@@ -1,0 +1,11 @@
+body{
+    background-color: #1A365D;
+}
+#treeMap {
+    background-color: #1A365D;
+}
+#title{
+    color: white;
+    font-size: 2em;
+    font-weight: bold;
+}
