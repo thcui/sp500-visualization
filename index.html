@@ -1,23 +1,36 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <title>S&P 500 Visualization</title>
+    <title>S&P 500 Companies Visualization</title>
+    <link rel="icon" href="data:;base64,iVBORwOKGO=" />
+    <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
-    <text id="title">S&P 500 Visualization</text>
-    <div>
-        <div>
-            <svg id="treeMap"></svg>
-            <svg id="lineChart"></svg>
-        </div>
-        <svg id="bubbleChart"></svg>
-    </div>
+    <h1>S&P 500 Companies Visualization </h1>
+    
+    <!-- todo: add visualizations -->
+
+    
     <script src="js/d3.v6.min.js"></script>
-    <script src="js/bubbleChart.js"></script>
     <script src="js/lineChart.js"></script>
-    <script src="js/treeMap.js"></script>
     <script src="js/main.js"></script>
-    <link rel="stylesheet" href="css/style.css">
+
+
+    <div id="lineChart-div" style="padding-top:10px; padding-bottom:30px">
+    <svg id="lineChart">
+    </svg>
+
+    </div>
+<!--    </div>-->
+<!--    <div id="tooltip">-->
+<!--        <circle></circle>-->
+<!--    </div>-->
+<!--    </div>-->
+<!--    <svg>-->
+<!--    <line id="highlighted_line"></line>-->
+<!--    </svg>-->
+
+
+
 </body>
 </html>
