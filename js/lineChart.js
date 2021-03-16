@@ -1,17 +1,254 @@
 class LineChart {
+
     constructor(_config, _data) {
+        // Configuration object with defaults
         this.config = {
             parentElement: _config.parentElement,
-            containerWidth: 400,
-            containerHeight: 380,
-            margin: {top: 45, right: 15, bottom: 20, left: 25},
-        };
-        this.data = _data
+            containerWidth: _config.containerWidth || 680,
+            containerHeight: _config.containerHeight || 400,
+            margin: _config.margin || {top: 20, right: 30, bottom: 20, left: 30}
+        }
+        this.data = _data;
+        this.selected_gender_data = []
         this.initVis();
     }
-    initVis(){}
 
-    updateVis(){}
+    initVis() {
+        let vis = this
 
-    renderVis(){}
+        vis.chart_height = vis.config.containerHeight - vis.config.margin.bottom - vis.config.margin.top
+        vis.chart_width = vis.config.containerWidth - vis.config.margin.right - vis.config.margin.left
+        // Create SVG area, initialize scales and axes
+        // Create scales
+        vis.svg = d3.select(vis.config.parentElement)
+            .attr('width', vis.config.containerWidth)
+            .attr('height', vis.config.containerHeight)
+
+        vis.svg.append("text")
+            .attr("x", vis.config.margin.left + 50)
+            .attr("y", vis.config.margin.top)
+            .attr("text-anchor", "middle")
+            .style("font-size", "12px")
+            .attr("font-weight", "700")
+            .text("Stock Price in USD($)");
+
+
+        vis.chart = vis.svg.append('g')
+            .attr('id', 'chart')
+            .attr('width', vis.chart_width)
+            .attr('height', vis.chart_height)
+            .attr('transform', `translate(${vis.config.margin.left},${vis.config.margin.top})`);
+        vis.drawing_area = vis.chart.append('g')
+            .attr('id', 'drawing_area')
+
+
+        vis.xScale = d3.scaleTime()
+            .range([0, vis.chart_width]);
+
+        vis.yScale = d3.scaleLinear()
+            .range([0, vis.chart_height])
+
+        vis.xAxis = d3.axisBottom(vis.xScale)
+            .tickSize(-vis.chart_height)
+
+        vis.yAxis = d3.axisLeft(vis.yScale)
+            .tickSize(-vis.chart_width)
+
+        vis.svg.append("text")
+            .attr("class", 'axis-name')
+            .attr("font-weight", "700")
+            .attr('font-size', '15')
+            .attr('transform', `translate(${vis.chart_width},${vis.chart_height})`)
+            .text("Date");
+
+
+        vis.xAxisG = vis.chart.append('g')
+            .attr('class', 'axis x-axis')
+            .attr('transform', `translate(0,${vis.chart_height})`);
+
+        // Add the left y-axis group
+        vis.yAxisG = vis.chart.append('g')
+            .attr('class', 'axis y-axis');
+
+        vis.trackingArea = vis.chart.append('rect')
+            .attr('width', vis.chart_width)
+            .attr('height', vis.chart_height)
+            .attr('fill', 'none')
+            .attr('pointer-events', 'all')
+
+        vis.tooltip = vis.chart.append('g')
+            .attr('class', 'tooltip')
+            .style('display', 'none');
+
+
+        this.updateVis()
+    }
+
+    updateVis() {
+        let vis = this
+        // Prepare data and scales
+        // vis.selected_data = vis.data.filter(function (d) {
+        //     return d[document.getElementById("country-selector").value] === 1;
+        // });
+        // vis.filtered_data = vis.selected_data.filter(function (d) {
+        //     return d.pcgdp !== null;
+        // });
+        vis.xScale.domain([d3.min(vis.data, d => d.Date), d3.max(vis.data, d => d.Date)]);
+        vis.yScale.domain([d3.max(vis.data, d => d.Adj_Close), d3.min(vis.data, d => d.Adj_Close)])
+
+
+        vis.selected_stock_data = {}
+        vis.actions = []
+        for (let stock of selected_stock_code) {
+            vis.selected_stock_data[stock] = []
+        }
+        d3.csv('data/preprocessed_data.csv').then(_data => {
+            let data_temp = _data
+
+            // Convert columns to numerical values
+            data_temp.forEach(d => {
+
+                if (selected_stock_code.includes(d['symbol'])) {
+                    Object.keys(d).forEach(attr => {
+                        if (attr === 'Date') {
+                            d[attr] = parseTime(d[attr])
+                        }
+                        if (attr === 'Adj_Close'||attr === 'marketcap'||attr === 'Volume') {
+                                d[attr] = +(d[attr])
+                        }
+                        vis.selected_stock_data[d['symbol']].push(d)
+                    });
+
+                    // data = data.filter(d => d.start_year !== d.end_year);
+                    // data.sort((a, b) => a.label - b.label);
+                }
+            })
+
+        }).then(() => {
+            vis.points_data = []
+            for (let stock of Object.values(vis.selected_stock_data)) {
+                for (let data of stock) {
+                    vis.points_data.push(data)
+                }
+
+            }
+            vis.xScale.domain([d3.min(vis.points_data, d => d.Date), d3.max(vis.points_data, d => d.Date)]);
+            vis.yScale.domain([d3.max(vis.points_data, d => d.Adj_Close), d3.min(vis.points_data, d => d.Adj_Close)])// 调用Promise的all方法，传入方法数组，结束后执行then方法参数中的方法
+            vis.renderVis()
+        })
+
+
+        // bar.then(()=>v)
+
+
+        // vis.selected_gender_data_id = vis.selected_gender_data.map(d => d.id)
+
+
+    }
+
+    renderVis() {
+        let vis = this
+        let line = vis.drawing_area.selectAll('.line').data(Object.values(vis.selected_stock_data))
+
+        let lineEnter = line.enter().append('path')
+        let lineMerge = lineEnter.merge(line)
+
+        lineMerge.datum(d => d)
+            .attr("fill", "none")
+            .attr('class', 'line')
+            .attr("stroke", "green")
+            .attr("stroke-width", 2)
+            .attr("d", d3.line()
+                .x(function (d) {
+                    return vis.xScale(d.Date)
+                })
+                .y(function (d) {
+                    return vis.yScale(d.Adj_Close)
+                })
+            )
+
+
+        // render_stock_point(vis.points_data)
+
+        function render_stock_point(stock) {
+
+            // Bind data to visual elements, update axes
+            // Update the axes/gridlines, remove the tick lines
+
+
+            let circle = vis.drawing_area.selectAll('.point').data(stock)
+            let circleEnter = circle.enter()
+                .append('g')
+                .attr('class', 'point')
+            circleEnter.append('circle')
+            circleEnter.append('path')
+
+            let circleMerge = circleEnter.merge(circle)
+
+            circleMerge.select('circle')
+                .attr('r', 1)
+                .attr('cx', d => vis.xScale(d.Date))
+                .attr('cy', d => vis.yScale(d.Adj_Close))
+                .attr('fill', 'green')
+
+            circle.exit().remove();
+        }
+
+        // vis.chart.selectAll('.hidden').on('mouseover', null).on('mousemove', null).on('mouseleave', null).on('click', null)
+        vis.trackingArea.on('mouseenter', () => {
+            vis.tooltip.style('display', 'block');
+        })
+            .on('mouseleave', () => {
+                vis.tooltip.style('display', 'none');
+            })
+            .on('mousemove', (event) => {
+
+                // Get date that corresponds to current mouse x-coordinate
+                const xPos = d3.pointer(event, this.svg.node())[0] - vis.config.margin.left// First array element is x, second is y
+                const date = vis.xScale.invert(xPos);
+                vis.bisectDate = d3.bisector(d => d.Date).left;
+                // Find nearest data point
+
+                let tempoo_data = []
+                for (let stock of Object.values(vis.selected_stock_data)) {
+                    if(stock.length===0){continue}
+                    const index = vis.bisectDate(stock, date, 1);
+                    const a = stock[index - 1];
+                    const b = stock[index];
+                    const d = b && (date - a.Date > b.Date - date) ? b : a;
+                    tempoo_data.push(d)
+                }
+
+
+                let tooltip_circle = vis.tooltip.selectAll('.tooltip_point').data(tempoo_data)
+                let tooltip_circleEnter = tooltip_circle.enter().append('g').attr('class', 'tooltip_point')
+                tooltip_circleEnter.append('circle')
+                tooltip_circleEnter.append('text')
+                let tooltip_circleMerge = tooltip_circleEnter.merge(tooltip_circle)
+                tooltip_circleMerge.select('circle')
+                    .attr('r', 4)
+                    .attr('fill', 'red')
+                    .attr('transform', d => `translate(${(vis.xScale(d.Date))},${(vis.yScale(d.Adj_Close))})`)
+                tooltip_circleMerge.select('text')
+                    .attr('font-size', '12')
+                    .attr('fill','white')
+                    .attr('transform', d => `translate(${vis.xScale(d.Date)},${(vis.yScale(d.Adj_Close) - 15)})`)
+                    .text(d => d.Adj_Close)
+
+
+                tooltip_circle.exit().remove()
+            })
+
+
+        vis.xAxisG
+            .call(vis.xAxis)
+            .call(g => g.select('.domain').remove())
+
+        vis.yAxisG
+            .call(vis.yAxis)
+            .call(g => g.select('.domain').remove())
+
+
+    }
+
 }
