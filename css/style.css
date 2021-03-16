@@ -4,8 +4,18 @@ body{
 #treeMap {
     background-color: #1A365D;
 }
+#lineChart {
+    color: white;
+    fill: white;
+}
+#lineChart line{
+    color: darkgray;
+}
 #title{
     color: white;
     font-size: 2em;
     font-weight: bold;
+}
+#Industrials{
+    color: orange;
 }
