@@ -69,7 +69,7 @@ class LineChart {
         // Add the left y-axis group
         vis.yAxisG = vis.chart.append('g')
             .attr('class', 'axis y-axis');
-        
+
 
         vis.tooltip = vis.chart.append('g')
             .attr('class', 'tooltip')
@@ -112,50 +112,52 @@ class LineChart {
         // for (let stock of selected_stock_code) {
         //     vis.selected_stock_data[stock] = []
         // }
-        if(selected_stock_code.length===0){
+        if(selected_stock_symbol===[]){
+            //TODO: use S&P500
+        }else {
 
-        }
-        d3.json('data/companyData.json').then(_data => {
-            // Convert columns to numerical values
-            selected_stock_code.forEach(stock_symbol=> {
-                if(_data[stock_symbol]) {
+            d3.json('data/companyData.json').then(_data => {
+                // Convert columns to numerical values
+                selected_stock_symbol.forEach(stock_symbol => {
+                    if (_data[stock_symbol]) {
 
-                    vis.selected_stock_data[stock_symbol] = _data[stock_symbol].historical
-                    d3.map(Object.keys(vis.selected_stock_data[stock_symbol]), d => vis.selected_stock_data[stock_symbol][d]['date'] = d)
-                    Object.values(vis.selected_stock_data[stock_symbol]).forEach(stock => {
-                        Object.keys(stock).forEach(attr=> {
-                            if (attr === 'date') {
-                                stock[attr] = parseTime(stock[attr])
-                            }
-                            if (attr === 'price' || attr === 'Volume') {
-                                stock[attr] = +(stock[attr])
-                            }
+                        vis.selected_stock_data[stock_symbol] = _data[stock_symbol].historical
+                        d3.map(Object.keys(vis.selected_stock_data[stock_symbol]), d => vis.selected_stock_data[stock_symbol][d]['date'] = d)
+                        Object.values(vis.selected_stock_data[stock_symbol]).forEach(stock => {
+                            Object.keys(stock).forEach(attr => {
+                                if (attr === 'date') {
+                                    stock[attr] = parseTime(stock[attr])
+                                }
+                                if (attr === 'price' || attr === 'Volume') {
+                                    stock[attr] = +(stock[attr])
+                                }
+                            })
                         })
-                    })
+                    }
+
+
+                });
+
+                // data = data.filter(d => d.start_year !== d.end_year);
+                // data.sort((a, b) => a.label - b.label);
+
+
+            }).then(() => {
+                vis.All_date = []
+                vis.All_price = []
+                for (let stock of Object.values(vis.selected_stock_data)) {
+                    vis.All_date = vis.All_date.concat(d3.map(Object.values(stock), d => d.date))
+                    vis.All_price = vis.All_price.concat(d3.map(Object.values(stock), d => d.price))
                 }
+                vis.xScale.domain([d3.min(this.All_date), d3.max(this.All_date)])
+                vis.yScale.domain([d3.max(this.All_price), d3.min(this.All_price)])
+                vis.renderVis()
 
-
-                    });
-
-                    // data = data.filter(d => d.start_year !== d.end_year);
-                    // data.sort((a, b) => a.label - b.label);
-
-
-
-        }).then(() => {
-            vis.All_date = []
-            vis.All_price = []
-            for (let stock of Object.values(vis.selected_stock_data)) {
-                vis.All_date=vis.All_date.concat(d3.map(Object.values(stock),d=>d.date))
-                vis.All_price=vis.All_price.concat(d3.map(Object.values(stock),d=>d.price))
-            }
-            vis.xScale.domain([d3.min(this.All_date), d3.max(this.All_date)])
-            vis.yScale.domain([d3.max(this.All_price), d3.min(this.All_price)])
-            vis.renderVis()
-
-        })
+            })
+        }
 
     }
+
 
 
     renderVis() {
