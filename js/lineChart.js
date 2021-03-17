@@ -69,16 +69,17 @@ class LineChart {
         // Add the left y-axis group
         vis.yAxisG = vis.chart.append('g')
             .attr('class', 'axis y-axis');
+        
+
+        vis.tooltip = vis.chart.append('g')
+            .attr('class', 'tooltip')
+            .style('display', 'none');
 
         vis.trackingArea = vis.chart.append('rect')
             .attr('width', vis.chart_width)
             .attr('height', vis.chart_height)
             .attr('fill', 'none')
             .attr('pointer-events', 'all')
-
-        vis.tooltip = vis.chart.append('g')
-            .attr('class', 'tooltip')
-            .style('display', 'none');
 
         vis.sector_data={}
 
