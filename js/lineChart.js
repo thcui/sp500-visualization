@@ -6,7 +6,7 @@ class LineChart {
             parentElement: _config.parentElement,
             containerWidth:  680,
             containerHeight:  400,
-            margin: _config.margin || {top: 20, right: 20, bottom: 20, left: 20}
+            margin: _config.margin || {top: 20, right: 40, bottom: 20, left: 20}
         }
         this.data = _data;
         this.selected_gender_data = []
@@ -158,7 +158,6 @@ class LineChart {
     renderVis() {
 
         let vis = this
-        console.log(vis.sector_data.filter(v=>{return v.symbol==='AAPL'}))
         let line = vis.drawing_area.selectAll('.line').data(Object.keys(vis.selected_stock_data))
 
         let lineEnter = line.enter().append('path')
@@ -180,7 +179,18 @@ class LineChart {
                     return vis.yScale(d.price)
                 })
             )
+        let text = vis.drawing_area.selectAll('.stock_name').data(Object.keys(vis.selected_stock_data))
+        let textEnter = text.enter().append('text')
+        let textMerge = textEnter.merge(text)
 
+        textMerge.text(d=>d)
+             .attr('class',d=>'stock_name '+vis.sector_data.filter(v=>{return v.symbol===d})[0].sector.replace(' ','_'))
+            .datum(d=>Object.values(vis.selected_stock_data[d]).slice(-1)[0])
+            .attr('transform', d=>`translate(${vis.chart_width+20},${vis.yScale(d.price)})`)
+            .attr('text-anchor', 'middle')
+            .attr('vertical-align', 'text-bottom')
+            .attr('font-size', 12)
+            .attr('text-stroke', '#ffffff')
 
         // render_stock_point(vis.points_data)
 
@@ -204,6 +214,7 @@ class LineChart {
                 .attr('cx', d => vis.xScale(d.date))
                 .attr('cy', d => vis.yScale(d.price))
                 .attr('fill', 'green')
+
 
             circle.exit().remove();
         }
