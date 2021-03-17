@@ -93,56 +93,58 @@ class LineChart {
         // vis.filtered_data = vis.selected_data.filter(function (d) {
         //     return d.pcgdp !== null;
         // });
-        vis.xScale.domain([d3.min(vis.data, d => d.Date), d3.max(vis.data, d => d.Date)]);
-        vis.yScale.domain([d3.max(vis.data, d => d.Adj_Close), d3.min(vis.data, d => d.Adj_Close)])
+        // vis.xScale.domain([d3.min(vis.data, d => d.Date), d3.max(vis.data, d => d.Date)]);
+        // vis.yScale.domain([d3.max(vis.data, d => d.Adj_Close), d3.min(vis.data, d => d.Adj_Close)])
 
 
         vis.selected_stock_data = {}
         vis.actions = []
-        for (let stock of selected_stock_code) {
-            vis.selected_stock_data[stock] = []
-        }
-        d3.csv('data/preprocessed_data.csv').then(_data => {
+        // for (let stock of selected_stock_code) {
+        //     vis.selected_stock_data[stock] = []
+        // }
+        d3.json('data/companyData.json').then(_data => {
             let data_temp = _data
 
             // Convert columns to numerical values
-            data_temp.forEach(d => {
+            selected_stock_code.forEach(stock_symbol=> {
+                if(_data[stock_symbol]) {
 
-                if (selected_stock_code.includes(d['symbol'])) {
-                    Object.keys(d).forEach(attr => {
-                        if (attr === 'Date') {
-                            d[attr] = parseTime(d[attr])
-                        }
-                        if (attr === 'Adj_Close'||attr === 'marketcap'||attr === 'Volume') {
-                                d[attr] = +(d[attr])
-                        }
-                        vis.selected_stock_data[d['symbol']].push(d)
+                    vis.selected_stock_data[stock_symbol] = _data[stock_symbol].historical
+                    d3.map(Object.keys(vis.selected_stock_data[stock_symbol]), d => vis.selected_stock_data[stock_symbol][d]['date'] = d)
+                    Object.values(vis.selected_stock_data[stock_symbol]).forEach(stock => {
+                        Object.keys(stock).forEach(attr=> {
+                            if (attr === 'date') {
+                                stock[attr] = parseTime(stock[attr])
+                            }
+                            if (attr === 'price' || attr === 'Volume') {
+                                stock[attr] = +(stock[attr])
+                            }
+                        })
+                    })
+                }
+
+
                     });
 
                     // data = data.filter(d => d.start_year !== d.end_year);
                     // data.sort((a, b) => a.label - b.label);
-                }
-            })
+
+
 
         }).then(() => {
-            vis.points_data = []
+            vis.All_date = []
+            vis.All_price = []
             for (let stock of Object.values(vis.selected_stock_data)) {
-                for (let data of stock) {
-                    vis.points_data.push(data)
-                }
-
+                vis.All_date=vis.All_date.concat(d3.map(Object.values(stock),d=>d.date))
+                vis.All_price=vis.All_price.concat(d3.map(Object.values(stock),d=>d.price))
             }
-            vis.xScale.domain([d3.min(vis.points_data, d => d.Date), d3.max(vis.points_data, d => d.Date)]);
-            vis.yScale.domain([d3.max(vis.points_data, d => d.Adj_Close), d3.min(vis.points_data, d => d.Adj_Close)])// 调用Promise的all方法，传入方法数组，结束后执行then方法参数中的方法
+            vis.xScale.domain([d3.min(this.All_date), d3.max(this.All_date)])
+            vis.yScale.domain([d3.max(this.All_price), d3.min(this.All_price)])
             vis.renderVis()
+            console.log(d3.max(this.All_price)
+            )
+
         })
-
-
-        // bar.then(()=>v)
-
-
-        // vis.selected_gender_data_id = vis.selected_gender_data.map(d => d.id)
-
 
     }
 
@@ -153,17 +155,17 @@ class LineChart {
         let lineEnter = line.enter().append('path')
         let lineMerge = lineEnter.merge(line)
 
-        lineMerge.datum(d => d)
+        lineMerge.datum(d => Object.values(d))
             .attr("fill", "none")
             .attr('class', 'line')
             .attr("stroke", "green")
             .attr("stroke-width", 2)
             .attr("d", d3.line()
                 .x(function (d) {
-                    return vis.xScale(d.Date)
+                    return vis.xScale(d.date)
                 })
                 .y(function (d) {
-                    return vis.yScale(d.Adj_Close)
+                    return vis.yScale(d.price)
                 })
             )
 
@@ -187,8 +189,8 @@ class LineChart {
 
             circleMerge.select('circle')
                 .attr('r', 1)
-                .attr('cx', d => vis.xScale(d.Date))
-                .attr('cy', d => vis.yScale(d.Adj_Close))
+                .attr('cx', d => vis.xScale(d.date))
+                .attr('cy', d => vis.yScale(d.price))
                 .attr('fill', 'green')
 
             circle.exit().remove();
@@ -206,16 +208,17 @@ class LineChart {
                 // Get date that corresponds to current mouse x-coordinate
                 const xPos = d3.pointer(event, this.svg.node())[0] - vis.config.margin.left// First array element is x, second is y
                 const date = vis.xScale.invert(xPos);
-                vis.bisectDate = d3.bisector(d => d.Date).left;
+                vis.bisectDate = d3.bisector(d => d.date).left;
                 // Find nearest data point
 
                 let tempoo_data = []
                 for (let stock of Object.values(vis.selected_stock_data)) {
+                    stock=Object.values(stock)
                     if(stock.length===0){continue}
                     const index = vis.bisectDate(stock, date, 1);
                     const a = stock[index - 1];
                     const b = stock[index];
-                    const d = b && (date - a.Date > b.Date - date) ? b : a;
+                    const d = b && (date - a.date > b.date - date) ? b : a;
                     tempoo_data.push(d)
                 }
 
@@ -228,12 +231,12 @@ class LineChart {
                 tooltip_circleMerge.select('circle')
                     .attr('r', 4)
                     .attr('fill', 'red')
-                    .attr('transform', d => `translate(${(vis.xScale(d.Date))},${(vis.yScale(d.Adj_Close))})`)
+                    .attr('transform', d => `translate(${(vis.xScale(d.date))},${(vis.yScale(d.price))})`)
                 tooltip_circleMerge.select('text')
                     .attr('font-size', '12')
                     .attr('fill','white')
-                    .attr('transform', d => `translate(${vis.xScale(d.Date)},${(vis.yScale(d.Adj_Close) - 15)})`)
-                    .text(d => d.Adj_Close)
+                    .attr('transform', d => `translate(${vis.xScale(d.date)},${(vis.yScale(d.price) - 15)})`)
+                    .text(d => d.price)
 
 
                 tooltip_circle.exit().remove()
