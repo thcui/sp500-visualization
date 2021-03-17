@@ -3,7 +3,7 @@ const parseTime = d3.timeParse("%Y-%m-%d");
 let stockData = [];
 let bubbleChartData = [];
 //把需要linechart显示的股票的symbol放入这个list
-let selected_stock_code = ['TEST', 'TEST2', 'AAP', 'AAPL']
+let selected_stock_code = ['TEST', 'TEST2', 'AAP', 'AAPL', 'AFL', 'ABC', 'MO', 'AXP']
 
 d3.csv('data/industryMC.csv').then(data => {
     data.forEach(d => {
