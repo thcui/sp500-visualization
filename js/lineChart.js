@@ -80,8 +80,15 @@ class LineChart {
             .attr('class', 'tooltip')
             .style('display', 'none');
 
+        vis.sector_data={}
 
-        this.updateVis()
+        d3.csv('data/marketcap_preprocessed.csv').then(_data=>{
+            vis.sector_data=_data
+            this.updateVis()
+        })
+
+
+
     }
 
     updateVis() {
@@ -98,10 +105,11 @@ class LineChart {
 
 
         vis.selected_stock_data = {}
-        vis.actions = []
+
         // for (let stock of selected_stock_code) {
         //     vis.selected_stock_data[stock] = []
         // }
+
         d3.json('data/companyData.json').then(_data => {
             let data_temp = _data
 
@@ -141,24 +149,28 @@ class LineChart {
             vis.xScale.domain([d3.min(this.All_date), d3.max(this.All_date)])
             vis.yScale.domain([d3.max(this.All_price), d3.min(this.All_price)])
             vis.renderVis()
-            console.log(d3.max(this.All_price)
-            )
 
         })
 
     }
 
+
     renderVis() {
+
         let vis = this
-        let line = vis.drawing_area.selectAll('.line').data(Object.values(vis.selected_stock_data))
+        console.log(vis.sector_data.filter(v=>{return v.symbol==='AAPL'}))
+        let line = vis.drawing_area.selectAll('.line').data(Object.keys(vis.selected_stock_data))
 
         let lineEnter = line.enter().append('path')
         let lineMerge = lineEnter.merge(line)
+        lineMerge.attr('class',d=>'line '+vis.sector_data.filter(v=>{return v.symbol===d})[0].sector.replace(' ','_'))
 
-        lineMerge.datum(d => Object.values(d))
+
+
+
+
+        lineMerge.datum(d => Object.values(vis.selected_stock_data[d]))
             .attr("fill", "none")
-            .attr('class', 'line')
-            .attr("stroke", "green")
             .attr("stroke-width", 2)
             .attr("d", d3.line()
                 .x(function (d) {
