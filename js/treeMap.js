@@ -2,8 +2,8 @@ class TreeMap {
     constructor(_config, _data) {
         this.config = {
             parentElement: _config.parentElement,
-            containerWidth: 680,
-            containerHeight: 400,
+            containerWidth: 646,
+            containerHeight: 380,
             margin: {top: 15, right: 10, bottom: 10, left: 15},
         };
         this.data = _data
@@ -22,7 +22,7 @@ class TreeMap {
             .select(vis.config.parentElement)
             .attr("width", vis.config.containerWidth)
             .attr("height", vis.config.containerHeight)
-            .attr("transform", "translate(0, 100)");
+
         vis.innerWidth = vis.config.containerWidth - vis.config.margin.left - vis.config.margin.right;
         vis.innerHeight = vis.config.containerHeight - vis.config.margin.top - vis.config.margin.bottom;
         vis.chartArea = vis.svg
