@@ -61,6 +61,8 @@ class TreeMap {
             .size([vis.innerWidth, vis.innerHeight])
             .padding(4)
             (root)
+
+
         vis.svg
             .selectAll("rect")
             .data(root.leaves())
@@ -79,7 +81,9 @@ class TreeMap {
                 return d.y1 - d.y0;
             })
             .style("stroke", "black")
-            .style("fill", function(d){ return vis.color(d.data.sector)});
+            .style("fill", function(d){ return vis.color(d.data.sector)})
+            .on("mouseover",this.showToolTip)
+            .on("mouseout",this.hideToolTip);
 
         // and to add the text labels
         vis.svg
@@ -100,6 +104,22 @@ class TreeMap {
             .attr("fill", "white")
 
     }
+showToolTip(e,d){
+        const formatMarketCap = number => d3.format('.3s')(number).replace('G','Billions').replace('T','Trillions')
+        let num = formatMarketCap(d.data.marketcap);
+        d3.select('#tooltip')
+            .style("display", "block")
+            .style("top", e.pageY +20+ "px")
+            .style("left", e.pageX + 20+"px")
+            .html(`<strong>${d.data.sector}</strong>
+              <div><i>Amount of Market Capitalization:</i></div>
+              <div> ${num}  USD</div>
+               `);
 
+
+}
+hideToolTip() {
+        d3.select("#tooltip").style("display", "none");
+    }
 
 }

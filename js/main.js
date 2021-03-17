@@ -4,7 +4,12 @@ let stockData = [];
 let bubbleChartData = [];
 //把需要linechart显示的股票的symbol放入这个list
 let selected_stock_code = ['TEST', 'TEST2', 'AAP', 'AAPL', 'ABBV', 'ABC', 'ABMD', 'ABT']
-
+// d3.select("body")
+//     .append("div")
+//     .attr("class", "tooltip")
+//     .style("position", "absolute")
+//     .style("background-color", "white")
+//     .style("visibility", "hidden");
 d3.csv('data/industryMC.csv').then(data => {
     data.forEach(d => {
         d.marketcap = +d.marketcap;
