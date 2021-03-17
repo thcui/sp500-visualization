@@ -17,6 +17,51 @@ body{
 #lineChart line{
     color: darkgray;
 }
+#lineChart .Industrials{
+    stroke: #ED8936;
+}
+
+#lineChart .Consumer_Discretionary{
+    stroke:#805AD5
+}
+#lineChart .Health_Care{
+    stroke:#2F855A
+}
+#lineChart .Information_Technology{
+    stroke:#3182CE
+}
+#lineChart .Communication_Services{
+    stroke:#702459
+}
+
+#lineChart .Utilities{
+   stroke:  #FC8181
+}
+#lineChart .Materials{
+    stroke: #C4C4C4
+}
+#lineChart .Financials{
+    stroke:  #C53030
+}#lineChart .Real_Estate{
+     stroke: #81E6D9
+ }
+ #lineChart .Consumer_Staples{
+     stroke: #B7791F
+
+ }
+#lineChart .Energy{
+    stroke: #E0CE61
+
+}
+
+
+/*(["", "", "I", ",*/
+/*, "", ", "", "",*/
+/*"C", ""])*/
+/*.range([", "", "", "", , "", "",*/
+/*"", "", "", "#"]);*/
+
+
 #title{
     color: white;
     font-size: 2em;
@@ -24,15 +69,4 @@ body{
 }
 #Industrials{
     color: orange;
-}
-#tooltip {
-    position: absolute;
-    display: none;
-    background: #fff;
-    border: 1px solid #ddd;
-    font-size: 12px;
-    font-weight: 500;
-    padding: 8px;
-    min-width: 160px;
-    color: #333;
 }
