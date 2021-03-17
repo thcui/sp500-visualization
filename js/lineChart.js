@@ -82,6 +82,8 @@ class LineChart {
 
         vis.sector_data={}
 
+
+
         d3.csv('data/marketcap_preprocessed.csv').then(_data=>{
             vis.sector_data=_data
             this.updateVis()
@@ -109,10 +111,10 @@ class LineChart {
         // for (let stock of selected_stock_code) {
         //     vis.selected_stock_data[stock] = []
         // }
+        if(selected_stock_code.length===0){
 
+        }
         d3.json('data/companyData.json').then(_data => {
-            let data_temp = _data
-
             // Convert columns to numerical values
             selected_stock_code.forEach(stock_symbol=> {
                 if(_data[stock_symbol]) {
@@ -166,6 +168,17 @@ class LineChart {
 
 
 
+        function transition(path) {
+            path.transition()
+                .duration(3000)
+                .attrTween("stroke-dasharray", tweenDash)
+                .on("end", () => { d3.select(this).call(transition); });
+        }
+        function tweenDash() {
+            const l = this.getTotalLength(),
+                i = d3.interpolateString("0," + l, l + "," + l);
+            return function(t) { return i(t) };
+        }
 
 
         lineMerge.datum(d => Object.values(vis.selected_stock_data[d]))
@@ -178,7 +191,9 @@ class LineChart {
                 .y(function (d) {
                     return vis.yScale(d.price)
                 })
-            )
+            ).call(transition);
+
+
         let text = vis.drawing_area.selectAll('.stock_name').data(Object.keys(vis.selected_stock_data))
         let textEnter = text.enter().append('text')
         let textMerge = textEnter.merge(text)
@@ -258,7 +273,7 @@ class LineChart {
                 tooltip_circleMerge.select('text')
                     .attr('font-size', '12')
                     .attr('fill','white')
-                    .attr('transform', d => `translate(${vis.xScale(d.date)},${(vis.yScale(d.price) - 15)})`)
+                    .attr('transform', d => `translate(${vis.xScale(d.date)},${(vis.yScale(d.price))})`)
                     .text(d => d.price)
 
 
