@@ -4,9 +4,15 @@ body{
 #treeMap {
     background-color: #1A365D;
 }
+#first_set{
+    display: inline-block;
+    position: absolute;
+    top: 100px;
+}
 #lineChart {
     color: white;
     fill: white;
+
 }
 #lineChart line{
     color: darkgray;
