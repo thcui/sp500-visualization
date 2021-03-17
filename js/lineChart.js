@@ -4,9 +4,9 @@ class LineChart {
         // Configuration object with defaults
         this.config = {
             parentElement: _config.parentElement,
-            containerWidth: _config.containerWidth || 680,
-            containerHeight: _config.containerHeight || 400,
-            margin: _config.margin || {top: 20, right: 30, bottom: 20, left: 30}
+            containerWidth:  680,
+            containerHeight:  400,
+            margin: _config.margin || {top: 20, right: 20, bottom: 20, left: 20}
         }
         this.data = _data;
         this.selected_gender_data = []
