@@ -2,16 +2,27 @@
 const parseTime = d3.timeParse("%Y-%m-%d");
 let stockData = [];
 let bubbleChartData = [];
-//把需要linechart显示的股票的symbol放入这个list
-let selected_stock_code = ['TEST', 'TEST2', 'AAP', 'AAPL', 'AFL', 'ABC', 'MO', 'AXP']
+let lineChart,treeMap
+let selected_stock_symbol=[]
+
+
+//如何更新lineChart(更新之前先删掉第17行)
+//添加:
+// 1.把需要lineChart显示的股票的symbol放入这个selected_stock_code:  selected_stock_symbol.push('AAPL')
+// 2. lineChart.upDateVis()
+//去除：
+// 1. selected_stock_symbol.filter(d=>{d!==‘AAPL’})
+// 2. lineChart.upDateVis()
+
+selected_stock_symbol=selected_stock_symbol.concat(['TEST', 'TEST2', 'AAP', 'AAPL', 'AFL', 'ABC', 'MO', 'AXP'])
 
 d3.csv('data/industryMC.csv').then(data => {
     data.forEach(d => {
         d.marketcap = +d.marketcap;
     });
   //  data = d3.rollup(data, v => d3.sum(v, d=>d.marketcap), (d) => d.sector);
-    let treeMap = new TreeMap({ parentElement: "#treeMap" }, data);
-    let lineChart = new LineChart({parentElement: '#lineChart',}, data);
+    treeMap = new TreeMap({ parentElement: "#treeMap" }, data);
+    lineChart= new LineChart({parentElement: '#lineChart',}, data);
 
 });
 
