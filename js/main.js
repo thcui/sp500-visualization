@@ -14,7 +14,6 @@ let selected_stock_symbol=[]
 // 1. selected_stock_symbol.filter(d=>{d!==‘AAPL’})
 // 2. lineChart.upDateVis()
 
-selected_stock_symbol=selected_stock_symbol.concat(['TEST', 'TEST2', 'AAP', 'AAPL', 'AFL', 'ABC', 'MO', 'AXP'])
 
 d3.csv('data/industryMC.csv').then(data => {
     data.forEach(d => {

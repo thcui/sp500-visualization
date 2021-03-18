@@ -83,28 +83,26 @@ class LineChart {
 
         vis.sector_data={}
 
+        vis.prepare_stock_data=new Promise((resolve, reject)=>{
+            d3.json('data/companyData.json').then(d=>{resolve(d)})
+        })
 
 
         d3.csv('data/marketcap_preprocessed.csv').then(_data=>{
             vis.sector_data=_data
+            vis.sector_data.push({
+                "": "0",
+                "symbol": "SP500",
+                "name": "SP500",
+                "sector": "SP500",
+            })
             this.updateVis()
         })
-
-
 
     }
 
     updateVis() {
         let vis = this
-        // Prepare data and scales
-        // vis.selected_data = vis.data.filter(function (d) {
-        //     return d[document.getElementById("country-selector").value] === 1;
-        // });
-        // vis.filtered_data = vis.selected_data.filter(function (d) {
-        //     return d.pcgdp !== null;
-        // });
-        // vis.xScale.domain([d3.min(vis.data, d => d.Date), d3.max(vis.data, d => d.Date)]);
-        // vis.yScale.domain([d3.max(vis.data, d => d.Adj_Close), d3.min(vis.data, d => d.Adj_Close)])
 
 
         vis.selected_stock_data = {}
@@ -112,11 +110,25 @@ class LineChart {
         // for (let stock of selected_stock_code) {
         //     vis.selected_stock_data[stock] = []
         // }
-        if(selected_stock_symbol===[]){
+        if(selected_stock_symbol.length===0){
             //TODO: use S&P500
+            d3.csv('data/SP500HistoricalData.csv').then(_data=>{
+                delete _data['columns'];
+                vis.selected_stock_data['SP500']=Object.assign({},_data )
+                Object.values(vis.selected_stock_data['SP500']).forEach(stock => {
+                    Object.keys(stock).forEach(attr => {
+                        if (attr === 'date') {
+                            stock[attr] = parseTime(stock[attr])
+                        }
+                        if (attr === 'price' || attr === 'Volume') {
+                            stock[attr] = +stock[attr]
+                        }
+                    })
+                })
+            }).then(()=>{set_lineChart_property(vis)})
         }else {
 
-            d3.json('data/companyData.json').then(_data => {
+            vis.prepare_stock_data.then(_data => {
                 // Convert columns to numerical values
                 selected_stock_symbol.forEach(stock_symbol => {
                     if (_data[stock_symbol]) {
@@ -143,17 +155,22 @@ class LineChart {
 
 
             }).then(() => {
-                vis.All_date = []
-                vis.All_price = []
-                for (let stock of Object.values(vis.selected_stock_data)) {
-                    vis.All_date = vis.All_date.concat(d3.map(Object.values(stock), d => d.date))
-                    vis.All_price = vis.All_price.concat(d3.map(Object.values(stock), d => d.price))
-                }
-                vis.xScale.domain([d3.min(this.All_date), d3.max(this.All_date)])
-                vis.yScale.domain([d3.max(this.All_price), d3.min(this.All_price)])
-                vis.renderVis()
+                set_lineChart_property(vis)
+
 
             })
+        }
+
+        function set_lineChart_property(vis){
+            vis.All_date = []
+            vis.All_price = []
+            for (let stock of Object.values(vis.selected_stock_data)) {
+                vis.All_date = vis.All_date.concat(d3.map(Object.values(stock), d => d.date))
+                vis.All_price = vis.All_price.concat(d3.map(Object.values(stock), d => d.price))
+            }
+            vis.xScale.domain([d3.min(vis.All_date), d3.max(vis.All_date)])
+            vis.yScale.domain([d3.max(vis.All_price), d3.min(vis.All_price)])
+            vis.renderVis()
         }
 
     }
@@ -169,8 +186,7 @@ class LineChart {
         let lineMerge = lineEnter.merge(line)
         lineMerge.attr('class',d=>'line '+vis.sector_data.filter(v=>{return v.symbol===d})[0].sector.replace(' ','_'))
 
-
-
+        
         function transition(path) {
             path.transition()
                 .duration(3000)
