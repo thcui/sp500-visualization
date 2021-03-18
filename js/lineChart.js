@@ -6,7 +6,7 @@ class LineChart {
             parentElement: _config.parentElement,
             containerWidth: 680,
             containerHeight: 400,
-            margin: _config.margin || {top: 20, right: 40, bottom: 20, left: 20}
+            margin: _config.margin || {top: 20, right: 40, bottom: 20, left: 30}
         }
         this.data = _data;
         this.initVis();
