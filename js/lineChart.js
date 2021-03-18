@@ -4,12 +4,11 @@ class LineChart {
         // Configuration object with defaults
         this.config = {
             parentElement: _config.parentElement,
-            containerWidth:  680,
-            containerHeight:  400,
+            containerWidth: 680,
+            containerHeight: 400,
             margin: _config.margin || {top: 20, right: 40, bottom: 20, left: 20}
         }
         this.data = _data;
-        this.selected_gender_data = []
         this.initVis();
     }
 
@@ -25,12 +24,20 @@ class LineChart {
             .attr('height', vis.config.containerHeight)
 
         vis.svg.append("text")
-            .attr("x", vis.config.margin.left + 50)
+            .attr("x", vis.config.margin.left + 80)
             .attr("y", vis.config.margin.top)
             .attr("text-anchor", "middle")
-            .style("font-size", "12px")
+            .style("font-size", "15px")
             .attr("font-weight", "700")
             .text("Stock Price in USD($)");
+
+        vis.svg.append("text")
+            .attr("class", 'axis-name')
+            .attr("font-weight", "700")
+            .attr('font-size', '15')
+            .attr('transform', `translate(${vis.chart_width},${vis.chart_height})`)
+            .text("Date");
+
 
 
         vis.chart = vis.svg.append('g')
@@ -54,12 +61,6 @@ class LineChart {
         vis.yAxis = d3.axisLeft(vis.yScale)
             .tickSize(-vis.chart_width)
 
-        vis.svg.append("text")
-            .attr("class", 'axis-name')
-            .attr("font-weight", "700")
-            .attr('font-size', '15')
-            .attr('transform', `translate(${vis.chart_width},${vis.chart_height})`)
-            .text("Date");
 
 
         vis.xAxisG = vis.chart.append('g')
@@ -81,15 +82,35 @@ class LineChart {
             .attr('fill', 'none')
             .attr('pointer-events', 'all')
 
-        vis.sector_data={}
+        vis.transition=function transition(path) {
+            path.transition()
+                .duration(3000)
+                .attrTween("stroke-dasharray", vis.tweenDash)
+                .on("end", () => {
+                    d3.select(this).call(vis.transition);
+                });
+        }
 
-        vis.prepare_stock_data=new Promise((resolve, reject)=>{
-            d3.json('data/companyData.json').then(d=>{resolve(d)})
+        vis.tweenDash=function tweenDash() {
+            const l = this.getTotalLength(),
+                i = d3.interpolateString("0," + l, l + "," + l);
+            return function (t) {
+                return i(t)
+            };
+        }
+
+
+        vis.sector_data = {}
+
+        vis.prepare_stock_data = new Promise((resolve, reject) => {
+            d3.json('data/companyData.json').then(d => {
+                resolve(d)
+            })
         })
 
 
-        d3.csv('data/marketcap_preprocessed.csv').then(_data=>{
-            vis.sector_data=_data
+        d3.csv('data/marketcap_preprocessed.csv').then(_data => {
+            vis.sector_data = _data
             vis.sector_data.push({
                 "": "0",
                 "symbol": "SP500",
@@ -99,6 +120,8 @@ class LineChart {
             this.updateVis()
         })
 
+
+
     }
 
     updateVis() {
@@ -107,14 +130,10 @@ class LineChart {
 
         vis.selected_stock_data = {}
 
-        // for (let stock of selected_stock_code) {
-        //     vis.selected_stock_data[stock] = []
-        // }
-        if(selected_stock_symbol.length===0){
-            //TODO: use S&P500
-            d3.csv('data/SP500HistoricalData.csv').then(_data=>{
+        if (selected_stock_symbol.length === 0) {
+            d3.csv('data/SP500HistoricalData.csv').then(_data => {
                 delete _data['columns'];
-                vis.selected_stock_data['SP500']=Object.assign({},_data )
+                vis.selected_stock_data['SP500'] = Object.assign({}, _data)
                 Object.values(vis.selected_stock_data['SP500']).forEach(stock => {
                     Object.keys(stock).forEach(attr => {
                         if (attr === 'date') {
@@ -125,8 +144,10 @@ class LineChart {
                         }
                     })
                 })
-            }).then(()=>{set_lineChart_property(vis)})
-        }else {
+            }).then(() => {
+                set_lineChart_property(vis)
+            })
+        } else {
 
             vis.prepare_stock_data.then(_data => {
                 // Convert columns to numerical values
@@ -150,18 +171,13 @@ class LineChart {
 
                 });
 
-                // data = data.filter(d => d.start_year !== d.end_year);
-                // data.sort((a, b) => a.label - b.label);
-
 
             }).then(() => {
                 set_lineChart_property(vis)
-
-
             })
         }
 
-        function set_lineChart_property(vis){
+        function set_lineChart_property(vis) {
             vis.All_date = []
             vis.All_price = []
             for (let stock of Object.values(vis.selected_stock_data)) {
@@ -176,7 +192,6 @@ class LineChart {
     }
 
 
-
     renderVis() {
 
         let vis = this
@@ -184,20 +199,11 @@ class LineChart {
 
         let lineEnter = line.enter().append('path')
         let lineMerge = lineEnter.merge(line)
-        lineMerge.attr('class',d=>'line '+vis.sector_data.filter(v=>{return v.symbol===d})[0].sector.replace(' ','_'))
+        lineMerge.attr('class', d => 'line ' + vis.sector_data.filter(v => {
+            return v.symbol === d
+        })[0].sector.replace(' ', '_'))
 
-        
-        function transition(path) {
-            path.transition()
-                .duration(3000)
-                .attrTween("stroke-dasharray", tweenDash)
-                .on("end", () => { d3.select(this).call(transition); });
-        }
-        function tweenDash() {
-            const l = this.getTotalLength(),
-                i = d3.interpolateString("0," + l, l + "," + l);
-            return function(t) { return i(t) };
-        }
+
 
 
         lineMerge.datum(d => Object.values(vis.selected_stock_data[d]))
@@ -210,23 +216,24 @@ class LineChart {
                 .y(function (d) {
                     return vis.yScale(d.price)
                 })
-            ).call(transition);
+            ).call(vis.transition);
 
 
         let text = vis.drawing_area.selectAll('.stock_name').data(Object.keys(vis.selected_stock_data))
         let textEnter = text.enter().append('text')
         let textMerge = textEnter.merge(text)
 
-        textMerge.text(d=>d)
-             .attr('class',d=>'stock_name '+vis.sector_data.filter(v=>{return v.symbol===d})[0].sector.replace(' ','_'))
-            .datum(d=>Object.values(vis.selected_stock_data[d]).slice(-1)[0])
-            .attr('transform', d=>`translate(${vis.chart_width+20},${vis.yScale(d.price)})`)
+        textMerge.text(d => d)
+            .attr('class', d => 'stock_name ' + vis.sector_data.filter(v => {
+                return v.symbol === d
+            })[0].sector.replace(' ', '_'))
+            .datum(d => Object.values(vis.selected_stock_data[d]).slice(-1)[0])
+            .attr('transform', d => `translate(${vis.chart_width + 20},${vis.yScale(d.price)})`)
             .attr('text-anchor', 'middle')
             .attr('vertical-align', 'text-bottom')
             .attr('font-size', 12)
             .attr('text-stroke', '#ffffff')
 
-        // render_stock_point(vis.points_data)
 
         function render_stock_point(stock) {
 
@@ -270,8 +277,10 @@ class LineChart {
 
                 let tempoo_data = []
                 for (let stock of Object.values(vis.selected_stock_data)) {
-                    stock=Object.values(stock)
-                    if(stock.length===0){continue}
+                    stock = Object.values(stock)
+                    if (stock.length === 0) {
+                        continue
+                    }
                     const index = vis.bisectDate(stock, date, 1);
                     const a = stock[index - 1];
                     const b = stock[index];
@@ -291,10 +300,9 @@ class LineChart {
                     .attr('transform', d => `translate(${(vis.xScale(d.date))},${(vis.yScale(d.price))})`)
                 tooltip_circleMerge.select('text')
                     .attr('font-size', '12')
-                    .attr('fill','white')
+                    .attr('fill', 'white')
                     .attr('transform', d => `translate(${vis.xScale(d.date)},${(vis.yScale(d.price))})`)
                     .text(d => d.price)
-
 
                 tooltip_circle.exit().remove()
             })
