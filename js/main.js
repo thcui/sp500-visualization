@@ -6,7 +6,7 @@ let lineChart,treeMap
 let selected_stock_symbol=[]
 
 
-//如何更新lineChart(更新之前先删掉第17行)
+//如何更新lineChart
 //添加:
 // 1.把需要lineChart显示的股票的symbol放入这个selected_stock_code:  selected_stock_symbol.push('AAPL')
 // 2. lineChart.upDateVis()
