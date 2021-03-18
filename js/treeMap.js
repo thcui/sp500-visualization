@@ -66,6 +66,7 @@ class TreeMap {
             .data(root.leaves())
             .enter()
             .append("rect")
+            .attr("class","treeBlock")
             .attr('x', function (d) {
                 return d.x0;
             })
@@ -78,7 +79,6 @@ class TreeMap {
             .attr('height', function (d) {
                 return d.y1 - d.y0;
             })
-            .style("stroke", "black")
             .style("fill", function(d){ return vis.color(d.data.sector)})
             .on("mouseover",this.showToolTip)
             .on("mouseout",this.hideToolTip);
@@ -113,6 +113,7 @@ class TreeMap {
               <div><i>Amount of Market Capitalization:</i></div>
               <div> ${num}  USD</div>
                `);
+        d3.select
 
 
     }
