@@ -17,6 +17,11 @@ body{
 #lineChart line{
     color: darkgray;
 }
+
+#lineChart .SP500{
+    stroke:  #FFFFFF
+}
+
 #lineChart .Industrials{
     stroke: #ED8936;
 }
