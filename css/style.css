@@ -19,7 +19,7 @@ body{
 }
 
 #lineChart .SP500{
-    stroke:  #FFFFFF
+    stroke:  #FFFFFF;
 }
 
 #lineChart .Industrials{
