@@ -45,8 +45,6 @@ class LineChart {
             .attr('width', vis.chart_width)
             .attr('height', vis.chart_height)
             .attr('transform', `translate(${vis.config.margin.left},${vis.config.margin.top})`);
-        vis.drawing_area = vis.chart.append('g')
-            .attr('id', 'drawing_area')
 
 
         vis.xScale = d3.scaleTime()
@@ -61,8 +59,6 @@ class LineChart {
         vis.yAxis = d3.axisLeft(vis.yScale)
             .tickSize(-vis.chart_width)
 
-
-
         vis.xAxisG = vis.chart.append('g')
             .attr('class', 'axis x-axis')
             .attr('transform', `translate(0,${vis.chart_height})`);
@@ -71,10 +67,15 @@ class LineChart {
         vis.yAxisG = vis.chart.append('g')
             .attr('class', 'axis y-axis');
 
+        vis.drawing_area = vis.chart.append('g')
+            .attr('id', 'drawing_area')
+
 
         vis.tooltip = vis.chart.append('g')
             .attr('class', 'tooltip')
             .style('display', 'none');
+
+
 
         vis.trackingArea = vis.chart.append('rect')
             .attr('width', vis.chart_width)
@@ -99,7 +100,6 @@ class LineChart {
             };
         }
 
-
         vis.sector_data = {}
 
         vis.prepare_stock_data = new Promise((resolve, reject) => {
@@ -119,8 +119,6 @@ class LineChart {
             })
             this.updateVis()
         })
-
-
 
     }
 
@@ -260,7 +258,6 @@ class LineChart {
             circle.exit().remove();
         }
 
-        // vis.chart.selectAll('.hidden').on('mouseover', null).on('mousemove', null).on('mouseleave', null).on('click', null)
         vis.trackingArea.on('mouseenter', () => {
             vis.tooltip.style('display', 'block');
         })

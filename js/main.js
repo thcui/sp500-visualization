@@ -3,7 +3,7 @@ const parseTime = d3.timeParse("%Y-%m-%d");
 let stockData = [];
 let bubbleChartData = [];
 let lineChart,treeMap
-let selected_stock_symbol=[]
+let selected_stock_symbol=['AAP','AAPL','MMM']
 
 
 //如何更新lineChart
@@ -45,5 +45,5 @@ function getbubbleChartData(start_date, end_date){
             bubbleChartData.push(obj);
         }
     }
-    console.log(bubbleChartData);
+    // console.log(bubbleChartData);
 }
