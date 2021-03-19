@@ -69,7 +69,18 @@ class BubbleChart {
             .attr("opacity", 0.7)
             .attr("class", (d) => `${d.industry} ${d.symbol}`)
             .on("mouseover",this.showToolTip)
-            .on("mouseout",this.hideToolTip);
+            .on("mouseout",this.hideToolTip)
+            .on('click', function (d) {
+            d3.select(this).each(function (d) {
+                if(selected_stock_symbol.includes(d.symbol)){
+                    selected_stock_symbol=selected_stock_symbol.filter(v=>{return (v!==d.symbol)})
+                }else{
+                    selected_stock_symbol.push(d.symbol)
+                }
+                updateLineChart();
+            })
+
+        })
     }
     showToolTip(e,d){
         const formatMarketCap = number => d3.format('.3s')(number).replace('G','Billions').replace('T','Trillions')
@@ -84,6 +95,7 @@ class BubbleChart {
                `);
 
     }
+
     hideToolTip() {
         d3.select("#tooltip").style("display", "none");
     }

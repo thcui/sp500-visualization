@@ -3,7 +3,7 @@ const parseTime = d3.timeParse("%Y-%m-%d");
 let stockData = [];
 let bubbleChartData = [];
 let lineChart,treeMap,bubbleChart
-let selected_stock_symbol=['AAP','AAPL','MMM']
+let selected_stock_symbol=[]
 let sectorFilter = [];
 
 
@@ -62,4 +62,8 @@ function filterSector(){
         bubbleChart.data = bubbleChartData;
         bubbleChart.updateVis();
     }
+}
+
+function  updateLineChart(){
+    lineChart.updateVis();
 }
