@@ -103,6 +103,8 @@ class LineChart {
 
 
 
+
+
         vis.trackingArea = vis.chart.append('rect')
             .attr('width', vis.chart_width)
             .attr('height', vis.detail_chart_height-vis.margin_btw)
@@ -127,6 +129,21 @@ class LineChart {
         }
 
         vis.sector_data = {}
+
+
+        vis.brushG = vis.overview_area.append('g')
+            .attr('class', 'brush x-brush');
+
+
+        // Initialize brush component
+        vis.brush = d3.brushX()
+            .extent([[0, 0], [vis.chart_width, vis.overview_chart_height]])
+            .on('brush', function({selection}) {
+                if (selection) vis.brushed(selection);
+            })
+            .on('end', function({selection}) {
+                if (!selection) vis.brushed(null);
+            });
 
         vis.prepare_stock_data = new Promise((resolve, reject) => {
             d3.json('data/companyData.json').then(d => {
@@ -221,10 +238,8 @@ class LineChart {
     renderVis() {
 
         let vis = this
-        renderLine(vis.drawing_area,Object.keys(vis.selected_stock_data),this.xScale_detail,this.yScale_detail)
-        renderLine(vis.overview_area,Object.keys(vis.selected_stock_data),this.xScale_overview,this.yScale_overview)
 
-        function renderLine(area,data,x_scale,y_scale){
+        vis.renderLine=function renderLine(area,data,x_scale,y_scale){
             let line = area.selectAll('.line').data(data)
 
             let lineEnter = line.enter().append('path')
@@ -249,6 +264,10 @@ class LineChart {
                 ).call(vis.transition);
 
         }
+        vis.renderLine(vis.drawing_area,Object.keys(vis.selected_stock_data),this.xScale_detail,this.yScale_detail)
+        vis.renderLine(vis.overview_area,Object.keys(vis.selected_stock_data),this.xScale_overview,this.yScale_overview)
+
+
 
 
 
@@ -355,7 +374,38 @@ class LineChart {
             .call(vis.yAxis_detail)
             .call(g => g.select('.domain').remove())
 
+        // Update the brush and define a default position
+        const defaultBrushSelection = [vis.xScale_detail(new Date('2019-01-01')), vis.xScale_detail.range()[1]];
+        vis.brushG
+            .call(vis.brush)
+            .call(vis.brush.move, defaultBrushSelection);
 
+
+
+    }
+
+    /**
+     * React to brush events
+     */
+    brushed(selection) {
+        let vis = this;
+
+        // Check if the brush is still active or if it has been removed
+        if (selection) {
+            // Convert given pixel coordinates (range: [x0,x1]) into a time period (domain: [Date, Date])
+            const selectedDomain = selection.map(vis.xScale_overview.invert, vis.xScale_overview);
+
+            // Update x-scale of the focus view accordingly
+            vis.xScale_detail.domain(selectedDomain);
+        } else {
+            // Reset x-scale of the focus view (full time period)
+            vis.xScale_detail.domain(vis.xScale_overview.domain());
+        }
+
+
+        // Redraw line and update x-axis labels in focus view
+        vis.renderLine(vis.drawing_area,Object.keys(vis.selected_stock_data),vis.xScale_detail,vis.yScale_detail)
+        vis.xAxisG_detail.call(vis.xAxis_detail);
     }
 
 }
