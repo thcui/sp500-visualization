@@ -4,6 +4,7 @@ let stockData = [];
 let bubbleChartData = [];
 let lineChart,treeMap,bubbleChart
 let selected_stock_symbol=['AAP','AAPL','MMM']
+let sectorFilter = [];
 
 
 //如何更新lineChart
@@ -48,4 +49,17 @@ function getbubbleChartData(start_date, end_date){
         }
     }
      bubbleChart = new BubbleChart({parentElement: '#bubbleChart',}, bubbleChartData);
+}
+function filterSector(){
+    if(sectorFilter.length!==0){
+        console.log(sectorFilter);
+        console.log(bubbleChartData);
+        bubbleChart.data = bubbleChartData.filter(d => sectorFilter.includes(d.industry));
+        console.log(bubbleChart.data);
+        bubbleChart.updateVis();
+    }else{
+        //no filter applied, get original data
+        bubbleChart.data = bubbleChartData;
+        bubbleChart.updateVis();
+    }
 }
