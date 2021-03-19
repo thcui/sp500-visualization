@@ -17,6 +17,13 @@ class LineChart {
 
         vis.chart_height = vis.config.containerHeight - vis.config.margin.bottom - vis.config.margin.top
         vis.chart_width = vis.config.containerWidth - vis.config.margin.right - vis.config.margin.left
+
+        vis.margin_btw=20
+        vis.overview_chart_height=50
+        vis.overview_chart_width=vis.chart_width
+        vis.detail_chart_height=vis.chart_height-vis.overview_chart_height
+        vis.detail_chart_width=vis.chart_width
+
         // Create SVG area, initialize scales and axes
         // Create scales
         vis.svg = d3.select(vis.config.parentElement)
@@ -35,10 +42,8 @@ class LineChart {
             .attr("class", 'axis-name')
             .attr("font-weight", "700")
             .attr('font-size', '15')
-            .attr('transform', `translate(${vis.chart_width},${vis.chart_height})`)
+            .attr('transform', `translate(${vis.chart_width},${vis.detail_chart_height})`)
             .text("Date");
-
-
 
         vis.chart = vis.svg.append('g')
             .attr('id', 'chart')
@@ -47,19 +52,32 @@ class LineChart {
             .attr('transform', `translate(${vis.config.margin.left},${vis.config.margin.top})`);
 
 
-        vis.xScale = d3.scaleTime()
-            .range([0, vis.chart_width]);
+        vis.xScale_detail = d3.scaleTime()
+            .range([0, vis.detail_chart_width]);
 
-        vis.yScale = d3.scaleLinear()
-            .range([0, vis.chart_height])
+        vis.yScale_detail = d3.scaleLinear()
+            .range([0, vis.detail_chart_height-vis.margin_btw])
 
-        vis.xAxis = d3.axisBottom(vis.xScale)
+        vis.xScale_overview = d3.scaleTime()
+            .range([0, vis.overview_chart_width]);
+
+        vis.yScale_overview = d3.scaleLinear()
+            .range([0, vis.overview_chart_height])
+
+        vis.xAxis_detail = d3.axisBottom(vis.xScale_detail)
             .tickSize(-vis.chart_height)
 
-        vis.yAxis = d3.axisLeft(vis.yScale)
+        vis.yAxis_detail = d3.axisLeft(vis.yScale_detail)
             .tickSize(-vis.chart_width)
 
-        vis.xAxisG = vis.chart.append('g')
+        vis.xAxis_overview = d3.axisBottom(vis.xScale_overview)
+            .tickSize(1)
+
+
+        vis.xAxisG_detail = vis.chart.append('g')
+            .attr('class', 'axis x-axis')
+            .attr('transform', `translate(0,${vis.detail_chart_height-vis.margin_btw})`);
+        vis.xAxisG_overview = vis.chart.append('g')
             .attr('class', 'axis x-axis')
             .attr('transform', `translate(0,${vis.chart_height})`);
 
@@ -69,6 +87,14 @@ class LineChart {
 
         vis.drawing_area = vis.chart.append('g')
             .attr('id', 'drawing_area')
+            .attr('width', vis.detail_chart_width)
+            .attr('height', vis.detail_chart_height)
+
+        vis.overview_area = vis.chart.append('g')
+            .attr('id', 'overview_area')
+            .attr('width', vis.overview_chart_width)
+            .attr('height', vis.overview_chart_height)
+            .attr('transform', `translate(0,${vis.detail_chart_height})`);
 
 
         vis.tooltip = vis.chart.append('g')
@@ -79,7 +105,7 @@ class LineChart {
 
         vis.trackingArea = vis.chart.append('rect')
             .attr('width', vis.chart_width)
-            .attr('height', vis.chart_height)
+            .attr('height', vis.detail_chart_height-vis.margin_btw)
             .attr('fill', 'none')
             .attr('pointer-events', 'all')
 
@@ -182,8 +208,10 @@ class LineChart {
                 vis.All_date = vis.All_date.concat(d3.map(Object.values(stock), d => d.date))
                 vis.All_price = vis.All_price.concat(d3.map(Object.values(stock), d => d.price))
             }
-            vis.xScale.domain([d3.min(vis.All_date), d3.max(vis.All_date)])
-            vis.yScale.domain([d3.max(vis.All_price), d3.min(vis.All_price)])
+            vis.xScale_detail.domain([d3.min(vis.All_date), d3.max(vis.All_date)])
+            vis.yScale_detail.domain([d3.max(vis.All_price), d3.min(vis.All_price)])
+            vis.xScale_overview.domain([d3.min(vis.All_date), d3.max(vis.All_date)])
+            vis.yScale_overview.domain([d3.max(vis.All_price), d3.min(vis.All_price)])
             vis.renderVis()
         }
 
@@ -193,28 +221,36 @@ class LineChart {
     renderVis() {
 
         let vis = this
-        let line = vis.drawing_area.selectAll('.line').data(Object.keys(vis.selected_stock_data))
+        renderLine(vis.drawing_area,Object.keys(vis.selected_stock_data),this.xScale_detail,this.yScale_detail)
+        renderLine(vis.overview_area,Object.keys(vis.selected_stock_data),this.xScale_overview,this.yScale_overview)
 
-        let lineEnter = line.enter().append('path')
-        let lineMerge = lineEnter.merge(line)
-        lineMerge.attr('class', d => 'line ' + vis.sector_data.filter(v => {
-            return v.symbol === d
-        })[0].sector.replace(' ', '_'))
+        function renderLine(area,data,x_scale,y_scale){
+            let line = area.selectAll('.line').data(data)
+
+            let lineEnter = line.enter().append('path')
+            let lineMerge = lineEnter.merge(line)
+            lineMerge.attr('class', d => 'line ' + vis.sector_data.filter(v => {
+                return v.symbol === d
+            })[0].sector.replace(' ', '_'))
 
 
 
 
-        lineMerge.datum(d => Object.values(vis.selected_stock_data[d]))
-            .attr("fill", "none")
-            .attr("stroke-width", 2)
-            .attr("d", d3.line()
-                .x(function (d) {
-                    return vis.xScale(d.date)
-                })
-                .y(function (d) {
-                    return vis.yScale(d.price)
-                })
-            ).call(vis.transition);
+            lineMerge.datum(d => Object.values(vis.selected_stock_data[d]))
+                .attr("fill", "none")
+                .attr("stroke-width", 2)
+                .attr("d", d3.line()
+                    .x(function (d) {
+                        return x_scale(d.date)
+                    })
+                    .y(function (d) {
+                        return y_scale(d.price)
+                    })
+                ).call(vis.transition);
+
+        }
+
+
 
 
         let text = vis.drawing_area.selectAll('.stock_name').data(Object.keys(vis.selected_stock_data))
@@ -226,7 +262,7 @@ class LineChart {
                 return v.symbol === d
             })[0].sector.replace(' ', '_'))
             .datum(d => Object.values(vis.selected_stock_data[d]).slice(-1)[0])
-            .attr('transform', d => `translate(${vis.chart_width + 20},${vis.yScale(d.price)})`)
+            .attr('transform', d => `translate(${vis.chart_width + 20},${vis.yScale_detail(d.price)})`)
             .attr('text-anchor', 'middle')
             .attr('vertical-align', 'text-bottom')
             .attr('font-size', 12)
@@ -250,8 +286,8 @@ class LineChart {
 
             circleMerge.select('circle')
                 .attr('r', 1)
-                .attr('cx', d => vis.xScale(d.date))
-                .attr('cy', d => vis.yScale(d.price))
+                .attr('cx', d => vis.xScale_detail(d.date))
+                .attr('cy', d => vis.yScale_detail(d.price))
                 .attr('fill', 'green')
 
 
@@ -268,7 +304,7 @@ class LineChart {
 
                 // Get date that corresponds to current mouse x-coordinate
                 const xPos = d3.pointer(event, this.svg.node())[0] - vis.config.margin.left// First array element is x, second is y
-                const date = vis.xScale.invert(xPos);
+                const date = vis.xScale_detail.invert(xPos);
                 vis.bisectDate = d3.bisector(d => d.date).left;
                 // Find nearest data point
 
@@ -294,23 +330,29 @@ class LineChart {
                 tooltip_circleMerge.select('circle')
                     .attr('r', 4)
                     .attr('fill', 'red')
-                    .attr('transform', d => `translate(${(vis.xScale(d.date))},${(vis.yScale(d.price))})`)
+                    .attr('transform', d => `translate(${(vis.xScale_detail(d.date))},${(vis.yScale_detail(d.price))})`)
                 tooltip_circleMerge.select('text')
                     .attr('font-size', '12')
                     .attr('fill', 'white')
-                    .attr('transform', d => `translate(${vis.xScale(d.date)},${(vis.yScale(d.price))})`)
+                    .attr('transform', d => `translate(${vis.xScale_detail(d.date)},${(vis.yScale_detail(d.price))})`)
                     .text(d => d.price)
 
                 tooltip_circle.exit().remove()
             })
 
 
-        vis.xAxisG
-            .call(vis.xAxis)
+        vis.xAxisG_detail
+            .call(vis.xAxis_detail)
             .call(g => g.select('.domain').remove())
 
+
+        vis.xAxisG_overview
+            .call(vis.xAxis_overview)
+
+
+
         vis.yAxisG
-            .call(vis.yAxis)
+            .call(vis.yAxis_detail)
             .call(g => g.select('.domain').remove())
 
 
