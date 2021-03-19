@@ -66,12 +66,33 @@ class LineChart {
 
         vis.xAxis_detail = d3.axisBottom(vis.xScale_detail)
             .tickSize(-vis.chart_height)
+            // .tickFormat((d, i) => {
+            //     const ticks = vis.xAxis_detail.scale().ticks();
+            //
+            //     if (i > 0 && ticks[i - 1].getFullYear() === d.getFullYear()) {
+            //         return d3.timeFormat('%b')(d);
+            //     }
+            //     else {
+            //         return d3.timeFormat('%Y')(d);
+            //     }
+            // });
 
         vis.yAxis_detail = d3.axisLeft(vis.yScale_detail)
             .tickSize(-vis.chart_width)
 
         vis.xAxis_overview = d3.axisBottom(vis.xScale_overview)
             .tickSize(1)
+            .tickFormat((d, i) => {
+                const ticks = vis.xAxis_detail.scale().ticks();
+
+                if (i > 0 && ticks[i - 1].getFullYear() === d.getFullYear()) {
+                    return d3.timeFormat('%b')(d);
+                }
+                else {
+                    return d3.timeFormat('%Y')(d);
+                }
+            });
+
 
 
         vis.xAxisG_detail = vis.chart.append('g')
@@ -249,8 +270,6 @@ class LineChart {
             })[0].sector.replace(' ', '_'))
 
 
-
-
             lineMerge.datum(d => Object.values(vis.selected_stock_data[d]))
                 .attr("fill", "none")
                 .attr("stroke-width", 2)
@@ -262,6 +281,9 @@ class LineChart {
                         return y_scale(d.price)
                     })
                 ).call(vis.transition);
+
+            line.exit().remove()
+
 
         }
         vis.renderLine(vis.drawing_area,Object.keys(vis.selected_stock_data),this.xScale_detail,this.yScale_detail)
@@ -286,6 +308,8 @@ class LineChart {
             .attr('vertical-align', 'text-bottom')
             .attr('font-size', 12)
             .attr('text-stroke', '#ffffff')
+
+        text.exit().remove()
 
 
         function render_stock_point(stock) {
