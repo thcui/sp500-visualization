@@ -81,7 +81,8 @@ class TreeMap {
             })
             .style("fill", function(d){ return vis.color(d.data.sector)})
             .on("mouseover",this.showToolTip)
-            .on("mouseout",this.hideToolTip);
+            .on("mouseout",this.hideToolTip)
+            .on("click", this.selectSector);
 
         // and to add the text labels
         vis.svg
@@ -120,6 +121,14 @@ class TreeMap {
     hideToolTip() {
         d3.select("#tooltip").style("display", "none");
     }
-
+    selectSector(e,d){
+        console.log(d.data.sector);
+        if(sectorFilter.includes(d.data.sector)){
+            sectorFilter = [];
+        }else{
+            sectorFilter = [d.data.sector]
+        }
+        filterSector();
+    }
 
 }
