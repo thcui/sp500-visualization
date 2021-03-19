@@ -82,3 +82,15 @@ body{
     stroke-width:3;
     stroke: white;
 }
+circle:hover{
+    stroke-width:1;
+    stroke: white;
+}
+.tick{
+    color: white;
+    fill: white;
+}
+.tick line{
+    color: darkgrey;
+    fill: darkgrey;
+}
