@@ -2,7 +2,7 @@ class BubbleChart {
     constructor(_config, _data) {
         this.config = {
             parentElement: _config.parentElement,
-            containerWidth: 1000,
+            containerWidth: 1200,
             containerHeight: 500,
             margin: {top: 30, right: 50, bottom: 50, left: 50},
         };
@@ -50,7 +50,7 @@ class BubbleChart {
         vis.radiusScale.domain(d3.extent(vis.data, d => d.marketcap));
         const yAxisFormat = number => d3.format(".0%")(number);
         vis.Yaxis.call(d3.axisLeft(vis.yScale).tickSize(-vis.innerWidth).tickPadding(10).ticks(6).tickFormat(yAxisFormat));
-        vis.Xaxis.call(d3.axisBottom(vis.xScale).tickSize(-vis.innerHeight).tickPadding(10).ticks(6)
+        vis.Xaxis.call(d3.axisBottom(vis.xScale).tickSize(-vis.innerHeight).tickPadding(10).ticks(10)
             .tickFormat(d => d/10**9 +'B'));
         //remove domain
         vis.Yaxis.select(".domain").remove();
