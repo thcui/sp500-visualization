@@ -30,6 +30,14 @@ class LineChart {
             .attr('width', vis.config.containerWidth)
             .attr('height', vis.config.containerHeight)
 
+
+
+        vis.chart = vis.svg.append('g')
+            .attr('id', 'chart')
+            .attr('width', vis.chart_width)
+            .attr('height', vis.chart_height)
+            .attr('transform', `translate(${vis.config.margin.left},${vis.config.margin.top})`);
+
         vis.svg.append("text")
             .attr("x", vis.config.margin.left + 80)
             .attr("y", vis.config.margin.top)
@@ -44,12 +52,6 @@ class LineChart {
             .attr('font-size', '15')
             .attr('transform', `translate(${vis.chart_width},${vis.detail_chart_height})`)
             .text("Date");
-
-        vis.chart = vis.svg.append('g')
-            .attr('id', 'chart')
-            .attr('width', vis.chart_width)
-            .attr('height', vis.chart_height)
-            .attr('transform', `translate(${vis.config.margin.left},${vis.config.margin.top})`);
 
 
         vis.xScale_detail = d3.scaleTime()
@@ -82,16 +84,7 @@ class LineChart {
 
         vis.xAxis_overview = d3.axisBottom(vis.xScale_overview)
             .tickSize(1)
-            .tickFormat((d, i) => {
-                const ticks = vis.xAxis_detail.scale().ticks();
 
-                if (i > 0 && ticks[i - 1].getFullYear() === d.getFullYear()) {
-                    return d3.timeFormat('%b')(d);
-                }
-                else {
-                    return d3.timeFormat('%Y')(d);
-                }
-            });
 
 
 
@@ -106,10 +99,21 @@ class LineChart {
         vis.yAxisG = vis.chart.append('g')
             .attr('class', 'axis y-axis');
 
+        // Initialize clipping mask that covers the whchole chart
+        vis.chart.append('defs')
+            .append('clipPath')
+            .attr('id', 'chart-mask')
+            .append('rect')
+            .attr('width', vis.detail_chart_width)
+            .attr('y', -vis.config.margin.top)
+            .attr('height', vis.detail_chart_height);
+
+        // Apply clipping mask to 'vis.drawing_area' to clip semicircles at the very beginning and end of a year
         vis.drawing_area = vis.chart.append('g')
             .attr('id', 'drawing_area')
             .attr('width', vis.detail_chart_width)
             .attr('height', vis.detail_chart_height)
+            .attr('clip-path', 'url(#chart-mask)');
 
         vis.overview_area = vis.chart.append('g')
             .attr('id', 'overview_area')
@@ -303,12 +307,12 @@ class LineChart {
             line.exit().remove()
 
             if(if_text){
-                render_text(area,data,x_scale,y_scale)
+                render_text(vis.chart,data,x_scale,y_scale)
             }
 
 
         }
-        vis.renderLine(vis.drawing_area,Object.keys(vis.selected_stock_data),vis.xScale_detail,vis.yScale_detail,true)
+        // vis.renderLine(vis.drawing_area,Object.keys(vis.selected_stock_data),vis.xScale_detail,vis.yScale_detail,true)
         vis.renderLine(vis.overview_area,Object.keys(vis.selected_stock_data),vis.xScale_overview,vis.yScale_overview,false)
 
 
@@ -319,19 +323,20 @@ class LineChart {
             let textEnter = text.enter().append('text')
             let textMerge = textEnter.merge(text)
             let boundary_date=vis.get_closest_date(x_scale.range()[1], Object.values(vis.selected_stock_data))[0].date
-           
+
             textMerge.text(d => d)
                 .attr('class', d => 'stock_name ' + vis.sector_data.filter(v => {
                     return v.symbol === d
                 })[0].sector.replace(' ', '_'))
-                .datum(d => Object.values(vis.selected_stock_data[d]).filter(v=>
-                    v.date===boundary_date))
+                // .datum(d => Object.values(vis.selected_stock_data[d]).filter(v=>
+                //     v.date===boundary_date))
+            textMerge.datum(d=>Object.values(vis.selected_stock_data[d]).filter(v=>
+                v.date.toDateString()===boundary_date.toDateString()))
                 .attr('transform',
                         d => `translate(${vis.chart_width + 20},${y_scale(d[0].price)})`)
                 .attr('text-anchor', 'middle')
                 .attr('vertical-align', 'text-bottom')
                 .attr('font-size', 12)
-                .attr('text-stroke', '#ffffff')
 
             text.exit().remove()
         }
