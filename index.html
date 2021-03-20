@@ -8,10 +8,16 @@
     <text id="title">S&P 500 Visualization</text>
     <div>
         <div id="first_set">
-            <svg id="treeMap"></svg>
-            <svg id="lineChart"></svg>
+            <div id="left">
+                <svg id="treeMap"></svg>
+            </div>
+            <div id="right">
+                <svg id="lineChart"></svg>
+            </div>
         </div>
-        <svg id="bubbleChart"></svg>
+        <div id="bottom_set">
+            <svg id="bubbleChart"></svg>
+        </div>
     </div>
     <div id="tooltip"></div>
     <script src="js/d3.v6.min.js"></script>
