@@ -22,8 +22,7 @@ class BubbleChart {
         vis.svg = d3
             .select(vis.config.parentElement)
             .attr("width", vis.config.containerWidth)
-            .attr("height", vis.config.containerHeight)
-            .attr("transform", "translate(0, 500)");
+            .attr("height", vis.config.containerHeight);
         // Append group element that will contain our actual chart
         // and position it according to the given margin config
 
