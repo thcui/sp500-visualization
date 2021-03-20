@@ -252,6 +252,24 @@ class LineChart {
             vis.yScale_overview.domain([d3.max(vis.All_price), d3.min(vis.All_price)])
             vis.renderVis()
         }
+        vis.get_closest_date=function get_closest_date(xPos,data) {
+            // Get date that corresponds to current mouse x-coordinate
+            const date = vis.xScale_detail.invert(xPos);
+            vis.bisectDate = d3.bisector(d => d.date).right;
+            let temp=[]
+            for (let stock of data) {
+                stock = Object.values(stock)
+                if (stock.length === 0) {
+                    continue
+                }
+                const index = vis.bisectDate(stock, date, 1);
+                const a = stock[index - 1];
+                const b = stock[index];
+                const d = b && (date - a.date > b.date - date) ? b : a;
+                temp.push(d)
+            }
+            return temp
+        }
 
     }
 
@@ -260,7 +278,7 @@ class LineChart {
 
         let vis = this
 
-        vis.renderLine=function renderLine(area,data,x_scale,y_scale){
+        vis.renderLine=function renderLine(area,data,x_scale,y_scale,if_text){
             let line = area.selectAll('.line').data(data)
 
             let lineEnter = line.enter().append('path')
@@ -284,32 +302,39 @@ class LineChart {
 
             line.exit().remove()
 
+            if(if_text){
+                render_text(area,data,x_scale,y_scale)
+            }
+
 
         }
-        vis.renderLine(vis.drawing_area,Object.keys(vis.selected_stock_data),this.xScale_detail,this.yScale_detail)
-        vis.renderLine(vis.overview_area,Object.keys(vis.selected_stock_data),this.xScale_overview,this.yScale_overview)
+        vis.renderLine(vis.drawing_area,Object.keys(vis.selected_stock_data),vis.xScale_detail,vis.yScale_detail,true)
+        vis.renderLine(vis.overview_area,Object.keys(vis.selected_stock_data),vis.xScale_overview,vis.yScale_overview,false)
 
 
 
 
+        function render_text(area,data,x_scale,y_scale) {
+            let text = area.selectAll('.stock_name').data(data)
+            let textEnter = text.enter().append('text')
+            let textMerge = textEnter.merge(text)
+            let boundary_date=vis.get_closest_date(x_scale.range()[1], Object.values(vis.selected_stock_data))[0].date
+           
+            textMerge.text(d => d)
+                .attr('class', d => 'stock_name ' + vis.sector_data.filter(v => {
+                    return v.symbol === d
+                })[0].sector.replace(' ', '_'))
+                .datum(d => Object.values(vis.selected_stock_data[d]).filter(v=>
+                    v.date===boundary_date))
+                .attr('transform',
+                        d => `translate(${vis.chart_width + 20},${y_scale(d[0].price)})`)
+                .attr('text-anchor', 'middle')
+                .attr('vertical-align', 'text-bottom')
+                .attr('font-size', 12)
+                .attr('text-stroke', '#ffffff')
 
-
-        let text = vis.drawing_area.selectAll('.stock_name').data(Object.keys(vis.selected_stock_data))
-        let textEnter = text.enter().append('text')
-        let textMerge = textEnter.merge(text)
-
-        textMerge.text(d => d)
-            .attr('class', d => 'stock_name ' + vis.sector_data.filter(v => {
-                return v.symbol === d
-            })[0].sector.replace(' ', '_'))
-            .datum(d => Object.values(vis.selected_stock_data[d]).slice(-1)[0])
-            .attr('transform', d => `translate(${vis.chart_width + 20},${vis.yScale_detail(d.price)})`)
-            .attr('text-anchor', 'middle')
-            .attr('vertical-align', 'text-bottom')
-            .attr('font-size', 12)
-            .attr('text-stroke', '#ffffff')
-
-        text.exit().remove()
+            text.exit().remove()
+        }
 
 
         function render_stock_point(stock) {
@@ -345,24 +370,12 @@ class LineChart {
             })
             .on('mousemove', (event) => {
 
-                // Get date that corresponds to current mouse x-coordinate
-                const xPos = d3.pointer(event, this.svg.node())[0] - vis.config.margin.left// First array element is x, second is y
-                const date = vis.xScale_detail.invert(xPos);
-                vis.bisectDate = d3.bisector(d => d.date).left;
+
                 // Find nearest data point
 
-                let tempoo_data = []
-                for (let stock of Object.values(vis.selected_stock_data)) {
-                    stock = Object.values(stock)
-                    if (stock.length === 0) {
-                        continue
-                    }
-                    const index = vis.bisectDate(stock, date, 1);
-                    const a = stock[index - 1];
-                    const b = stock[index];
-                    const d = b && (date - a.date > b.date - date) ? b : a;
-                    tempoo_data.push(d)
-                }
+                let tempoo_data = vis.get_closest_date(d3.pointer(event, this.svg.node())[0] - vis.config.margin.left,
+                    Object.values(vis.selected_stock_data))
+
 
 
                 let tooltip_circle = vis.tooltip.selectAll('.tooltip_point').data(tempoo_data)
@@ -408,6 +421,7 @@ class LineChart {
 
     }
 
+
     /**
      * React to brush events
      */
@@ -428,7 +442,7 @@ class LineChart {
 
 
         // Redraw line and update x-axis labels in focus view
-        vis.renderLine(vis.drawing_area,Object.keys(vis.selected_stock_data),vis.xScale_detail,vis.yScale_detail)
+        vis.renderLine(vis.drawing_area,Object.keys(vis.selected_stock_data),vis.xScale_detail,vis.yScale_detail,true)
         vis.xAxisG_detail.call(vis.xAxis_detail);
     }
 
