@@ -102,7 +102,7 @@ class LineChart {
         // Initialize clipping mask that covers the whchole chart
         vis.chart.append('defs')
             .append('clipPath')
-            .attr('id', 'chart-mask')
+            .attr('id', 'lineChart-mask')
             .append('rect')
             .attr('width', vis.detail_chart_width)
             .attr('y', -vis.config.margin.top)
@@ -113,7 +113,7 @@ class LineChart {
             .attr('id', 'drawing_area')
             .attr('width', vis.detail_chart_width)
             .attr('height', vis.detail_chart_height)
-            .attr('clip-path', 'url(#chart-mask)');
+            .attr('clip-path', 'url(#lineChart-mask)');
 
         vis.overview_area = vis.chart.append('g')
             .attr('id', 'overview_area')

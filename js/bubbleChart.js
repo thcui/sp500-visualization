@@ -80,8 +80,8 @@ class BubbleChart {
         //remove domain
         vis.YaxisG.select(".domain").remove();
         vis.XaxisG.select(".domain").remove();
-      
-        vis.add_legend()
+
+        // vis.add_legend()
         vis.renderVis();
     }
 
