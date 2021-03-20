@@ -23,6 +23,18 @@ class BubbleChart {
             .select(vis.config.parentElement)
             .attr("width", vis.config.containerWidth)
             .attr("height", vis.config.containerHeight);
+
+
+
+
+
+
+
+
+
+
+
+
         // Append group element that will contain our actual chart
         // and position it according to the given margin config
 
@@ -54,6 +66,7 @@ class BubbleChart {
         //remove domain
         vis.Yaxis.select(".domain").remove();
         vis.Xaxis.select(".domain").remove();
+        vis.add_legend()
         vis.renderVis();
     }
 
@@ -78,6 +91,9 @@ class BubbleChart {
                     selected_stock_symbol.push(d.symbol)
                 }
                 updateLineChart();
+
+
+
         })
     }
     showToolTip(e,d){
@@ -97,4 +113,63 @@ class BubbleChart {
     hideToolTip() {
         d3.select("#tooltip").style("display", "none");
     }
+
+    add_legend(){
+        let vis=this
+
+        // append the svg object to the body of the page
+
+// The scale you use for bubble size
+        vis.size = d3.scaleSqrt()
+            .domain(vis.radiusScale.domain())  // What's in the data, let's say it is percentage
+            .range([5,50])  // Size in pixel
+
+// Add legend: circles
+        let valuesToShow = [5000000000000,1000000000000,100000000000]
+        vis.xCircle = 230
+        vis.xLabel = 380
+        vis.yCircle = 330
+
+        vis.lengend= vis.svg.append('g').attr("transform", `translate(700,-150)`);
+
+        vis.lengend
+            .selectAll("legend")
+            .data(valuesToShow)
+            .enter()
+            .append("circle")
+            .attr("cx", vis.xCircle)
+            .attr("cy", function(d){ return vis.yCircle - vis.size(d) } )
+            .attr("r", function(d){ return vis.size(d) })
+            .style("fill", "green")
+            .attr("stroke", "black")
+
+// Add legend: segments
+        vis.lengend
+            .selectAll("legend")
+            .data(valuesToShow)
+            .enter()
+            .append("line")
+            .attr('x1', function(d){ return vis.xCircle + vis.size(d) } )
+            .attr('x2', vis.xLabel)
+            .attr('y1', function(d){ return vis.yCircle - vis.size(d) } )
+            .attr('y2', function(d){ return vis.yCircle - vis.size(d) } )
+            .attr('stroke', 'white')
+            .style('stroke-dasharray', ('2,2'))
+
+// Add legend: labels
+        vis.lengend
+            .selectAll("legend")
+            .data(valuesToShow)
+            .enter()
+            .append("text")
+            .attr('x', vis.xLabel)
+            .attr('y', function(d){ return vis.yCircle - vis.size(d) } )
+            .text( function(d){ return d } )
+            .style("font-size", 10)
+            .attr('stroke', 'white')
+            .attr('alignment-baseline', 'middle')
+    }
+
+
+
 }

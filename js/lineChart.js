@@ -138,7 +138,7 @@ class LineChart {
 
         vis.transition=function transition(path) {
             path.transition()
-                .duration(3000)
+                .duration(2000)
                 .attrTween("stroke-dasharray", vis.tweenDash)
                 .on("end", () => {
                     d3.select(this).call(vis.transition);
