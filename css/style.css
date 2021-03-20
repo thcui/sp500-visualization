@@ -4,10 +4,12 @@ body{
 #treeMap {
     background-color: #1A365D;
 }
-#first_set{
-    display: inline-block;
-    position: absolute;
-    top: 100px;
+#first_set {
+    display: flex;
+    margin-top: 50px;
+}
+#bottom_set {
+    position: relative;
 }
 #lineChart {
     color: white;
@@ -77,6 +79,7 @@ body{
     padding: 8px;
     min-width: 160px;
     color: #333;
+    /*z-index: 2;*/
 }
 .treeBlock:hover{
     stroke-width:3;
@@ -84,6 +87,9 @@ body{
 }
 circle:hover{
     stroke-width:1;
+    stroke: white;
+}
+circle.selected {
     stroke: white;
 }
 .tick{
