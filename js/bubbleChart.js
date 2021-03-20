@@ -69,16 +69,15 @@ class BubbleChart {
             .attr("class", (d) => `${d.industry} ${d.symbol}`)
             .on("mouseover",this.showToolTip)
             .on("mouseout",this.hideToolTip)
-            .on('click', function (d) {
-            d3.select(this).each(function (d) {
-                if(selected_stock_symbol.includes(d.symbol)){
+            .on('click', function (event, d) {
+                const isSelected = (selected_stock_symbol.includes(d.symbol));
+                d3.select(this).classed("selected", !isSelected);
+                if(isSelected){
                     selected_stock_symbol=selected_stock_symbol.filter(v=>{return (v!==d.symbol)})
                 }else{
                     selected_stock_symbol.push(d.symbol)
                 }
                 updateLineChart();
-            })
-
         })
     }
     showToolTip(e,d){

@@ -89,6 +89,9 @@ circle:hover{
     stroke-width:1;
     stroke: white;
 }
+circle.selected {
+    stroke: white;
+}
 .tick{
     color: white;
     fill: white;
