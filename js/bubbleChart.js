@@ -124,6 +124,8 @@ class BubbleChart {
                 vis.resetSelectedStockSymbol();
             });
 
+        vis.initialZoom();
+
     }
 
     showToolTip(e,d){
@@ -167,6 +169,20 @@ class BubbleChart {
         d3.selectAll("circle").classed("selected", false);
         selected_stock_symbol = [];
         updateLineChart();
+    }
+
+    initialZoom() {
+        let vis = this;
+        // initial zoom
+        let initialTransform = d3.zoomIdentity.scale(5).translate(0,-150);
+        vis.svg.call(vis.zoom.transform, initialTransform);
+        // go back to normal
+        vis.svg
+            .transition()
+            .delay(50)
+            .duration(1000)
+            .ease(d3.easeQuadInOut)
+            .call(vis.zoom.transform, d3.zoomIdentity)
     }
 
     add_legend(){
