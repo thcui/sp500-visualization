@@ -187,7 +187,7 @@ class BubbleChart {
         // go back to normal
         vis.svg
             .transition()
-            .delay(50)
+            .delay(100)
             .duration(1000)
             .ease(d3.easeQuadInOut)
             .call(vis.zoom.transform, d3.zoomIdentity)
