@@ -5,6 +5,7 @@ let bubbleChartData = [];
 let lineChart,treeMap,bubbleChart
 let selected_stock_symbol=[]
 let sectorFilter = [];
+let data= [];
 
 
 //如何更新lineChart
@@ -16,22 +17,45 @@ let sectorFilter = [];
 // 2. lineChart.upDateVis()
 
 
-d3.csv('data/industryMC.csv').then(data => {
+// d3.csv('data/industryMC.csv').then(data => {
+//     data.forEach(d => {
+//         d.marketcap = +d.marketcap;
+//     });
+//   //  data = d3.rollup(data, v => d3.sum(v, d=>d.marketcap), (d) => d.sector);
+//     treeMap = new TreeMap({ parentElement: "#treeMap" }, data);
+//     lineChart= new LineChart({parentElement: '#lineChart',}, data);
+//
+// });
+//
+//
+// d3.json("data/companyData.json").then(function(data) {
+//     console.log(data);
+//     stockData = data;
+//     getbubbleChartData("2020-09-11","2020-09-18");
+//     bubbleChart = new BubbleChart({parentElement: '#bubbleChart',}, bubbleChartData);
+// });
+
+d3.csv('data/industryMC.csv').then(_data => {
+    data = _data;
+    return d3.json('data/companyData.json');
+}).then(_stock => {
+    stockData = _stock;
     data.forEach(d => {
         d.marketcap = +d.marketcap;
     });
-  //  data = d3.rollup(data, v => d3.sum(v, d=>d.marketcap), (d) => d.sector);
+    getbubbleChartData("2020-09-11","2020-09-18");
+
+    d3.select("#bubbleChart-reset-button_div")
+        .html(`<button id="bubbleChart-reset-button">Reset Bubble Chart</button>`);
+
     treeMap = new TreeMap({ parentElement: "#treeMap" }, data);
     lineChart= new LineChart({parentElement: '#lineChart',}, data);
+    bubbleChart = new BubbleChart({parentElement: '#bubbleChart',}, bubbleChartData);
 
-});
+})
 
 
-d3.json("data/companyData.json").then(function(data) {
 
-    stockData = data;
-    getbubbleChartData("2020-09-11","2020-09-18");
-});
 function getbubbleChartData(start_date, end_date){
     bubbleChartData = [];
     for(var comp of Object.keys(stockData)){
@@ -48,7 +72,6 @@ function getbubbleChartData(start_date, end_date){
             bubbleChartData.push(obj);
         }
     }
-     bubbleChart = new BubbleChart({parentElement: '#bubbleChart',}, bubbleChartData);
 }
 function filterSector(){
     if(sectorFilter.length!==0){
