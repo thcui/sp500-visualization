@@ -8,6 +8,7 @@ let sectorFilter = [];
 let data= [];
 
 
+
 //如何更新lineChart
 //添加:
 // 1.把需要lineChart显示的股票的symbol放入这个selected_stock_code:  selected_stock_symbol.push('AAPL')
@@ -41,18 +42,21 @@ d3.csv('data/industryMC.csv').then(_data => {
         d.marketcap = +d.marketcap;
     });
     treeMap = new TreeMap({ parentElement: "#treeMap" }, data);
-    lineChart= new LineChart({parentElement: '#lineChart',}, data);
-    return d3.json('data/companyData.json');
-}).then(_stock => {
-    stockData = _stock;
 
-    getbubbleChartData("2020-09-11","2020-09-18");
+    d3.json('data/companyData.json').then(_stock => {
 
-    d3.select("#bubbleChart-reset-button_div")
-        .html(`<button id="bubbleChart-reset-button">Reset Bubble Chart</button>`);
+        stockData = _stock;
+        lineChart = new LineChart({parentElement: '#lineChart',}, data);
 
-    bubbleChart = new BubbleChart({parentElement: '#bubbleChart',}, bubbleChartData);
+        getbubbleChartData("2020-09-11", "2020-09-18");
 
+        d3.select("#bubbleChart-reset-button_div")
+            .html(`<button id="bubbleChart-reset-button">Reset Bubble Chart</button>`);
+
+        bubbleChart = new BubbleChart({parentElement: '#bubbleChart',}, bubbleChartData);
+
+
+    })
 })
 
 
