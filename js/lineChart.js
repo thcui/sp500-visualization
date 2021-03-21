@@ -185,13 +185,13 @@ class LineChart {
     updateVis() {
         let vis = this
 
-
         vis.selected_stock_data = {}
 
         if (selected_stock_symbol.length === 0) {
-            d3.csv('data/SP500HistoricalData.csv').then(_data => {
-                delete _data['columns'];
-                vis.selected_stock_data['SP500'] = Object.assign({}, _data)
+
+                let temp_sp500=sp500_data
+                delete temp_sp500['columns'];
+                vis.selected_stock_data['SP500'] = Object.assign({}, temp_sp500)
                 Object.values(vis.selected_stock_data['SP500']).forEach(stock => {
                     Object.keys(stock).forEach(attr => {
                         if (attr === 'date') {
@@ -202,37 +202,32 @@ class LineChart {
                         }
                     })
                 })
-            }).then(() => {
-                set_lineChart_property(vis)
-            })
+
         } else {
+            selected_stock_symbol.forEach(stock_symbol => {
+                if (stockData[stock_symbol]) {
 
-            // vis.prepare_stock_data.then(_data => {
-                // Convert columns to numerical values
-                selected_stock_symbol.forEach(stock_symbol => {
-                    if (stockData[stock_symbol]) {
-
-                        vis.selected_stock_data[stock_symbol] = stockData[stock_symbol].historical
-                        d3.map(Object.keys(vis.selected_stock_data[stock_symbol]), d => vis.selected_stock_data[stock_symbol][d]['date'] = d)
-                        Object.values(vis.selected_stock_data[stock_symbol]).forEach(stock => {
-                            Object.keys(stock).forEach(attr => {
-                                if (attr === 'date') {
-                                    stock[attr] = parseTime(stock[attr])
-                                }
-                                if (attr === 'price' || attr === 'Volume') {
-                                    stock[attr] = +(stock[attr])
-                                }
-                            })
+                    vis.selected_stock_data[stock_symbol] = stockData[stock_symbol].historical
+                    d3.map(Object.keys(vis.selected_stock_data[stock_symbol]), d => vis.selected_stock_data[stock_symbol][d]['date'] = d)
+                    Object.values(vis.selected_stock_data[stock_symbol]).forEach(stock => {
+                        Object.keys(stock).forEach(attr => {
+                            if (attr === 'date') {
+                                stock[attr] = parseTime(stock[attr])
+                            }
+                            if (attr === 'price' || attr === 'Volume') {
+                                stock[attr] = +(stock[attr])
+                            }
                         })
-                    }
+                    })
+                }
 
 
-                });
-
-
-                set_lineChart_property(vis)
-
+            });
         }
+
+
+
+        set_lineChart_property(vis)
 
         function set_lineChart_property(vis) {
             vis.All_date = []
@@ -247,24 +242,8 @@ class LineChart {
             vis.yScale_overview.domain([d3.max(vis.All_price), d3.min(vis.All_price)])
             vis.renderVis()
         }
-        vis.get_closest_date=function get_closest_date(xPos,data) {
-            // Get date that corresponds to current mouse x-coordinate
-            const date = vis.xScale_detail.invert(xPos);
-            vis.bisectDate = d3.bisector(d => d.date).right;
-            let temp=[]
-            for (let stock of data) {
-                stock = Object.values(stock)
-                if (stock.length === 0) {
-                    continue
-                }
-                const index = vis.bisectDate(stock, date, 1);
-                const a = stock[index - 1];
-                const b = stock[index];
-                const d = b && (date - a.date > b.date - date) ? b : a;
-                temp.push(d)
-            }
-            return temp
-        }
+
+
 
     }
 
@@ -440,6 +419,26 @@ class LineChart {
         // Redraw line and update x-axis labels in focus view
         vis.renderLine(vis.drawing_area,Object.keys(vis.selected_stock_data),vis.xScale_detail,vis.yScale_detail,true)
         vis.xAxisG_detail.call(vis.xAxis_detail);
+    }
+
+    get_closest_date(xPos,data) {
+        let vis=this
+        // Get date that corresponds to current mouse x-coordinate
+        let date = vis.xScale_detail.invert(xPos);
+        vis.bisectDate = d3.bisector(d => d.date).right;
+        let temp=[]
+        for (let stock of data) {
+            stock = Object.values(stock)
+            if (stock.length === 0) {
+                continue
+            }
+            const index = vis.bisectDate(stock, date, 1);
+            const a = stock[index - 1];
+            const b = stock[index];
+            const d = b && (date - a.date > b.date - date) ? b : a;
+            temp.push(d)
+        }
+        return temp
     }
 
 }
