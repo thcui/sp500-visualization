@@ -47,9 +47,6 @@ d3.csv('data/industryMC.csv').then(_data => {
 
         stockData = _stock;
 
-
-
-
         getbubbleChartData("2020-09-11", "2020-09-18");
 
         d3.select("#bubbleChart-reset-button_div")
@@ -57,8 +54,8 @@ d3.csv('data/industryMC.csv').then(_data => {
 
         bubbleChart = new BubbleChart({parentElement: '#bubbleChart',}, bubbleChartData);
 
-        d3.csv('data/marketcap_preprocessed.csv').then(_data => {
-            companies=_data
+        d3.csv('data/marketcap_preprocessed.csv').then(_companies => {
+            companies=_companies
             lineChart= new LineChart({parentElement: '#lineChart',}, data);
         })
 
