@@ -84,6 +84,10 @@ body{
     stroke-width:3;
     stroke: white;
 }
+.treeBlock.selected{
+    stroke-width:3;
+    stroke: white;
+}
 circle{
     stroke-width:1;
     stroke: #000000;

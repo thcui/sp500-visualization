@@ -100,7 +100,9 @@ class BubbleChart {
             .attr("r", (d) => vis.radiusScale(d.marketcap))
             .attr("fill", (d) => vis.color(d.industry))
             .attr("opacity", 0.7)
-            .attr("class", (d) => `${d.industry} ${d.symbol}`)
+            .attr("class", (d) => `${d.industry} ${d.symbol} ${
+                selected_stock_symbol.includes(d.symbol) ? 'selected' : ''
+            }`)
             .on("mouseover",this.showToolTip)
             .on("mouseout",this.hideToolTip)
             .on('click', function (event, d) {
@@ -113,6 +115,12 @@ class BubbleChart {
                 }
                 updateLineChart();
             })
+
+        // vis.circle.each(function (d) {
+        //     if(selected_stock_symbol.includes(d.symbol)){
+        //         d3.select(this).classed("selected", true);
+        //     }
+        // });
 
         // append zoom to svg
         vis.svg.call(vis.zoom);
