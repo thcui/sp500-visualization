@@ -99,6 +99,12 @@ function filterSector(){
     }
 }
 
+function filterDateRange(start_date, end_date) {
+    getbubbleChartData(start_date, end_date);
+    bubbleChart.data = bubbleChartData;
+    bubbleChart.updateVis();
+}
+
 function  updateLineChart(){
     lineChart.updateVis();
 }
