@@ -170,23 +170,15 @@ class LineChart {
                 if (!selection) vis.brushed(null);
             });
 
-        // vis.prepare_stock_data = new Promise((resolve, reject) => {
-        //     d3.json('data/companyData.json').then(d => {
-        //         resolve(d)
-        //     })
-        // })
 
-
-        d3.csv('data/marketcap_preprocessed.csv').then(_data => {
-            vis.sector_data = _data
-            vis.sector_data.push({
-                "": "0",
-                "symbol": "SP500",
-                "name": "SP500",
-                "sector": "SP500",
-            })
-            this.updateVis()
+        vis.sector_data = companies
+        vis.sector_data.push({
+            "": "0",
+            "symbol": "SP500",
+            "name": "SP500",
+            "sector": "SP500",
         })
+        vis.updateVis()
 
     }
 
