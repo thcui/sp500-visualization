@@ -170,11 +170,11 @@ class LineChart {
                 if (!selection) vis.brushed(null);
             });
 
-        vis.prepare_stock_data = new Promise((resolve, reject) => {
-            d3.json('data/companyData.json').then(d => {
-                resolve(d)
-            })
-        })
+        // vis.prepare_stock_data = new Promise((resolve, reject) => {
+        //     d3.json('data/companyData.json').then(d => {
+        //         resolve(d)
+        //     })
+        // })
 
 
         d3.csv('data/marketcap_preprocessed.csv').then(_data => {
@@ -215,12 +215,12 @@ class LineChart {
             })
         } else {
 
-            vis.prepare_stock_data.then(_data => {
+            // vis.prepare_stock_data.then(_data => {
                 // Convert columns to numerical values
                 selected_stock_symbol.forEach(stock_symbol => {
-                    if (_data[stock_symbol]) {
+                    if (stockData[stock_symbol]) {
 
-                        vis.selected_stock_data[stock_symbol] = _data[stock_symbol].historical
+                        vis.selected_stock_data[stock_symbol] = stockData[stock_symbol].historical
                         d3.map(Object.keys(vis.selected_stock_data[stock_symbol]), d => vis.selected_stock_data[stock_symbol][d]['date'] = d)
                         Object.values(vis.selected_stock_data[stock_symbol]).forEach(stock => {
                             Object.keys(stock).forEach(attr => {
@@ -238,9 +238,8 @@ class LineChart {
                 });
 
 
-            }).then(() => {
                 set_lineChart_property(vis)
-            })
+
         }
 
         function set_lineChart_property(vis) {
