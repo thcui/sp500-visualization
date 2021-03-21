@@ -5,6 +5,7 @@ let bubbleChartData = [];
 let lineChart,treeMap,bubbleChart
 let selected_stock_symbol=[]
 let sectorFilter = [];
+let sp500_data= [];
 let data= [];
 
 
@@ -55,8 +56,11 @@ d3.csv('data/industryMC.csv').then(_data => {
         bubbleChart = new BubbleChart({parentElement: '#bubbleChart',}, bubbleChartData);
 
         d3.csv('data/marketcap_preprocessed.csv').then(_companies => {
-            companies=_companies
-            lineChart= new LineChart({parentElement: '#lineChart',}, data);
+            d3.csv('data/SP500HistoricalData.csv').then((sp500_data_)=>{
+                companies = _companies
+                sp500_data= sp500_data_
+                lineChart = new LineChart({parentElement: '#lineChart',}, data);
+            })
         })
 
 
