@@ -50,8 +50,8 @@ class BubbleChart {
                 "#C4C4C4", "#81E6D9", "#B7791F", "#E0CE61"]);
         vis.YaxisG = vis.chartArea.append("g");
         vis.XaxisG = vis.chartArea.append("g").attr("transform", `translate(0,${vis.innerHeight})`);
-        vis.xScale = d3.scaleLinear().range([0, vis.innerWidth]);
-        vis.yScale = d3.scaleLinear().range([vis.innerHeight, 0]);
+        vis.xScale = d3.scaleLinear().range([0, vis.innerWidth-55]);
+        vis.yScale = d3.scaleLinear().range([vis.innerHeight-55, 55]);
         vis.radiusScale = d3.scaleSqrt().range([5, 50]);
         vis.Yaxis = d3.axisLeft(vis.yScale)
                     .tickSize(-vis.innerWidth)
