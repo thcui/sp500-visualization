@@ -58,7 +58,7 @@ class BubbleChart {
                     .tickSize(-vis.innerWidth)
                     .tickPadding(10)
                     .ticks(6)
-                    .tickFormat(number => d3.format(".0%")(number))
+                    .tickFormat(number => d3.format(".2%")(number))
 
         vis.Xaxis = d3.axisBottom(vis.xScale)
                     .tickSize(-vis.innerHeight)
