@@ -106,10 +106,8 @@ class BubbleChart {
                     selected_stock_symbol.push(d.symbol)
                 }
                 updateLineChart();
+            })
 
-
-
-        })
         // zoom and pan
         const zoom = d3.zoom()
                 .scaleExtent([1, 40])
@@ -117,9 +115,23 @@ class BubbleChart {
                 .on("zoom", function (event) {
                     vis.zoomed(event,vis);
                 });
+
+        function resetZoom() {
+            vis.svg.transition()
+                .duration(500)
+                .call(zoom.transform, d3.zoomIdentity);
+        }
+
+
         // append zoom to svg
         vis.svg.call(zoom);
+
+        // reset button
+        d3.select("#bubbleChart-reset-button")
+            .on("click", resetZoom);
+
     }
+
     showToolTip(e,d){
         const formatMarketCap = number => d3.format('.3s')(number).replace('G','Billions').replace('T','Trillions')
         let num = formatMarketCap(d.marketcap);
