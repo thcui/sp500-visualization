@@ -16,13 +16,6 @@ class BubbleChart {
         vis.innerWidth = vis.config.containerWidth - vis.config.margin.left - vis.config.margin.right;
         vis.innerHeight = vis.config.containerHeight - vis.config.margin.top - vis.config.margin.bottom;
 
-        vis.color = d3.scaleOrdinal()
-            .domain(["Industrials", "Health Care", "Information Technology", "Communication Services",
-                "Consumer Discretionary", "Utilities", "Financials", "Materials", "Real Estate",
-                "Consumer Staples", "Energy"])
-            .range(["#ED8936", "#2F855A", "#3182CE", "#702459", "#805AD5", "#FC8181", "#C53030",
-                "#C4C4C4", "#81E6D9", "#B7791F", "#E0CE61"]);
-
         // Define size of SVG drawing area
         vis.svg = d3
             .select(vis.config.parentElement)
@@ -49,6 +42,12 @@ class BubbleChart {
             .attr('clip-path', 'url(#chart-mask)');
 
         // Initialize the axis and scale
+        vis.color = d3.scaleOrdinal()
+            .domain(["Industrials", "Health Care", "Information Technology", "Communication Services",
+                "Consumer Discretionary", "Utilities", "Financials", "Materials", "Real Estate",
+                "Consumer Staples", "Energy"])
+            .range(["#ED8936", "#2F855A", "#3182CE", "#702459", "#805AD5", "#FC8181", "#C53030",
+                "#C4C4C4", "#81E6D9", "#B7791F", "#E0CE61"]);
         vis.YaxisG = vis.chartArea.append("g");
         vis.XaxisG = vis.chartArea.append("g").attr("transform", `translate(0,${vis.innerHeight})`);
         vis.xScale = d3.scaleLinear().range([0, vis.innerWidth]);
@@ -59,12 +58,19 @@ class BubbleChart {
                     .tickPadding(10)
                     .ticks(6)
                     .tickFormat(number => d3.format(".2%")(number))
-
         vis.Xaxis = d3.axisBottom(vis.xScale)
                     .tickSize(-vis.innerHeight)
                     .tickPadding(10)
                     .ticks(10)
                     .tickFormat(d => d/10**9 +'B');
+
+        // zoom and pan
+        vis.zoom = d3.zoom()
+            .scaleExtent([1, 40])
+            .translateExtent([[-100,-100],[vis.config.containerWidth+100,vis.config.containerHeight+100]])
+            .on("zoom", function (event) {
+                vis.zoomed(event,vis);
+            });
 
         vis.updateVis();
 
@@ -108,27 +114,15 @@ class BubbleChart {
                 updateLineChart();
             })
 
-        // zoom and pan
-        const zoom = d3.zoom()
-                .scaleExtent([1, 40])
-                .translateExtent([[-100,-100],[vis.config.containerWidth+100,vis.config.containerHeight+100]])
-                .on("zoom", function (event) {
-                    vis.zoomed(event,vis);
-                });
-
-        function resetZoom() {
-            vis.svg.transition()
-                .duration(500)
-                .call(zoom.transform, d3.zoomIdentity);
-        }
-
-
         // append zoom to svg
-        vis.svg.call(zoom);
+        vis.svg.call(vis.zoom);
 
         // reset button
         d3.select("#bubbleChart-reset-button")
-            .on("click", resetZoom);
+            .on("click", function () {
+                vis.resetZoom();
+                vis.resetSelectedStockSymbol();
+            });
 
     }
 
@@ -150,7 +144,8 @@ class BubbleChart {
         d3.select("#tooltip").style("display", "none");
     }
 
-    zoomed(e,vis) {
+    zoomed(e) {
+        let vis = this;
         vis.radiusScale.range([5/e.transform.k,50/e.transform.k]);
         vis.circle.attr("transform", e.transform)
             .attr("r", (d) => vis.radiusScale(d.marketcap));
@@ -159,7 +154,19 @@ class BubbleChart {
         vis.YaxisG.call(vis.Yaxis.scale(e.transform.rescaleY(vis.yScale)));
         vis.YaxisG.select(".domain").remove();
         vis.XaxisG.select(".domain").remove();
+    }
 
+    resetZoom() {
+        let vis = this;
+        vis.svg.transition()
+            .duration(500)
+            .call(vis.zoom.transform, d3.zoomIdentity);
+    }
+
+    resetSelectedStockSymbol() {
+        d3.selectAll("circle").classed("selected", false);
+        selected_stock_symbol = [];
+        updateLineChart();
     }
 
     add_legend(){
