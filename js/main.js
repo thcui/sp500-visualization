@@ -37,19 +37,20 @@ let data= [];
 
 d3.csv('data/industryMC.csv').then(_data => {
     data = _data;
-    return d3.json('data/companyData.json');
-}).then(_stock => {
-    stockData = _stock;
     data.forEach(d => {
         d.marketcap = +d.marketcap;
     });
+    treeMap = new TreeMap({ parentElement: "#treeMap" }, data);
+    lineChart= new LineChart({parentElement: '#lineChart',}, data);
+    return d3.json('data/companyData.json');
+}).then(_stock => {
+    stockData = _stock;
+
     getbubbleChartData("2020-09-11","2020-09-18");
 
     d3.select("#bubbleChart-reset-button_div")
         .html(`<button id="bubbleChart-reset-button">Reset Bubble Chart</button>`);
 
-    treeMap = new TreeMap({ parentElement: "#treeMap" }, data);
-    lineChart= new LineChart({parentElement: '#lineChart',}, data);
     bubbleChart = new BubbleChart({parentElement: '#bubbleChart',}, bubbleChartData);
 
 })
