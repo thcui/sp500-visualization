@@ -106,4 +106,5 @@ circle.selected {
 .tick line{
     color: #4A5568;
     fill:  #4A5568;
+    pointer-events: none;
 }
