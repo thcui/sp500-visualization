@@ -15,6 +15,8 @@ class LineChart {
     initVis() {
         let vis = this
 
+        vis.selectedDomain=[]
+
         vis.chart_height = vis.config.containerHeight - vis.config.margin.bottom - vis.config.margin.top
         vis.chart_width = vis.config.containerWidth - vis.config.margin.right - vis.config.margin.left
 
@@ -394,7 +396,7 @@ class LineChart {
             .call(g => g.select('.domain').remove())
 
         // Update the brush and define a default position
-        const defaultBrushSelection = [vis.xScale_detail(new Date('2019-01-01')), vis.xScale_detail.range()[1]];
+        const defaultBrushSelection = [vis.xScale_detail(new Date('2020-04-01')), vis.xScale_detail.range()[1]];
         vis.brushG
             .call(vis.brush)
             .call(vis.brush.move, defaultBrushSelection);
@@ -408,12 +410,15 @@ class LineChart {
      * React to brush events
      */
     brushed(selection) {
+
         let vis = this;
 
+        let currentDomain=selection.map(vis.xScale_overview.invert, vis.xScale_overview)
         // Check if the brush is still active or if it has been removed
-        if (selection) {
+        if (selection && (JSON.stringify(vis.selectedDomain) !== JSON.stringify(currentDomain) )) {
             // Convert given pixel coordinates (range: [x0,x1]) into a time period (domain: [Date, Date])
-            const selectedDomain = selection.map(vis.xScale_overview.invert, vis.xScale_overview);
+            vis.selectedDomain = selection.map(vis.xScale_overview.invert, vis.xScale_overview);
+            let selectedDomain=vis.selectedDomain
 
             // Update x-scale of the focus view accordingly
             vis.xScale_detail.domain(selectedDomain);
