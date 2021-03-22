@@ -4,7 +4,7 @@ class BubbleChart {
             parentElement: _config.parentElement,
             containerWidth: 1200,
             containerHeight: 500,
-            margin: {top: 50, right: 50, bottom: 50, left: 50},
+            margin: {top: 50, right: 50, bottom: 50, left: 60},
         };
         this.data = _data
         this.initVis();
