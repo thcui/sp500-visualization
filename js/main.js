@@ -1,5 +1,7 @@
 
 const parseTime = d3.timeParse("%Y-%m-%d");
+const formatTime = d3.timeFormat("%Y-%m-%d");
+
 let stockData = [];
 let bubbleChartData = [];
 let lineChart,treeMap,bubbleChart
@@ -108,9 +110,14 @@ d3.json('data/companyData.json').then(_stock => {
     d3.select("#bubbleChart-reset-button_div")
         .html(`<button id="bubbleChart-reset-button">Reset Bubble Chart</button>`);
 
-    lineChart = new LineChart({parentElement: '#lineChart',}, data);
+
+
     treeMap = new TreeMap({ parentElement: "#treeMap" }, data);
     bubbleChart = new BubbleChart({parentElement: '#bubbleChart',}, bubbleChartData);
+    lineChart = new LineChart({parentElement: '#lineChart',}, data);
+
+
+
 });
 
 
