@@ -98,7 +98,11 @@ class TreeMap {
             .style("fill", function(d){ return vis.color(d.data.sector)})
             .on("mouseover",this.showToolTip)
             .on("mouseout",this.hideToolTip)
+<<<<<<< HEAD
             .on("click", this.selectSector)
+=======
+            .on("click", this.selectSector);
+>>>>>>> master
 
         // and to add the text labels
         vis.svg
@@ -173,7 +177,36 @@ class TreeMap {
         }
         filterSector();
     }
+    showToolTip(e,d){
+        const formatMarketCap = number => d3.format('.3s')(number).replace('G','Billions').replace('T','Trillions')
+        let num = formatMarketCap(d.data.marketcap);
+        d3.select('#tooltip')
+            .style("display", "block")
+            .style("top", e.pageY +20+ "px")
+            .style("left", e.pageX + 20+"px")
+            .html(`<strong>${d.data.sector}</strong>
+              <div><i>Amount of Market Capitalization:</i></div>
+              <div> ${num}  USD</div>
+               `);
+        d3.select
 
+
+    }
+    hideToolTip() {
+        d3.select("#tooltip").style("display", "none");
+    }
+    selectSector(e,d){
+        console.log(d.data.sector);
+        if(sectorFilter.includes(d.data.sector)){
+            d3.select(this).classed("selected", false);
+            sectorFilter = [];
+        }else{
+            d3.select(".treeBlock.selected").classed("selected", false);
+            d3.select(this).classed("selected", true);
+            sectorFilter = [d.data.sector]
+        }
+        filterSector();
+    }
 
     draw(words,vis,x,y) {
         let layout=vis.layout

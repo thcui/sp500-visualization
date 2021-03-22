@@ -34,5 +34,22 @@ d3.csv('data/preprocessed_data.csv').then(data => {
         companyData["historical"] = historical;
         stockData[companies[i]] = companyData;
     }
+<<<<<<< HEAD
 
 });
+=======
+    let stockIndex = {};
+    for(var i  = 0; i< industry.length; i++){
+        let sector = industry[i];
+        let sectorData = data.filter(d => d.sector === sector);
+        sectorData = d3.rollup(sectorData, v => d3.sum(v, d=>d.Adj_Close), (d) => d.Date);
+        let obj = {}
+        for(let [key, value] of sectorData){
+            obj[key] = value;
+        }
+        stockIndex[sector] = obj;
+
+    }
+    console.log(JSON.stringify(stockIndex));
+});
+>>>>>>> master
