@@ -179,9 +179,8 @@ class LineChart {
             "sector": "SP500",
         })
 
-        vis.get_closest_date=function get_closest_date(xPos,data) {
+        vis.get_closest_date=function get_closest_date(date,data) {
             // Get date that corresponds to current mouse x-coordinate
-            const date = vis.xScale_detail.invert(xPos);
             vis.bisectDate = d3.bisector(d => d.date).right;
             let temp=[]
             for (let stock of data) {
@@ -300,7 +299,7 @@ class LineChart {
             let text = area.selectAll('.stock_name').data(data)
             let textEnter = text.enter().append('text')
             let textMerge = textEnter.merge(text)
-            let boundary_date=vis.get_closest_date(x_scale.range()[1], Object.values(vis.selected_stock_data))[0].date
+            let boundary_date=vis.get_closest_date(vis.xScale_detail.invert(x_scale.range()[1]), Object.values(vis.selected_stock_data))[0].date
 
             textMerge.text(d => d)
                 .attr('class', d => 'stock_name ' + vis.sector_data.filter(v => {
@@ -356,7 +355,7 @@ class LineChart {
 
                 // Find nearest data point
 
-                let tempoo_data = vis.get_closest_date(d3.pointer(event, this.svg.node())[0] - vis.config.margin.left,
+                let tempoo_data = vis.get_closest_date(vis.xScale_detail.invert(d3.pointer(event, this.svg.node())[0] - vis.config.margin.left),
                     Object.values(vis.selected_stock_data))
 
 
@@ -418,6 +417,9 @@ class LineChart {
 
             // Update x-scale of the focus view accordingly
             vis.xScale_detail.domain(selectedDomain);
+            let from=vis.get_closest_date(selectedDomain[0],Object.values(vis.selected_stock_data))[0].date
+            let end=vis.get_closest_date(selectedDomain[1],Object.values(vis.selected_stock_data))[0].date
+            filterDateRange(formatTime(from),formatTime(end))
         } else {
             // Reset x-scale of the focus view (full time period)
             vis.xScale_detail.domain(vis.xScale_overview.domain());
