@@ -111,7 +111,7 @@ d3.json('data/companyData.json').then(_stock => {
     lineChart = new LineChart({parentElement: '#lineChart',}, data);
     treeMap = new TreeMap({ parentElement: "#treeMap" }, data);
     bubbleChart = new BubbleChart({parentElement: '#bubbleChart',}, bubbleChartData);
-})
+});
 
 
 
