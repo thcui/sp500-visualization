@@ -57,6 +57,16 @@ d3.csv('data/industryMC.csv').then(_data => {
 
         d3.csv('data/marketcap_preprocessed.csv').then(_companies => {
             d3.csv('data/SP500HistoricalData.csv').then((sp500_data_)=>{
+                sp500_data_.forEach(stock => {
+                    Object.keys(stock).forEach(attr => {
+                        if (attr === 'date') {
+                            stock[attr] = parseTime(stock[attr])
+                        }
+                        if (attr === 'price' || attr === 'Volume') {
+                            stock[attr] = +stock[attr]
+                        }
+                    })
+                })
                 companies = _companies
                 sp500_data= sp500_data_
                 lineChart = new LineChart({parentElement: '#lineChart',}, data);
