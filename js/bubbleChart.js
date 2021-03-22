@@ -51,7 +51,7 @@ class BubbleChart {
         vis.chart = vis.chartArea.append('g')
             .attr('clip-path', 'url(#chart-mask)');
         
-        vis.xScale = d3.scaleLinear().range([0, vis.innerWidth-55]);
+        vis.xScale = d3.scaleLinear().range([10, vis.innerWidth-55]);
         vis.yScale = d3.scaleLinear().range([vis.innerHeight-55, 55]);
         vis.radiusScale = d3.scaleSqrt().range([5, 50]);
         vis.Yaxis = d3.axisLeft(vis.yScale)
