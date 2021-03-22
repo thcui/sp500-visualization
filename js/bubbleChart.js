@@ -144,7 +144,8 @@ class BubbleChart {
             .style("display", "block")
             .style("top", e.pageY +20+ "px")
             .style("left", e.pageX + 20+"px")
-            .html(`<strong>${d.name}</strong>
+            .html(`<strong>${d.symbol}</strong>
+              <div><strong>${d.name}</strong></div>
               <div><i>Amount of Market Capitalization:</i></div>
               <div> ${num}  USD</div>
                `);
