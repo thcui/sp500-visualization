@@ -15,7 +15,7 @@ class LineChart {
     initVis() {
         let vis = this
 
-        vis.selectedDomain=[]
+        vis.selectedDomain=[new Date('2020-04-01'), new Date('2021-01-29')]
 
         vis.chart_height = vis.config.containerHeight - vis.config.margin.bottom - vis.config.margin.top
         vis.chart_width = vis.config.containerWidth - vis.config.margin.right - vis.config.margin.left
@@ -395,8 +395,9 @@ class LineChart {
             .call(vis.yAxis_detail)
             .call(g => g.select('.domain').remove())
 
+
         // Update the brush and define a default position
-        const defaultBrushSelection = [vis.xScale_detail(new Date('2020-04-01')), vis.xScale_detail.range()[1]];
+        const defaultBrushSelection = [vis.xScale_detail(vis.selectedDomain[0]), vis.xScale_detail(vis.selectedDomain[1])];
         vis.brushG
             .call(vis.brush)
             .call(vis.brush.move, defaultBrushSelection);
