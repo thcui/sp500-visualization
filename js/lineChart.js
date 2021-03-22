@@ -15,23 +15,22 @@ class LineChart {
     initVis() {
         let vis = this
 
-        vis.selectedDomain=[new Date('2020-04-01'), new Date('2021-01-29')]
+        vis.selectedDomain = [new Date('2020-04-01'), new Date('2021-01-29')]
 
         vis.chart_height = vis.config.containerHeight - vis.config.margin.bottom - vis.config.margin.top
         vis.chart_width = vis.config.containerWidth - vis.config.margin.right - vis.config.margin.left
 
-        vis.margin_btw=20
-        vis.overview_chart_height=50
-        vis.overview_chart_width=vis.chart_width
-        vis.detail_chart_height=vis.chart_height-vis.overview_chart_height
-        vis.detail_chart_width=vis.chart_width
+        vis.margin_btw = 20
+        vis.overview_chart_height = 50
+        vis.overview_chart_width = vis.chart_width
+        vis.detail_chart_height = vis.chart_height - vis.overview_chart_height
+        vis.detail_chart_width = vis.chart_width
 
         // Create SVG area, initialize scales and axes
         // Create scales
         vis.svg = d3.select(vis.config.parentElement)
             .attr('width', vis.config.containerWidth)
             .attr('height', vis.config.containerHeight)
-
 
 
         vis.chart = vis.svg.append('g')
@@ -60,7 +59,7 @@ class LineChart {
             .range([0, vis.detail_chart_width]);
 
         vis.yScale_detail = d3.scaleLinear()
-            .range([0, vis.detail_chart_height-vis.margin_btw])
+            .range([0, vis.detail_chart_height - vis.margin_btw])
 
         vis.xScale_overview = d3.scaleTime()
             .range([0, vis.overview_chart_width]);
@@ -70,16 +69,6 @@ class LineChart {
 
         vis.xAxis_detail = d3.axisBottom(vis.xScale_detail)
             .tickSize(-vis.chart_height)
-            // .tickFormat((d, i) => {
-            //     const ticks = vis.xAxis_detail.scale().ticks();
-            //
-            //     if (i > 0 && ticks[i - 1].getFullYear() === d.getFullYear()) {
-            //         return d3.timeFormat('%b')(d);
-            //     }
-            //     else {
-            //         return d3.timeFormat('%Y')(d);
-            //     }
-            // });
 
         vis.yAxis_detail = d3.axisLeft(vis.yScale_detail)
             .tickSize(-vis.chart_width)
@@ -88,11 +77,9 @@ class LineChart {
             .tickSize(1)
 
 
-
-
         vis.xAxisG_detail = vis.chart.append('g')
             .attr('class', 'axis x-axis')
-            .attr('transform', `translate(0,${vis.detail_chart_height-vis.margin_btw})`);
+            .attr('transform', `translate(0,${vis.detail_chart_height - vis.margin_btw})`);
         vis.xAxisG_overview = vis.chart.append('g')
             .attr('class', 'axis x-axis')
             .attr('transform', `translate(0,${vis.chart_height})`);
@@ -129,16 +116,13 @@ class LineChart {
             .style('display', 'none');
 
 
-
-
-
         vis.trackingArea = vis.chart.append('rect')
             .attr('width', vis.chart_width)
-            .attr('height', vis.detail_chart_height-vis.margin_btw)
+            .attr('height', vis.detail_chart_height - vis.margin_btw)
             .attr('fill', 'none')
             .attr('pointer-events', 'all')
 
-        vis.transition=function transition(path) {
+        vis.transition = function transition(path) {
             path.transition()
                 .duration(2000)
                 .attrTween("stroke-dasharray", vis.tweenDash)
@@ -147,7 +131,7 @@ class LineChart {
                 });
         }
 
-        vis.tweenDash=function tweenDash() {
+        vis.tweenDash = function tweenDash() {
             const l = this.getTotalLength(),
                 i = d3.interpolateString("0," + l, l + "," + l);
             return function (t) {
@@ -165,10 +149,10 @@ class LineChart {
         // Initialize brush component
         vis.brush = d3.brushX()
             .extent([[0, 0], [vis.chart_width, vis.overview_chart_height]])
-            .on('brush', function({selection}) {
+            .on('brush', function ({selection}) {
                 if (selection) vis.brushed(selection);
             })
-            .on('end', function({selection}) {
+            .on('end', function ({selection}) {
                 if (!selection) vis.brushed(null);
             });
 
@@ -181,10 +165,10 @@ class LineChart {
             "sector": "SP500",
         })
 
-        vis.get_closest_date=function get_closest_date(date,data) {
+        vis.get_closest_date = function get_closest_date(date, data) {
             // Get date that corresponds to current mouse x-coordinate
             vis.bisectDate = d3.bisector(d => d.date).right;
-            let temp=[]
+            let temp = []
             for (let stock of data) {
                 stock = Object.values(stock)
                 if (stock.length === 0) {
@@ -209,9 +193,9 @@ class LineChart {
 
         if (selected_stock_symbol.length === 0) {
 
-                let temp_sp500=sp500_data
-                delete temp_sp500['columns'];
-                vis.selected_stock_data['SP500'] = Object.assign({}, temp_sp500)
+            let temp_sp500 = sp500_data
+            delete temp_sp500['columns'];
+            vis.selected_stock_data['SP500'] = Object.assign({}, temp_sp500)
 
         } else {
             selected_stock_symbol.forEach(stock_symbol => {
@@ -234,7 +218,6 @@ class LineChart {
 
             });
         }
-
 
 
         set_lineChart_property(vis)
@@ -261,7 +244,7 @@ class LineChart {
 
         let vis = this
 
-        vis.renderLine=function renderLine(area,data,x_scale,y_scale,if_text){
+        vis.renderLine = function renderLine(area, data, x_scale, y_scale, if_text) {
             let line = area.selectAll('.line').data(data)
 
             let lineEnter = line.enter().append('path')
@@ -285,34 +268,32 @@ class LineChart {
 
             line.exit().remove()
 
-            if(if_text){
-                render_text(vis.chart,data,x_scale,y_scale)
+            if (if_text) {
+                render_text(vis.chart, data, x_scale, y_scale)
             }
 
 
         }
         // vis.renderLine(vis.drawing_area,Object.keys(vis.selected_stock_data),vis.xScale_detail,vis.yScale_detail,true)
-        vis.renderLine(vis.overview_area,Object.keys(vis.selected_stock_data),vis.xScale_overview,vis.yScale_overview,false)
+        vis.renderLine(vis.overview_area, Object.keys(vis.selected_stock_data), vis.xScale_overview, vis.yScale_overview, false)
 
 
-
-
-        function render_text(area,data,x_scale,y_scale) {
+        function render_text(area, data, x_scale, y_scale) {
             let text = area.selectAll('.stock_name').data(data)
             let textEnter = text.enter().append('text')
             let textMerge = textEnter.merge(text)
-            let boundary_date=vis.get_closest_date(vis.xScale_detail.invert(x_scale.range()[1]), Object.values(vis.selected_stock_data))[0].date
+            let boundary_date = vis.get_closest_date(vis.xScale_detail.invert(x_scale.range()[1]), Object.values(vis.selected_stock_data))[0].date
 
             textMerge.text(d => d)
                 .attr('class', d => 'stock_name ' + vis.sector_data.filter(v => {
                     return v.symbol === d
                 })[0].sector.replace(' ', '_'))
-                // .datum(d => Object.values(vis.selected_stock_data[d]).filter(v=>
-                //     v.date===boundary_date))
-            textMerge.datum(d=>Object.values(vis.selected_stock_data[d]).filter(v=>
-                v.date.toDateString()===boundary_date.toDateString()))
+            // .datum(d => Object.values(vis.selected_stock_data[d]).filter(v=>
+            //     v.date===boundary_date))
+            textMerge.datum(d => Object.values(vis.selected_stock_data[d]).filter(v =>
+                v.date.toDateString() === boundary_date.toDateString()))
                 .attr('transform',
-                        d => `translate(${vis.chart_width + 20},${y_scale(d[0].price)})`)
+                    d => `translate(${vis.chart_width + 20},${y_scale(d[0].price)})`)
                 .attr('text-anchor', 'middle')
                 .attr('vertical-align', 'text-bottom')
                 .attr('font-size', 12)
@@ -320,31 +301,6 @@ class LineChart {
             text.exit().remove()
         }
 
-
-        function render_stock_point(stock) {
-
-            // Bind data to visual elements, update axes
-            // Update the axes/gridlines, remove the tick lines
-
-
-            let circle = vis.drawing_area.selectAll('.point').data(stock)
-            let circleEnter = circle.enter()
-                .append('g')
-                .attr('class', 'point')
-            circleEnter.append('circle')
-            circleEnter.append('path')
-
-            let circleMerge = circleEnter.merge(circle)
-
-            circleMerge.select('circle')
-                .attr('r', 1)
-                .attr('cx', d => vis.xScale_detail(d.date))
-                .attr('cy', d => vis.yScale_detail(d.price))
-                .attr('fill', 'green')
-
-
-            circle.exit().remove();
-        }
 
         vis.trackingArea.on('mouseenter', () => {
             vis.tooltip.style('display', 'block');
@@ -359,7 +315,6 @@ class LineChart {
 
                 let tempoo_data = vis.get_closest_date(vis.xScale_detail.invert(d3.pointer(event, this.svg.node())[0] - vis.config.margin.left),
                     Object.values(vis.selected_stock_data))
-
 
 
                 let tooltip_circle = vis.tooltip.selectAll('.tooltip_point').data(tempoo_data)
@@ -390,7 +345,6 @@ class LineChart {
             .call(vis.xAxis_overview)
 
 
-
         vis.yAxisG
             .call(vis.yAxis_detail)
             .call(g => g.select('.domain').remove())
@@ -403,7 +357,6 @@ class LineChart {
             .call(vis.brush.move, defaultBrushSelection);
 
 
-
     }
 
 
@@ -414,26 +367,29 @@ class LineChart {
 
         let vis = this;
 
-        let currentDomain=selection.map(vis.xScale_overview.invert, vis.xScale_overview)
+        let currentDomain = selection.map(vis.xScale_overview.invert, vis.xScale_overview)
         // Check if the brush is still active or if it has been removed
-        if (selection && (JSON.stringify(vis.selectedDomain) !== JSON.stringify(currentDomain) )) {
-            // Convert given pixel coordinates (range: [x0,x1]) into a time period (domain: [Date, Date])
-            vis.selectedDomain = selection.map(vis.xScale_overview.invert, vis.xScale_overview);
-            let selectedDomain=vis.selectedDomain
+        if (selection) {
+            if (JSON.stringify(vis.selectedDomain) !== JSON.stringify(currentDomain)) {
+                // Convert given pixel coordinates (range: [x0,x1]) into a time period (domain: [Date, Date])
+                vis.selectedDomain = selection.map(vis.xScale_overview.invert, vis.xScale_overview);
+                let selectedDomain = vis.selectedDomain
 
-            // Update x-scale of the focus view accordingly
-            vis.xScale_detail.domain(selectedDomain);
-            let from=vis.get_closest_date(selectedDomain[0],Object.values(vis.selected_stock_data))[0].date
-            let end=vis.get_closest_date(selectedDomain[1],Object.values(vis.selected_stock_data))[0].date
-            filterDateRange(formatTime(from),formatTime(end))
+                // Update x-scale of the focus view accordingly
+                vis.xScale_detail.domain(selectedDomain);
+                let from = vis.get_closest_date(selectedDomain[0], Object.values(vis.selected_stock_data))[0].date
+                let end = vis.get_closest_date(selectedDomain[1], Object.values(vis.selected_stock_data))[0].date
+                filterDateRange(formatTime(from), formatTime(end))
+            } else {
+                vis.xScale_detail.domain(currentDomain);
+            }
         } else {
             // Reset x-scale of the focus view (full time period)
             vis.xScale_detail.domain(vis.xScale_overview.domain());
         }
 
-
         // Redraw line and update x-axis labels in focus view
-        vis.renderLine(vis.drawing_area,Object.keys(vis.selected_stock_data),vis.xScale_detail,vis.yScale_detail,true)
+        vis.renderLine(vis.drawing_area, Object.keys(vis.selected_stock_data), vis.xScale_detail, vis.yScale_detail, true)
         vis.xAxisG_detail.call(vis.xAxis_detail);
     }
 
