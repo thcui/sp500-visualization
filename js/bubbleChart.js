@@ -37,10 +37,6 @@ class BubbleChart {
             .attr('y', 0)
             .attr('height', vis.innerHeight);
 
-        // Apply clipping mask to 'vis.chart' to clip leader started before 1950
-        vis.chart = vis.chartArea.append('g')
-            .attr('clip-path', 'url(#chart-mask)');
-
         // Initialize the axis and scale
         vis.color = d3.scaleOrdinal()
             .domain(["Industrials", "Health Care", "Information Technology", "Communication Services",
@@ -50,6 +46,11 @@ class BubbleChart {
                 "#C4C4C4", "#81E6D9", "#B7791F", "#E0CE61"]);
         vis.YaxisG = vis.chartArea.append("g");
         vis.XaxisG = vis.chartArea.append("g").attr("transform", `translate(0,${vis.innerHeight})`);
+
+        // Apply clipping mask to 'vis.chart' to clip leader started before 1950
+        vis.chart = vis.chartArea.append('g')
+            .attr('clip-path', 'url(#chart-mask)');
+        
         vis.xScale = d3.scaleLinear().range([0, vis.innerWidth-55]);
         vis.yScale = d3.scaleLinear().range([vis.innerHeight-55, 55]);
         vis.radiusScale = d3.scaleSqrt().range([5, 50]);
