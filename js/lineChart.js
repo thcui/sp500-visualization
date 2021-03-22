@@ -85,7 +85,11 @@ class LineChart {
             .attr('transform', `translate(0,${vis.chart_height})`);
 
         // Add the left y-axis group
+<<<<<<< HEAD
+        vis.yAxisG_detail = vis.chart.append('g')
+=======
         vis.yAxisG = vis.chart.append('g')
+>>>>>>> master
             .attr('class', 'axis y-axis');
 
         // Initialize clipping mask that covers the whchole chart
@@ -313,11 +317,19 @@ class LineChart {
 
                 // Find nearest data point
 
+<<<<<<< HEAD
+                let closest_dates_all_stocks = vis.get_closest_date(vis.xScale_detail.invert(d3.pointer(event, this.svg.node())[0] - vis.config.margin.left),
+                    Object.values(vis.selected_stock_data))
+
+
+                let tooltip_circle = vis.tooltip.selectAll('.tooltip_point').data(closest_dates_all_stocks)
+=======
                 let tempoo_data = vis.get_closest_date(vis.xScale_detail.invert(d3.pointer(event, this.svg.node())[0] - vis.config.margin.left),
                     Object.values(vis.selected_stock_data))
 
 
                 let tooltip_circle = vis.tooltip.selectAll('.tooltip_point').data(tempoo_data)
+>>>>>>> master
                 let tooltip_circleEnter = tooltip_circle.enter().append('g').attr('class', 'tooltip_point')
                 tooltip_circleEnter.append('circle')
                 tooltip_circleEnter.append('text')
@@ -345,7 +357,11 @@ class LineChart {
             .call(vis.xAxis_overview)
 
 
+<<<<<<< HEAD
+        vis.yAxisG_detail
+=======
         vis.yAxisG
+>>>>>>> master
             .call(vis.yAxis_detail)
             .call(g => g.select('.domain').remove())
 

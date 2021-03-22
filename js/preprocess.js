@@ -34,6 +34,10 @@ d3.csv('data/preprocessed_data.csv').then(data => {
         companyData["historical"] = historical;
         stockData[companies[i]] = companyData;
     }
+<<<<<<< HEAD
+
+});
+=======
     let stockIndex = {};
     for(var i  = 0; i< industry.length; i++){
         let sector = industry[i];
@@ -48,3 +52,4 @@ d3.csv('data/preprocessed_data.csv').then(data => {
     }
     console.log(JSON.stringify(stockIndex));
 });
+>>>>>>> master
