@@ -144,7 +144,8 @@ class BubbleChart {
             .style("display", "block")
             .style("top", e.pageY +20+ "px")
             .style("left", e.pageX + 20+"px")
-            .html(`<strong>${d.name}</strong>
+            .html(`<strong>${d.symbol}</strong>
+              <div><strong>${d.name}</strong></div>
               <div><i>Amount of Market Capitalization:</i></div>
               <div> ${num}  USD</div>
                `);
@@ -183,7 +184,8 @@ class BubbleChart {
     initialZoom() {
         let vis = this;
         // initial zoom
-        let initialTransform = d3.zoomIdentity.scale(5).translate(0,-150);
+        let initialTransform = d3.zoomIdentity.translate(vis.innerWidth/2, vis.innerHeight/2)
+            .scale(5).translate(-vis.innerWidth/5,-vis.innerHeight/1.3);
         vis.svg.call(vis.zoom.transform, initialTransform);
         // go back to normal
         vis.svg
