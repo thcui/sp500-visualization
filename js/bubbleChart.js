@@ -4,7 +4,7 @@ class BubbleChart {
             parentElement: _config.parentElement,
             containerWidth: 1200,
             containerHeight: 500,
-            margin: {top: 50, right: 50, bottom: 50, left: 50},
+            margin: {top: 50, right: 50, bottom: 50, left: 60},
         };
         this.data = _data
         this.initVis();
@@ -51,7 +51,7 @@ class BubbleChart {
         vis.chart = vis.chartArea.append('g')
             .attr('clip-path', 'url(#chart-mask)');
         
-        vis.xScale = d3.scaleLinear().range([0, vis.innerWidth-55]);
+        vis.xScale = d3.scaleLinear().range([10, vis.innerWidth-55]);
         vis.yScale = d3.scaleLinear().range([vis.innerHeight-55, 55]);
         vis.radiusScale = d3.scaleSqrt().range([5, 50]);
         vis.Yaxis = d3.axisLeft(vis.yScale)
@@ -144,7 +144,8 @@ class BubbleChart {
             .style("display", "block")
             .style("top", e.pageY +20+ "px")
             .style("left", e.pageX + 20+"px")
-            .html(`<strong>${d.name}</strong>
+            .html(`<strong>${d.symbol}</strong>
+              <div><strong>${d.name}</strong></div>
               <div><i>Amount of Market Capitalization:</i></div>
               <div> ${num}  USD</div>
                `);
@@ -183,7 +184,8 @@ class BubbleChart {
     initialZoom() {
         let vis = this;
         // initial zoom
-        let initialTransform = d3.zoomIdentity.scale(5).translate(0,-150);
+        let initialTransform = d3.zoomIdentity.translate(vis.innerWidth/2, vis.innerHeight/2)
+            .scale(5).translate(-vis.innerWidth/5,-vis.innerHeight/1.3);
         vis.svg.call(vis.zoom.transform, initialTransform);
         // go back to normal
         vis.svg
