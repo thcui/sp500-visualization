@@ -1,68 +1,121 @@
-/* Todo: add styles */
+body{
+    background-color: #1A365D;
+}
+#treeMap {
+    background-color: #1A365D;
+}
+#first_set {
+    display: flex;
+    margin-top: 50px;
+}
+#bottom_set {
+    position: relative;
+}
+#lineChart {
+    color: white;
+    fill: white;
 
-
-#country-selector{
-    position:relative;
+}
+#lineChart line{
+    color: #4A5568;
 }
 
+#lineChart .SP500{
+    stroke:  #FFFFFF;
+}
+
+#lineChart .Industrials{
+    stroke: #ED8936;
+}
+
+#lineChart .Consumer_Discretionary{
+    stroke:#805AD5
+}
+#lineChart .Health_Care{
+    stroke:#2F855A
+}
+#lineChart .Information_Technology{
+    stroke:#3182CE
+}
+#lineChart .Communication_Services{
+    stroke:#702459
+}
+
+#lineChart .Utilities{
+   stroke:  #FC8181
+}
+#lineChart .Materials{
+    stroke: #C4C4C4
+}
+#lineChart .Financials{
+    stroke:  #C53030
+}#lineChart .Real_Estate{
+     stroke: #81E6D9
+ }
+ #lineChart .Consumer_Staples{
+     stroke: #B7791F
+
+ }
+#lineChart .Energy{
+    stroke: #E0CE61
+
+}
+
+#title{
+    color: white;
+    font-size: 2em;
+    font-weight: bold;
+}
+#Industrials{
+    color: orange;
+}
 #tooltip {
     position: absolute;
     display: none;
     background: #fff;
-    box-shadow: 3px 3px 3px 0px rgb(92 92 92);
-    border: 1px solid #3a3a3a;
+    border: 1px solid #ddd;
     font-size: 12px;
     font-weight: 500;
     padding: 8px;
     min-width: 160px;
-    color: #000000;
+    color: #333;
 }
-
-#barChart-div {
-    float: left;
+.treeBlock:hover{
+    stroke-width:3;
+    stroke: white;
 }
-
-#barChart{
-    position:relative;
-    border-style:solid;
-    border-color:#ddd
+.treeBlock.selected{
+    stroke-width:3;
+    stroke: white;
 }
-
-#lexisChart{
-    position:relative;
-    border-style:solid;
-    border-color:#ddd
-}
-#scatterPlot-div{
-    float: left;
-}
-#scatterPlot{
-    position:relative;
-    border-style:solid;
-    border-color:#ddd
-}
-.axis .tick line {
-    stroke: #3333;
-    shape-rendering: crispEdges;
-}
-
-.axis text {
-    font-family: sans-serif;
-    font-size: 11px;
-}
-
-.bar {
-    fill: #a4a4c3;
-    opacity:1.0
-}
-.point-mouse {
+circle{
+    stroke-width:1;
     stroke: #000000;
+    vector-effect: non-scaling-stroke;
 }
-.active {
-    stroke: #000000;
+circle:hover{
+    stroke: white;
+}
+circle.selected {
+    stroke: white;
+}
+.tick{
+    color: white;
+    fill: white;
+}
+.tick line{
+    color: #4A5568;
+    fill:  #4A5568;
+    pointer-events: none;
 }
 
-.active-gender {
-    stroke: #000000;
-    fill:mediumpurple;
+.s-shape{
+    clip-path: polygon(33% 14%,
+    61% 20%, 70% 4%,
+    35% 0, 20% 8%,
+    13% 21%, 18% 41%,
+    48% 54%, 40% 70%,
+    15% 66%, 15% 81%,
+    58% 80%, 67% 63%,
+    61% 41%, 31% 31%);
 }

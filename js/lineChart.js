@@ -4,33 +4,33 @@ class LineChart {
         // Configuration object with defaults
         this.config = {
             parentElement: _config.parentElement,
-            containerWidth: _config.containerWidth || 680,
-            containerHeight: _config.containerHeight || 300,
-            margin: _config.margin || {top: 20, right: 20, bottom: 20, left: 30}
+            containerWidth: 680,
+            containerHeight: 400,
+            margin: _config.margin || {top: 20, right: 40, bottom: 20, left: 30}
         }
         this.data = _data;
-        this.selected_gender_data = []
         this.initVis();
     }
 
     initVis() {
         let vis = this
 
+        vis.selectedDomain = [new Date('2020-04-01'), new Date('2021-01-29')]
+
         vis.chart_height = vis.config.containerHeight - vis.config.margin.bottom - vis.config.margin.top
         vis.chart_width = vis.config.containerWidth - vis.config.margin.right - vis.config.margin.left
+
+        vis.margin_btw = 20
+        vis.overview_chart_height = 50
+        vis.overview_chart_width = vis.chart_width
+        vis.detail_chart_height = vis.chart_height - vis.overview_chart_height
+        vis.detail_chart_width = vis.chart_width
+
         // Create SVG area, initialize scales and axes
         // Create scales
         vis.svg = d3.select(vis.config.parentElement)
             .attr('width', vis.config.containerWidth)
-            .attr('height', vis.config.containerHeight);
-
-        vis.svg.append("text")
-            .attr("x", vis.config.margin.left+50)
-            .attr("y", vis.config.margin.top)
-            .attr("text-anchor", "middle")
-            .style("font-size", "12px")
-            .attr("font-weight", "700")
-            .text("Stock Price in USD($)");
+            .attr('height', vis.config.containerHeight)
 
 
         vis.chart = vis.svg.append('g')
@@ -38,317 +38,359 @@ class LineChart {
             .attr('width', vis.chart_width)
             .attr('height', vis.chart_height)
             .attr('transform', `translate(${vis.config.margin.left},${vis.config.margin.top})`);
-        vis.drawing_area = vis.chart.append('g')
-            .attr('id', 'drawing_area')
 
-
-
-        vis.xScale = d3.scaleTime()
-            .range([0, vis.chart_width]);
-
-        vis.yScale = d3.scaleLinear()
-            .range([0, vis.chart_height])
-
-        vis.xAxis = d3.axisBottom(vis.xScale)
-            .tickSize(-vis.chart_height)
-
-        vis.yAxis = d3.axisLeft(vis.yScale)
-            .tickSize(-vis.chart_width)
+        vis.svg.append("text")
+            .attr("x", vis.config.margin.left + 80)
+            .attr("y", vis.config.margin.top)
+            .attr("text-anchor", "middle")
+            .style("font-size", "15px")
+            .attr("font-weight", "700")
+            .text("Stock Price in USD($)");
 
         vis.svg.append("text")
             .attr("class", 'axis-name')
             .attr("font-weight", "700")
             .attr('font-size', '15')
-            .attr('transform', `translate(${vis.chart_width},${vis.chart_height})`)
+            .attr('transform', `translate(${vis.chart_width},${vis.detail_chart_height})`)
             .text("Date");
 
 
-        vis.xAxisG = vis.chart.append('g')
+        vis.xScale_detail = d3.scaleTime()
+            .range([0, vis.detail_chart_width]);
+
+        vis.yScale_detail = d3.scaleLinear()
+            .range([0, vis.detail_chart_height - vis.margin_btw])
+
+        vis.xScale_overview = d3.scaleTime()
+            .range([0, vis.overview_chart_width]);
+
+        vis.yScale_overview = d3.scaleLinear()
+            .range([0, vis.overview_chart_height])
+
+        vis.xAxis_detail = d3.axisBottom(vis.xScale_detail)
+            .tickSize(-vis.chart_height)
+
+        vis.yAxis_detail = d3.axisLeft(vis.yScale_detail)
+            .tickSize(-vis.chart_width)
+
+        vis.xAxis_overview = d3.axisBottom(vis.xScale_overview)
+            .tickSize(1)
+
+
+        vis.xAxisG_detail = vis.chart.append('g')
+            .attr('class', 'axis x-axis')
+            .attr('transform', `translate(0,${vis.detail_chart_height - vis.margin_btw})`);
+        vis.xAxisG_overview = vis.chart.append('g')
             .attr('class', 'axis x-axis')
             .attr('transform', `translate(0,${vis.chart_height})`);
 
         // Add the left y-axis group
-        vis.yAxisG = vis.chart.append('g')
+        vis.yAxisG_detail = vis.chart.append('g')
             .attr('class', 'axis y-axis');
 
-        vis.trackingArea = vis.chart.append('rect')
-            .attr('width', vis.chart_width)
-            .attr('height', vis.chart_height)
-            .attr('fill', 'none')
-            .attr('pointer-events', 'all');
+        // Initialize clipping mask that covers the whchole chart
+        vis.chart.append('defs')
+            .append('clipPath')
+            .attr('id', 'lineChart-mask')
+            .append('rect')
+            .attr('width', vis.detail_chart_width)
+            .attr('y', -vis.config.margin.top)
+            .attr('height', vis.detail_chart_height);
+
+        // Apply clipping mask to 'vis.drawing_area' to clip semicircles at the very beginning and end of a year
+        vis.drawing_area = vis.chart.append('g')
+            .attr('id', 'drawing_area')
+            .attr('width', vis.detail_chart_width)
+            .attr('height', vis.detail_chart_height)
+            .attr('clip-path', 'url(#lineChart-mask)');
+
+        vis.overview_area = vis.chart.append('g')
+            .attr('id', 'overview_area')
+            .attr('width', vis.overview_chart_width)
+            .attr('height', vis.overview_chart_height)
+            .attr('transform', `translate(0,${vis.detail_chart_height})`);
+
 
         vis.tooltip = vis.chart.append('g')
             .attr('class', 'tooltip')
             .style('display', 'none');
 
 
-        this.updateVis()
+        vis.trackingArea = vis.chart.append('rect')
+            .attr('width', vis.chart_width)
+            .attr('height', vis.detail_chart_height - vis.margin_btw)
+            .attr('fill', 'none')
+            .attr('pointer-events', 'all')
+
+        vis.transition = function transition(path) {
+            path.transition()
+                .duration(2000)
+                .attrTween("stroke-dasharray", vis.tweenDash)
+                .on("end", () => {
+                    d3.select(this).call(vis.transition);
+                });
+        }
+
+        vis.tweenDash = function tweenDash() {
+            const l = this.getTotalLength(),
+                i = d3.interpolateString("0," + l, l + "," + l);
+            return function (t) {
+                return i(t)
+            };
+        }
+
+        vis.sector_data = {}
+
+
+        vis.brushG = vis.overview_area.append('g')
+            .attr('class', 'brush x-brush');
+
+
+        // Initialize brush component
+        vis.brush = d3.brushX()
+            .extent([[0, 0], [vis.chart_width, vis.overview_chart_height]])
+            .on('brush', function ({selection}) {
+                if (selection) vis.brushed(selection);
+            })
+            .on('end', function ({selection}) {
+                if (!selection) vis.brushed(null);
+            });
+
+
+        vis.sector_data = companies
+        vis.sector_data.push({
+            "": "0",
+            "symbol": "SP500",
+            "name": "SP500",
+            "sector": "SP500",
+        })
+
+        vis.get_closest_date = function get_closest_date(date, data) {
+            // Get date that corresponds to current mouse x-coordinate
+            vis.bisectDate = d3.bisector(d => d.date).right;
+            let temp = []
+            for (let stock of data) {
+                stock = Object.values(stock)
+                if (stock.length === 0) {
+                    continue
+                }
+                const index = vis.bisectDate(stock, date, 1);
+                const a = stock[index - 1];
+                const b = stock[index];
+                const d = b && (date - a.date > b.date - date) ? b : a;
+                temp.push(d)
+            }
+            return temp
+        }
+        vis.updateVis()
+
     }
 
     updateVis() {
         let vis = this
-        // Prepare data and scales
-        // vis.selected_data = vis.data.filter(function (d) {
-        //     return d[document.getElementById("country-selector").value] === 1;
-        // });
-        // vis.filtered_data = vis.selected_data.filter(function (d) {
-        //     return d.pcgdp !== null;
-        // });
-        vis.xScale.domain([d3.min(vis.data, d => d.Date), d3.max(vis.data, d => d.Date)]);
-        vis.yScale.domain([d3.max(vis.data, d => d.Close),d3.min(vis.data, d => d.Close)])
 
-        vis.selected_stock=['TEST','TEST2','AAP','AAPL','ABBV','ABC','ABMD','ABT']
-        vis.selected_stock_data=[]
-        vis.actions=[]
-        for (let stock of vis.selected_stock){
-            let action=()=>{
-                return new Promise(resolve =>{
-                d3.csv('data/'+stock+'.csv').then(_data => {
-                    let data_temp = _data
-                    // Convert columns to numerical values
-                    data_temp.forEach(d => {
-                        Object.keys(d).forEach(attr => {
-                            if (attr === 'Date') {
-                                d[attr] = parseTime(d[attr])
-                            } else {
-                                d[attr] = +d[attr]
+        vis.selected_stock_data = {}
+
+        if (selected_stock_symbol.length === 0) {
+
+            let temp_sp500 = sp500_data
+            delete temp_sp500['columns'];
+            vis.selected_stock_data['SP500'] = Object.assign({}, temp_sp500)
+
+        } else {
+            selected_stock_symbol.forEach(stock_symbol => {
+                if (stockData[stock_symbol]) {
+
+                    vis.selected_stock_data[stock_symbol] = stockData[stock_symbol].historical
+                    d3.map(Object.keys(vis.selected_stock_data[stock_symbol]), d => vis.selected_stock_data[stock_symbol][d]['date'] = d)
+                    Object.values(vis.selected_stock_data[stock_symbol]).forEach(stock => {
+                        Object.keys(stock).forEach(attr => {
+                            if (attr === 'date') {
+                                stock[attr] = parseTime(stock[attr])
                             }
-
-                        });
-                        // data = data.filter(d => d.start_year !== d.end_year);
-                        // data.sort((a, b) => a.label - b.label);
+                            if (attr === 'price' || attr === 'Volume') {
+                                stock[attr] = +(stock[attr])
+                            }
+                        })
                     })
-                    vis.selected_stock_data.push(data_temp)
-                    resolve()
-                })})
-            }
-            vis.actions.push(action())
-        }
-
-        Promise.all(vis.actions).then(()=>{
-            vis.points_data=[]
-            for (let stock of vis.selected_stock_data){
-                for (let data of stock){
-                    vis.points_data.push(data)
                 }
 
+
+            });
+        }
+
+
+        set_lineChart_property(vis)
+
+        function set_lineChart_property(vis) {
+            vis.All_date = []
+            vis.All_price = []
+            for (let stock of Object.values(vis.selected_stock_data)) {
+                vis.All_date = vis.All_date.concat(d3.map(Object.values(stock), d => d.date))
+                vis.All_price = vis.All_price.concat(d3.map(Object.values(stock), d => d.price))
             }
-            console.log([d3.min(vis.points_data, d => d.Date), d3.max(vis.points_data, d => d.Date)])
-            console.log([d3.max(vis.points_data, d => d.Close),d3.min(vis.points_data, d => d.Close)])
-            vis.xScale.domain([d3.min(vis.points_data, d => d.Date), d3.max(vis.points_data, d => d.Date)]);
-            vis.yScale.domain([d3.max(vis.points_data, d => d.Close),d3.min(vis.points_data, d => d.Close)])// 调用Promise的all方法，传入方法数组，结束后执行then方法参数中的方法
+            vis.xScale_detail.domain([d3.min(vis.All_date), d3.max(vis.All_date)])
+            vis.yScale_detail.domain([d3.max(vis.All_price), d3.min(vis.All_price)])
+            vis.xScale_overview.domain([d3.min(vis.All_date), d3.max(vis.All_date)])
+            vis.yScale_overview.domain([d3.max(vis.All_price), d3.min(vis.All_price)])
             vis.renderVis()
-        })
-
-
-
-        // bar.then(()=>v)
-
-
-        // vis.selected_gender_data_id = vis.selected_gender_data.map(d => d.id)
+        }
 
 
     }
 
+
     renderVis() {
+
         let vis = this
-        let line = vis.drawing_area.selectAll('.line').data(vis.selected_stock_data)
 
-        let lineEnter = line.enter().append('path')
-        let lineMerge = lineEnter.merge(line)
+        vis.renderLine = function renderLine(area, data, x_scale, y_scale, if_text) {
+            let line = area.selectAll('.line').data(data)
 
-        lineMerge.datum(d => d)
-            .attr("fill", "none")
-            .attr('class', 'line')
-            .attr("stroke", "navy")
-            .attr("stroke-width", 2)
-            .attr("d", d3.line()
-                .x(function (d) {
-                    return vis.xScale(d.Date)
-                })
-                .y(function (d) {
-                    return vis.yScale(d.Close)
-                })
-            )
+            let lineEnter = line.enter().append('path')
+            let lineMerge = lineEnter.merge(line)
+            lineMerge.attr('class', d => 'line ' + vis.sector_data.filter(v => {
+                return v.symbol === d
+            })[0].sector.replace(' ', '_'))
 
 
-        // render_stock_point(vis.points_data)
+            lineMerge.datum(d => Object.values(vis.selected_stock_data[d]))
+                .attr("fill", "none")
+                .attr("stroke-width", 2)
+                .attr("d", d3.line()
+                    .x(function (d) {
+                        return x_scale(d.date)
+                    })
+                    .y(function (d) {
+                        return y_scale(d.price)
+                    })
+                ).call(vis.transition);
 
-        function render_stock_point(stock) {
+            line.exit().remove()
 
-            // Bind data to visual elements, update axes
-            // Update the axes/gridlines, remove the tick lines
+            if (if_text) {
+                render_text(vis.chart, data, x_scale, y_scale)
+            }
 
 
-            let circle = vis.drawing_area.selectAll('.point').data(stock)
-            let circleEnter = circle.enter()
-                .append('g')
-                .attr('class', 'point')
-            circleEnter.append('circle')
-            circleEnter.append('path')
-
-            let circleMerge = circleEnter.merge(circle)
-
-            circleMerge.select('circle')
-                .attr('r', 1)
-                .attr('cx', d => vis.xScale(d.Date))
-                .attr('cy', d => vis.yScale(d.Close))
-                .attr('fill', 'green')
-
-            circle.exit().remove();
         }
-            // .attr("fill", "none")
-            // .attr("stroke", "#69b3a2")
-            // .attr("stroke-width", 4)
-            // .attr("d", d3.line()
-            //     .x(function(d) { return vis.xScale(d.Date) })
-            //     .y(function(d) { return vis.yScale(d.Close) })
-            // )
+        // vis.renderLine(vis.drawing_area,Object.keys(vis.selected_stock_data),vis.xScale_detail,vis.yScale_detail,true)
+        vis.renderLine(vis.overview_area, Object.keys(vis.selected_stock_data), vis.xScale_overview, vis.yScale_overview, false)
 
 
-            // function setColor(d, selection) {
-            //     if (LeaderFilter!==null && LeaderFilter.id===(d.id)) {
-            //         selection.each(
-            //             function (d) {
-            //                 d3.select(this).classed('active', true);
-            //                 setSelectedColor(d, d3.select(this))
-            //             }
-            //         )
-            //     } else {
-            //         selection.each(
-            //             function (d) {
-            //                 d3.select(this).classed('active', false);
-            //                 if (vis.selected_gender_data.length !== 0) {
-            //                     setBlack_with_diff_opacity(d, d3.select(this))
-            //                 } else {
-            //                     setDefaultBlack(d, d3.select(this))
-            //                 }
-            //
-            //             })
-            //     }
-            // }
+        function render_text(area, data, x_scale, y_scale) {
+            let text = area.selectAll('.stock_name').data(data)
+            let textEnter = text.enter().append('text')
+            let textMerge = textEnter.merge(text)
+            let boundary_date = vis.get_closest_date(vis.xScale_detail.invert(x_scale.range()[1]), Object.values(vis.selected_stock_data))[0].date
+
+            textMerge.text(d => d)
+                .attr('class', d => 'stock_name ' + vis.sector_data.filter(v => {
+                    return v.symbol === d
+                })[0].sector.replace(' ', '_'))
+            // .datum(d => Object.values(vis.selected_stock_data[d]).filter(v=>
+            //     v.date===boundary_date))
+            textMerge.datum(d => Object.values(vis.selected_stock_data[d]).filter(v =>
+                v.date.toDateString() === boundary_date.toDateString()))
+                .attr('transform',
+                    d => `translate(${vis.chart_width + 20},${y_scale(d[0].price)})`)
+                .attr('text-anchor', 'middle')
+                .attr('vertical-align', 'text-bottom')
+                .attr('font-size', 12)
+
+            text.exit().remove()
+        }
 
 
-            // function setSelectedColor(d, selection) {
-            //     selection.attr("fill", "#FF9933")
-            //     selection.attr('fill-opacity', '0.7');
-            // }
-            //
-            // function setDefaultBlack(d, selection) {
-            //     selection.attr('fill', 'black')
-            //     selection.attr('fill-opacity', '0.7');
-            //     selection.each(function () {
-            //         d3.select(this.parentNode).classed('hidden', false)
-            //     })
-            // }
-            //
-            // function setBlack_with_diff_opacity(d, selection) {
-            //
-            //     selection.attr('fill', 'black')
-            //
-            //     if (vis.selected_gender_data_id.includes(d.id)) {
-            //         setDefaultBlack(d, selection)
-            //     } else {
-            //         selection.attr('fill-opacity', '0.15');
-            //         selection.each(function () {
-            //             d3.select(this.parentNode).on('mouseover', null).on('mousemove', null).on('click', null)
-            //             d3.select(this.parentNode).classed('hidden', true)
-            //         })
-            //     }
-            // }
-
-
-            // circleMerge.on('click', function (d) {
-            //
-            //     d3.select(this).each(function (d) {
-            //         let previous_id=null
-            //         if(LeaderFilter!==null){
-            //             previous_id=LeaderFilter.id
-            //             LeaderFilter=null
-            //             setColor(d, d3.select('#pid'+previous_id))
-            //         }
-            //         if (previous_id!==d.id) {
-            //             LeaderFilter=d;
-            //         }
-            //         setColor(d, d3.select(this).select('circle'))
-            //
-            //         filterData_lexis_by_scatter();// Call global function to update lexisChart
-            //
-            //     })
-            //
-            // })
-
-            // vis.chart.selectAll('.hidden').on('mouseover', null).on('mousemove', null).on('mouseleave', null).on('click', null)
-            vis.trackingArea.on('mouseenter', () => {
-                vis.tooltip.style('display', 'block');
+        vis.trackingArea.on('mouseenter', () => {
+            vis.tooltip.style('display', 'block');
+        })
+            .on('mouseleave', () => {
+                vis.tooltip.style('display', 'none');
             })
-                .on('mouseleave', () => {
-                    vis.tooltip.style('display', 'none');
-                })
-            //     .on('mouseover', (event, d) => {
-            //     // if (d.pcgdp !== null) {
-            //     //     pcgdp = '<li>GDP/capita: ' + parseInt(d.pcgdp) + '</li>'
-            //     // } else {
-            //     //     pcgdp = ''
-            //     // }
-            //     // d3.select('#pid' + d.id).classed("point-mouse", true)
-            //     d3.select('#tooltip')
-            //         .style('display', 'block')
-            //         .style('background', 'white')
-            //         // Format number with million and thousand separator
-            //         .html(`<div class="tooltip-label"></div><B>${d.Close}</B><br/>
-            //
-            //             </ul>`)
-            // })
-                .on('mousemove', (event) => {
-
-                    // Get date that corresponds to current mouse x-coordinate
-                    const xPos = d3.pointer(event, this)[0]; // First array element is x, second is y
-                    const date = vis.xScale.invert(xPos);
-                    vis.bisectDate = d3.bisector(d=>d.Date).left;
-                    // Find nearest data point
-
-                    let tempoo_data=[]
-                    for (let stock of vis.selected_stock_data) {
-                        const index = vis.bisectDate(stock, date, 1);
-                        const a = stock[index - 1];
-                        const b = stock[index];
-                        let d = b && (date - a.Date > b.Date - date) ? b : a;
-                        tempoo_data.push(d)
-                    }
+            .on('mousemove', (event) => {
 
 
-                    let tooltip_circle = vis.tooltip.selectAll('.tooltip_point').data(tempoo_data)
-                    let tooltip_circleEnter = tooltip_circle.enter().append('g').attr('class', 'tooltip_point')
-                    tooltip_circleEnter.append('circle')
-                    tooltip_circleEnter.append('text')
-                    let tooltip_circleMerge=tooltip_circleEnter.merge(tooltip_circle)
-                    tooltip_circleMerge.select('circle')
-                        .attr('r', 4)
-                        .attr('fill','red')
-                        .attr('transform', d=>`translate(${(vis.xScale(d.Date))},${(vis.yScale(d.Close))})`)
-                    tooltip_circleMerge.select('text')
-                        .attr('font-size','12')
-                         .attr('transform', d=>`translate(${vis.xScale(d.Date)},${(vis.yScale(d.Close) - 15)})`)
-                        .text(d=>d.Close)
+                // Find nearest data point
+
+                let closest_dates_all_stocks = vis.get_closest_date(vis.xScale_detail.invert(d3.pointer(event, this.svg.node())[0] - vis.config.margin.left),
+                    Object.values(vis.selected_stock_data))
 
 
-                    tooltip_circle.exit().remove()
-                })
+                let tooltip_circle = vis.tooltip.selectAll('.tooltip_point').data(closest_dates_all_stocks)
+                let tooltip_circleEnter = tooltip_circle.enter().append('g').attr('class', 'tooltip_point')
+                tooltip_circleEnter.append('circle')
+                tooltip_circleEnter.append('text')
+                let tooltip_circleMerge = tooltip_circleEnter.merge(tooltip_circle)
+                tooltip_circleMerge.select('circle')
+                    .attr('r', 4)
+                    .attr('fill', 'red')
+                    .attr('transform', d => `translate(${(vis.xScale_detail(d.date))},${(vis.yScale_detail(d.price))})`)
+                tooltip_circleMerge.select('text')
+                    .attr('font-size', '12')
+                    .attr('fill', 'white')
+                    .attr('transform', d => `translate(${vis.xScale_detail(d.date)},${(vis.yScale_detail(d.price))})`)
+                    .text(d => d.price)
+
+                tooltip_circle.exit().remove()
+            })
 
 
-
-
-
-        vis.xAxisG
-            .call(vis.xAxis)
-            .call(g => g.select('.domain').remove())
-
-        vis.yAxisG
-            .call(vis.yAxis)
+        vis.xAxisG_detail
+            .call(vis.xAxis_detail)
             .call(g => g.select('.domain').remove())
 
 
+        vis.xAxisG_overview
+            .call(vis.xAxis_overview)
+
+
+        vis.yAxisG_detail
+            .call(vis.yAxis_detail)
+            .call(g => g.select('.domain').remove())
+
+
+        // Update the brush and define a default position
+        const defaultBrushSelection = [vis.xScale_detail(vis.selectedDomain[0]), vis.xScale_detail(vis.selectedDomain[1])];
+        vis.brushG
+            .call(vis.brush)
+            .call(vis.brush.move, defaultBrushSelection);
+
+
+    }
+
+
+    /**
+     * React to brush events
+     */
+    brushed(selection) {
+
+        let vis = this;
+
+        let currentDomain = selection.map(vis.xScale_overview.invert, vis.xScale_overview)
+        // Check if the brush is still active or if it has been removed
+        if (selection) {
+            if (JSON.stringify(vis.selectedDomain) !== JSON.stringify(currentDomain)) {
+                // Convert given pixel coordinates (range: [x0,x1]) into a time period (domain: [Date, Date])
+                vis.selectedDomain = selection.map(vis.xScale_overview.invert, vis.xScale_overview);
+                let selectedDomain = vis.selectedDomain
+
+                // Update x-scale of the focus view accordingly
+                vis.xScale_detail.domain(selectedDomain);
+                let from = vis.get_closest_date(selectedDomain[0], Object.values(vis.selected_stock_data))[0].date
+                let end = vis.get_closest_date(selectedDomain[1], Object.values(vis.selected_stock_data))[0].date
+                filterDateRange(formatTime(from), formatTime(end))
+            } else {
+                vis.xScale_detail.domain(currentDomain);
+            }
+        } else {
+            // Reset x-scale of the focus view (full time period)
+            vis.xScale_detail.domain(vis.xScale_overview.domain());
+        }
+
+        // Redraw line and update x-axis labels in focus view
+        vis.renderLine(vis.drawing_area, Object.keys(vis.selected_stock_data), vis.xScale_detail, vis.yScale_detail, true)
+        vis.xAxisG_detail.call(vis.xAxis_detail);
     }
 
 }
