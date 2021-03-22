@@ -37,44 +37,80 @@ let data= [];
 //     bubbleChart = new BubbleChart({parentElement: '#bubbleChart',}, bubbleChartData);
 // });
 
-d3.csv('data/industryMC.csv').then(_data => {
+// d3.csv('data/industryMC.csv').then(_data => {
+//     data = _data;
+//     data.forEach(d => {
+//         d.marketcap = +d.marketcap;
+//     });
+//     treeMap = new TreeMap({ parentElement: "#treeMap" }, data);
+//
+//     d3.json('data/companyData.json').then(_stock => {
+//
+//         stockData = _stock;
+//
+//         getbubbleChartData("2020-09-11", "2020-09-18");
+//
+//         d3.select("#bubbleChart-reset-button_div")
+//             .html(`<button id="bubbleChart-reset-button">Reset Bubble Chart</button>`);
+//
+//         bubbleChart = new BubbleChart({parentElement: '#bubbleChart',}, bubbleChartData);
+//
+//         d3.csv('data/marketcap_preprocessed.csv').then(_companies => {
+//             d3.csv('data/SP500HistoricalData.csv').then((sp500_data_)=>{
+//                 sp500_data_.forEach(stock => {
+//                     Object.keys(stock).forEach(attr => {
+//                         if (attr === 'date') {
+//                             stock[attr] = parseTime(stock[attr])
+//                         }
+//                         if (attr === 'price' || attr === 'Volume') {
+//                             stock[attr] = +stock[attr]
+//                         }
+//                     })
+//                 })
+//                 companies = _companies
+//                 sp500_data= sp500_data_
+//                 lineChart = new LineChart({parentElement: '#lineChart',}, data);
+//             })
+//         })
+//
+//
+//     })
+// })
+
+// Avoid promise hell
+d3.json('data/companyData.json').then(_stock => {
+    stockData = _stock;
+    getbubbleChartData("2020-09-11", "2020-09-18");
+    return d3.csv('data/industryMC.csv');
+}).then(_data => {
     data = _data;
     data.forEach(d => {
         d.marketcap = +d.marketcap;
     });
+    return d3.csv('data/marketcap_preprocessed.csv');
+}).then(_companies => {
+    companies = _companies;
+    return d3.csv('data/SP500HistoricalData.csv');
+}).then(sp500_data_ => {
+    sp500_data= sp500_data_;
+
+    sp500_data_.forEach(stock => {
+        Object.keys(stock).forEach(attr => {
+            if (attr === 'date') {
+                stock[attr] = parseTime(stock[attr]);
+            }
+            if (attr === 'price' || attr === 'Volume') {
+                stock[attr] = +stock[attr];
+            }
+        });
+    });
+
+    d3.select("#bubbleChart-reset-button_div")
+        .html(`<button id="bubbleChart-reset-button">Reset Bubble Chart</button>`);
+
+    lineChart = new LineChart({parentElement: '#lineChart',}, data);
     treeMap = new TreeMap({ parentElement: "#treeMap" }, data);
-
-    d3.json('data/companyData.json').then(_stock => {
-
-        stockData = _stock;
-
-        getbubbleChartData("2020-09-11", "2020-09-18");
-
-        d3.select("#bubbleChart-reset-button_div")
-            .html(`<button id="bubbleChart-reset-button">Reset Bubble Chart</button>`);
-
-        bubbleChart = new BubbleChart({parentElement: '#bubbleChart',}, bubbleChartData);
-
-        d3.csv('data/marketcap_preprocessed.csv').then(_companies => {
-            d3.csv('data/SP500HistoricalData.csv').then((sp500_data_)=>{
-                sp500_data_.forEach(stock => {
-                    Object.keys(stock).forEach(attr => {
-                        if (attr === 'date') {
-                            stock[attr] = parseTime(stock[attr])
-                        }
-                        if (attr === 'price' || attr === 'Volume') {
-                            stock[attr] = +stock[attr]
-                        }
-                    })
-                })
-                companies = _companies
-                sp500_data= sp500_data_
-                lineChart = new LineChart({parentElement: '#lineChart',}, data);
-            })
-        })
-
-
-    })
+    bubbleChart = new BubbleChart({parentElement: '#bubbleChart',}, bubbleChartData);
 })
 
 
