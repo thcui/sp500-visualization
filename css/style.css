@@ -98,7 +98,10 @@ circle:hover{
 }
 circle.selected {
     stroke: white;
+<<<<<<< HEAD
+=======
     opacity:1;
+>>>>>>> master
 }
 .tick{
     color: white;
@@ -108,4 +111,18 @@ circle.selected {
     color: #4A5568;
     fill:  #4A5568;
     pointer-events: none;
+<<<<<<< HEAD
+}
+
+.s-shape{
+    clip-path: polygon(33% 14%,
+    61% 20%, 70% 4%,
+    35% 0, 20% 8%,
+    13% 21%, 18% 41%,
+    48% 54%, 40% 70%,
+    15% 66%, 15% 81%,
+    58% 80%, 67% 63%,
+    61% 41%, 31% 31%);
+=======
+>>>>>>> master
 }
