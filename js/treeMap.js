@@ -28,22 +28,6 @@ class TreeMap {
         vis.chartArea = vis.svg
             .append("g")
             .attr("transform", `translate(${vis.config.margin.left},${vis.config.margin.top})`);
-
-
-        vis.sector_data = Object.values(companies)
-        vis.sector={}
-
-
-        vis.name_size_scale= d3.scaleLinear()
-            .range([0, 10])
-            .domain([0,d3.max(vis.sector_data.map(v=>v.marketcap))])
-
-        for (let sector of ["Industrials", "Health Care", "Information Technology", "Communication Services",
-            "Consumer Discretionary", "Utilities", "Financials", "Materials", "Real Estate",
-            "Consumer Staples", "Energy"]){
-            vis.sector[sector]=vis.sector_data.filter(v=>v.sector===sector).map(v=>{return {'text':v.name,'value':vis.name_size_scale(v.marketcap)}})
-
-        }
         vis.renderVis()
 
     }
@@ -98,7 +82,7 @@ class TreeMap {
             .style("fill", function(d){ return vis.color(d.data.sector)})
             .on("mouseover",this.showToolTip)
             .on("mouseout",this.hideToolTip)
-            .on("click", this.selectSector)
+            .on("click", this.selectSector);
 
         // and to add the text labels
         vis.svg
@@ -117,30 +101,6 @@ class TreeMap {
             })
             .attr("font-size", "12px")
             .attr("fill", "white")
-            .append("svg")
-            .attr("width", d=>d.x1 - d.x0)
-            .attr("height", d=>d.y1 - d.y0)
-            .each(function (d){
-                vis.layout=d3.layout.cloud()
-                    .size([d.x1 - d.x0-30, d.y1 - d.y0-20])
-                    .words(vis.sector[d.id].map(function(v) {
-                        return Object.create(v) }))
-                    .padding(0)
-                    .rotate(() => 0)
-                    .font("sans-serif")
-                    .fontSize(d => Math.sqrt(d.value))
-                    .on("word", ({size, x, y, rotate, text}) => {
-                        vis.svg
-                            .append("g")
-                            .attr('transform', `translate(${d.x0-20},${d.y0+20})`)
-                            .append("text")
-                            .attr("font-size", size)
-                            .style("fill", "#C0C0C0")
-                            .attr("transform", `translate(${x},${y}) rotate(${rotate})`)
-                            .text(text);
-                    });
-                // .on("end",  function (v){vis.draw(v,vis,d.x0,d.y0)})
-                vis.layout.start();})
 
     }
     showToolTip(e,d){
@@ -174,21 +134,4 @@ class TreeMap {
         filterSector();
     }
 
-
-    draw(words,vis,x,y) {
-        let layout=vis.layout
-
-        vis.svg.append("g")
-            .attr('transform', `translate(${x+ layout.size()[0] / 2},${y+ layout.size()[1] / 2})`)
-            .selectAll("text")
-            .data(words)
-            .enter()
-            .append("text")
-            .style("font-size", function(d) { return d[1]; })
-            .style("fill", "#dddddd")
-            .attr("transform", function(d) {
-                return "translate(" + [x, y] + ")";
-            })
-            .text(function(d) { return d[0] });
-    }
 }
