@@ -88,7 +88,7 @@ class BubbleChart {
         vis.YaxisG.select(".domain").remove();
         vis.XaxisG.select(".domain").remove();
 
-        // vis.add_legend()
+        vis.add_legend()
         vis.renderVis();
     }
 
@@ -198,57 +198,111 @@ class BubbleChart {
 
     add_legend(){
         let vis=this
+        let pos_x=1100
+        let pos_y=200
 
-        // append the svg object to the body of the page
+        let height=100
 
-        // The scale you use for bubble size
-        vis.size = d3.scaleSqrt()
-            .domain(vis.radiusScale.domain())  // What's in the data, let's say it is percentage
-            .range([5,50])  // Size in pixel
 
-        // Add legend: circles
-        let valuesToShow = [5000000000000,1000000000000,100000000000]
-        vis.xCircle = 230
-        vis.xLabel = 380
-        vis.yCircle = 330
+            let svg = vis.chartArea.append('svg')
+                .style("overflow", "visible")
+                .datum([{x: pos_x, y: pos_y, r: 0, id:0}, {x: pos_x, y: pos_y, r: 0,id:1}]);
+            //
+            // let delta = svg.append("line")
+            //     .attr("stroke", "red")
+            //     .attr("stroke-width", 2)
+            //     .attr("stroke-linecap", "round");
 
-        vis.lengend= vis.svg.append('g').attr("transform", `translate(700,-150)`);
+            let e = svg.append("g");
 
-        vis.lengend
-            .selectAll("legend")
-            .data(valuesToShow)
-            .enter()
-            .append("circle")
-            .attr("cx", vis.xCircle)
-            .attr("cy", function(d){ return vis.yCircle - vis.size(d) } )
-            .attr("r", function(d){ return vis.size(d) })
-            .style("fill", "green")
-            .attr("stroke", "black")
+            e.append("circle")
+                .attr("fill", "darkgrey")
+                .attr("r",'80')
+                .attr("fill-opacity", 0.3)
+                .attr("stroke", "red")
+                // .call(d3.drag().on("drag", dragged_large));
 
-        // Add legend: segments
-        vis.lengend
-            .selectAll("legend")
-            .data(valuesToShow)
-            .enter()
-            .append("line")
-            .attr('x1', function(d){ return vis.xCircle + vis.size(d) } )
-            .attr('x2', vis.xLabel)
-            .attr('y1', function(d){ return vis.yCircle - vis.size(d) } )
-            .attr('y2', function(d){ return vis.yCircle - vis.size(d) } )
-            .attr('stroke', 'white')
-            .style('stroke-dasharray', ('2,2'))
+            // e.append("circle")
+            //     .attr("fill", "red")
+            //     .attr("r", 3.5);
 
-        // Add legend: labels
-        vis.lengend
-            .selectAll("legend")
-            .data(valuesToShow)
-            .enter()
-            .append("text")
-            .attr('x', vis.xLabel)
-            .attr('y', function(d){ return vis.yCircle - vis.size(d) } )
-            .text( function(d){ return d } )
-            .style("font-size", 10)
-            .attr('stroke', 'white')
-            .attr('alignment-baseline', 'middle')
+            let circle = svg.append("g")
+                .selectAll("g")
+                .data(d => d)
+                .enter().append("g")
+                .attr("transform", d => `translate(${d.x},${d.y})`)
+                .each(function (d){
+                    if(d.id===0){
+                        d3.select(this).call(d3.drag().on("drag", dragged));
+                        d3.select(this).append("path")
+                            .attr("fill", "white")
+                            .attr("transform", `scale(0.05)`)
+                            .attr("d", "M0,-300l100,100h-50v150h150v-50L300,0l-100,100v-50h-150v150h50L0,300l-100,-100h50v-150h-150v50L-300,0l100,-100v50h150v-150h-50z")
+
+                    }})
+
+            circle.append("circle")
+                .attr("id", "circle_minimum")
+                .attr("cursor", "move")
+                .attr("stroke", "black")
+                .attr("fill-opacity", 0.3)
+                .attr("r", d => d.r)
+                .call(d3.drag().on("drag", null));
+
+
+            function dragged(event) {
+                let d = d3.select(this).datum();
+                d.x = Math.max(0, Math.min(pos_x, event.x));
+                d.y = Math.max(0, Math.min(pos_y, event.y));
+                update();
+            }
+
+            function update() {
+                let circles = svg.datum(),
+                    ad = circles[0],
+                    bd = circles[1],
+                    dx = bd.x - ad.x,
+                    dy = bd.y - ad.y,
+                    l = Math.sqrt(dx * dx + dy * dy);
+
+                circle
+                    .attr("transform", d => `translate(${d.x},${d.y})`);
+
+                if (vis.encloses(ad, bd) || vis.encloses(bd, ad)) {
+                    e.style("display", "none");
+                    return;
+                }
+
+                let ed = vis.encloseBasis2(ad, bd);
+
+                e
+                    .style("display", null)
+                    .attr("transform",`translate(${ed.x},${ed.y})`)
+                    .select("circle")
+                    .attr("r", ed.r);
+            }
+
+            update();
+
+            return svg.node();
+
+    }
+
+     encloseBasis2(a, b) {
+        const x1 = a.x, y1 = a.y, r1 = a.r;
+        const x2 = b.x, y2 = b.y, r2 = b.r;
+        const x21 = x2 - x1, y21 = y2 - y1, r21 = r2 - r1;
+        const l = Math.sqrt(x21 * x21 + y21 * y21);
+        return {
+            x: (x1 + x2 + x21 / l * r21) / 2,
+            y: (y1 + y2 + y21 / l * r21) / 2,
+            r: (l + r1 + r2) / 2
+        };
+    }
+    encloses(a, b) {
+        const dr = a.r - b.r;
+        const dx = b.x - a.x;
+        const dy = b.y - a.y;
+        return dr >= 0 && dr * dr > dx * dx + dy * dy;
     }
 }
