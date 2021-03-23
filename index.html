@@ -6,6 +6,10 @@
 </head>
 <body>
     <text id="title">S&P 500 Visualization</text>
+    <div id="search_bar">
+        <label for="search"></label><input id="search" type="text" name="searchActor" placeholder="Search Stocks" autocomplete="yes">
+    <input id="actor-submit" type="submit"/>
+    </div>
     <div>
         <div id="first_set">
             <div id="left">
@@ -23,6 +27,7 @@
         </div>
     </div>
     <div id="tooltip"></div>
+
     <script src="js/d3.v6.min.js"></script>
     <script src="js/d3.layout.cloud.js"></script>
     <script src="js/bubbleChart.js"></script>

@@ -98,10 +98,8 @@ circle:hover{
 }
 circle.selected {
     stroke: white;
-<<<<<<< HEAD
-=======
     opacity:1;
->>>>>>> master
+
 }
 .tick{
     color: white;
@@ -111,8 +109,33 @@ circle.selected {
     color: #4A5568;
     fill:  #4A5568;
     pointer-events: none;
-<<<<<<< HEAD
+
 }
+#search_bar{
+    position: absolute;
+    display:inline-flex;
+    right: 30px;
+}
+input[type='text'] {
+    background-color: lightgrey;
+    padding: 10px;
+    font-size: 16px;
+    border: 0;
+    border-radius: 5px;
+}
+
+input[type='submit'] {
+    background-color: DodgerBlue;
+    color: #dddddd;
+    padding: 10px;
+    font-size: 16px;
+    border: 0;
+    border-radius: 5px;
+    margin-left: 2%;
+    cursor: pointer;
+}
+
+
 
 .s-shape{
     clip-path: polygon(33% 14%,
@@ -123,6 +146,5 @@ circle.selected {
     15% 66%, 15% 81%,
     58% 80%, 67% 63%,
     61% 41%, 31% 31%);
-=======
->>>>>>> master
+
 }
