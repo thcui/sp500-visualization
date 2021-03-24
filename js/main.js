@@ -162,3 +162,4 @@ function filterDateRange(start_date, end_date) {
 function  updateLineChart(){
     lineChart.updateVis();
 }
+

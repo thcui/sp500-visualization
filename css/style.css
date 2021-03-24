@@ -135,6 +135,18 @@ input[type='submit'] {
     cursor: pointer;
 }
 
+#bubbleChart-reset-button{
+    background-color: DodgerBlue;
+    color: #dddddd;
+    padding: 10px;
+    font-size: 16px;
+    border: 0;
+    border-radius: 5px;
+    margin-left: 2%;
+    cursor: pointer;
+
+}
+
 
 
 .s-shape{
