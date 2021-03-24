@@ -108,7 +108,7 @@ d3.json('data/companyData.json').then(_stock => {
     });
 
     d3.select("#bubbleChart-reset-button_div")
-        .html(`<button id="bubbleChart-reset-button">Reset Bubble Chart</button>`);
+        .html(`<button id="bubbleChart-reset-button">Reset Stocks Selection</button>`);
 
 
 
