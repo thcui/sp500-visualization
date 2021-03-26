@@ -157,7 +157,7 @@ class LineChart {
             });
 
 
-        vis.sector_data = companies
+        vis.sector_data = companies_data
         vis.sector_data.push({
             "": "0",
             "symbol": "SP500",

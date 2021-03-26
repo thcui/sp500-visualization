@@ -3,6 +3,7 @@ const parseTime = d3.timeParse("%Y-%m-%d");
 const formatTime = d3.timeFormat("%Y-%m-%d");
 
 let stockData = [];
+let companies_data=[]
 let bubbleChartData = [];
 let lineChart,treeMap,bubbleChart
 let selected_stock_symbol=[]
@@ -91,7 +92,7 @@ d3.json('data/companyData.json').then(_stock => {
     });
     return d3.csv('data/marketcap_preprocessed.csv');
 }).then(_companies => {
-    companies = _companies;
+    companies_data = _companies;
     return d3.csv('data/SP500HistoricalData.csv');
 }).then(sp500_data_ => {
     sp500_data= sp500_data_;
@@ -107,14 +108,31 @@ d3.json('data/companyData.json').then(_stock => {
         });
     });
 
-    d3.select("#bubbleChart-reset-button_div")
-        .html(`<button id="bubbleChart-reset-button">Reset Stocks Selection</button>`);
-
 
 
     treeMap = new TreeMap({ parentElement: "#treeMap" }, data);
     bubbleChart = new BubbleChart({parentElement: '#bubbleChart',}, bubbleChartData);
     lineChart = new LineChart({parentElement: '#lineChart',}, data);
+    let a =companies_data
+
+    d3.select("#bubbleChart-reset-button_div")
+        .html(`<button id="bubbleChart-reset-button">Reset Stocks Selection</button>`);
+    $(() => {
+        const submitSearch = () => {
+            let searchValue = $('#search').val()
+            let searched_company=companies_data.filter(v=>{return v.name===searchValue})[0]
+            if(searched_company){
+            let symbol=searched_company.symbol
+            selected_stock_symbol.push(symbol)
+            lineChart.updateVis()
+            }
+        };
+        $('#search').autocomplete({
+            source:companies_data.map(v=>v.name)
+        });
+        $('#submit').click(submitSearch);
+    })
+
 
 
 

@@ -147,6 +147,20 @@ input[type='submit'] {
 
 }
 
+.ui-menu {
+    position: relative;
+    padding: 0;
+    display: inline-block;
+    cursor: pointer;
+    background-color: #dddddd;
+    list-style-type: none;
+    border-radius: 5px;
+    color: #3182CE;
+}
+
+.ui-helper-hidden-accessible {
+    display: none;
+}
 
 
 .s-shape{
