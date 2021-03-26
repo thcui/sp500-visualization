@@ -1,16 +1,14 @@
-
 const parseTime = d3.timeParse("%Y-%m-%d");
 const formatTime = d3.timeFormat("%Y-%m-%d");
 
 let stockData = [];
-let companies_data=[]
+let companies_data = []
 let bubbleChartData = [];
-let lineChart,treeMap,bubbleChart
-let selected_stock_symbol=[]
+let lineChart, treeMap, bubbleChart
+let selected_stock_symbol = []
 let sectorFilter = [];
-let sp500_data= [];
-let data= [];
-
+let sp500_data = [];
+let data = [];
 
 
 //如何更新lineChart
@@ -95,7 +93,7 @@ d3.json('data/companyData.json').then(_stock => {
     companies_data = _companies;
     return d3.csv('data/SP500HistoricalData.csv');
 }).then(sp500_data_ => {
-    sp500_data= sp500_data_;
+    sp500_data = sp500_data_;
 
     sp500_data_.forEach(stock => {
         Object.keys(stock).forEach(attr => {
@@ -109,42 +107,43 @@ d3.json('data/companyData.json').then(_stock => {
     });
 
 
-
-    treeMap = new TreeMap({ parentElement: "#treeMap" }, data);
+    treeMap = new TreeMap({parentElement: "#treeMap"}, data);
     bubbleChart = new BubbleChart({parentElement: '#bubbleChart',}, bubbleChartData);
     lineChart = new LineChart({parentElement: '#lineChart',}, data);
-    let a =companies_data
+    let a = companies_data
 
     d3.select("#bubbleChart-reset-button_div")
         .html(`<button id="bubbleChart-reset-button">Reset Stocks Selection</button>`);
     $(() => {
         const submitSearch = () => {
             let searchValue = $('#search').val()
-            let searched_company=companies_data.filter(v=>{return v.name===searchValue})[0]
-            if(searched_company){
-            let symbol=searched_company.symbol
-            selected_stock_symbol.push(symbol)
-            lineChart.updateVis()
+            let searched_company = companies_data.filter(v => {
+                return v.name === searchValue
+            })[0]
+            if (searched_company) {
+                let symbol = searched_company.symbol
+                selected_stock_symbol.push(symbol)
+                lineChart.updateVis()
+            }
+            else {
+                window.alert('No Company Found')
             }
         };
         $('#search').autocomplete({
-            source:companies_data.map(v=>v.name)
+            source: companies_data.map(v => v.name)
         });
         $('#submit').click(submitSearch);
     })
 
 
-
-
 });
 
 
-
-function getbubbleChartData(start_date, end_date){
+function getbubbleChartData(start_date, end_date) {
     bubbleChartData = [];
-    for(var comp of Object.keys(stockData)){
-        if(stockData[comp]["historical"][start_date]!== undefined
-            && stockData[comp]["historical"][end_date]!== undefined){
+    for (var comp of Object.keys(stockData)) {
+        if (stockData[comp]["historical"][start_date] !== undefined
+            && stockData[comp]["historical"][end_date] !== undefined) {
             let obj = {};
             obj["symbol"] = comp;
             obj["name"] = stockData[comp]["name"];
@@ -157,14 +156,15 @@ function getbubbleChartData(start_date, end_date){
         }
     }
 }
-function filterSector(){
-    if(sectorFilter.length!==0){
+
+function filterSector() {
+    if (sectorFilter.length !== 0) {
         console.log(sectorFilter);
         console.log(bubbleChartData);
         bubbleChart.data = bubbleChartData.filter(d => sectorFilter.includes(d.industry));
         console.log(bubbleChart.data);
         bubbleChart.updateVis();
-    }else{
+    } else {
         //no filter applied, get original data
         bubbleChart.data = bubbleChartData;
         bubbleChart.updateVis();
@@ -177,7 +177,7 @@ function filterDateRange(start_date, end_date) {
     filterSector();
 }
 
-function  updateLineChart(){
+function updateLineChart() {
     lineChart.updateVis();
 }
 
