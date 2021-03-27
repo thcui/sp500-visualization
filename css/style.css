@@ -56,9 +56,15 @@ body{
      stroke: #B7791F
 
  }
-#lineChart .Energy{
+#lineChart .Energy {
     stroke: #E0CE61
+}
 
+
+
+#lineChart .Your_Busket{
+    stroke: #dddddd;
+    stroke-dasharray: 1px;
 }
 
 #title{
