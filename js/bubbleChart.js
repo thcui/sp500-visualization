@@ -32,8 +32,8 @@ class BubbleChart {
             .attr('width', vis.custom_container_width)
             .attr('height', vis.innerHeight)
             .attr("fill", '#dddddd')
-            .attr("rx", 6)
-            .attr("ry", 6)
+            .attr("rx", 10)
+            .attr("ry", 10)
             .attr("fill-opacity", '0.5')
 
         vis.custom_selection=[]
