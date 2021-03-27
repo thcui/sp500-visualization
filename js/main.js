@@ -117,7 +117,8 @@ d3.json('data/companyData.json').then(_stock => {
     treeMap = new TreeMap({parentElement: "#treeMap"}, data);
     bubbleChart = new BubbleChart({parentElement: '#bubbleChart',}, bubbleChartData);
     lineChart = new LineChart({parentElement: '#lineChart',}, data);
-    bubbleChart.initialZoom();
+    // bubbleChart.initialZoom();
+
     let a = companies_data
 
     $(() => {
