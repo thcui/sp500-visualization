@@ -107,14 +107,15 @@ d3.json('data/companyData.json').then(_stock => {
         });
     });
 
+    // reset button must render before chart initialization
+    d3.select("#bubbleChart-reset-button_div")
+        .html(`<button id="bubbleChart-reset-button">Reset Stocks Selection</button>`);
 
     treeMap = new TreeMap({parentElement: "#treeMap"}, data);
     bubbleChart = new BubbleChart({parentElement: '#bubbleChart',}, bubbleChartData);
     lineChart = new LineChart({parentElement: '#lineChart',}, data);
     let a = companies_data
 
-    d3.select("#bubbleChart-reset-button_div")
-        .html(`<button id="bubbleChart-reset-button">Reset Stocks Selection</button>`);
     $(() => {
         const submitSearch = () => {
             let searchValue = $('#search').val()

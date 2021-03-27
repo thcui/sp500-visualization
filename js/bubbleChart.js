@@ -153,10 +153,10 @@ class BubbleChart {
                                 .on('click',vis.clickBubble )
                         })
                         .on("end", dragend)
-                )
+                );
 
 
-            function dragend(event,d){
+        function dragend(event,d){
             let text
             if (clone.attr("cx") >= vis.custom_container_x && clone.attr("cy")  >= vis.custom_container_y) {
                 text=vis.custom_container.append('text').text(d.symbol).attr("transform",`translate(${clone.attr("cx")},${clone.attr("cy")+10})`).attr('color','#000000').attr('font-size','20')
@@ -199,10 +199,11 @@ class BubbleChart {
 
         // append zoom to svg
         vis.svg.call(vis.zoom);
-
+        console.log('ww')
         // reset button
         d3.select("#bubbleChart-reset-button")
             .on("click", function () {
+                console.log("hh");
                 vis.resetZoom();
                 vis.resetSelectedStockSymbol();
             });
