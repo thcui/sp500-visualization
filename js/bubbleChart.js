@@ -12,6 +12,8 @@ class BubbleChart {
     initVis(){
         let vis = this;
 
+        vis.initFlag = true;
+
         vis.custom_container_y=100
         vis.custom_container_width=300
 
@@ -99,7 +101,13 @@ class BubbleChart {
             .scaleExtent([1, 40])
             .translateExtent([[-100,-100],[vis.config.containerWidth+100,vis.config.containerHeight+100]])
             .on("zoom", function (event) {
-                vis.zoomed(event,vis);
+                vis.zoomed(event);
+            });
+        vis.autoZoom = d3.zoom()
+            .scaleExtent([1, 40])
+            .translateExtent([[-100,-100],[vis.config.containerWidth+100,vis.config.containerHeight+100]])
+            .on("zoom", function (event) {
+                vis.autoZoomed(event);
             });
 
         vis.updateVis();
@@ -108,6 +116,9 @@ class BubbleChart {
 
     updateVis(){
         let vis = this;
+
+        vis.resetZoom();
+
         vis.xScale.domain(d3.extent(vis.data, d => d.marketcap));
         vis.yScale.domain(d3.extent(vis.data, d => d.perChange));
         vis.radiusScale.domain(d3.extent(vis.data, d => d.marketcap));
@@ -117,30 +128,47 @@ class BubbleChart {
         vis.YaxisG.select(".domain").remove();
         vis.XaxisG.select(".domain").remove();
 
-
         vis.renderVis();
     }
 
     renderVis(){
         let vis = this;
         let original;
-        let clone
+        let clone;
 
-        vis.circle = vis.chart.selectAll("circle").data(vis.data)
-            .join("circle"
-                // enter => enter.append("circle"),
-                // update => update,
-                // exit => exit
+        let enterDelay = vis.initFlag ? 1050 : 0;
+
+
+        // Bond transition to circles
+        vis.circle = vis.chart.selectAll("circle").data(vis.data, d => d.symbol)
+            .join(
+                enter => enter
+                    .append("circle")
+                    .attr("cx", (d) => vis.xScale(d.marketcap))
+                    .attr("cy", (d) => vis.yScale(d.perChange))
+                    .attr("r", 0)
+                    .attr("fill", (d) => vis.color(d.industry))
+                    .attr("opacity", 0.7)
+                    .attr("class", (d) => `${d.industry} ${d.symbol} ${
+                        selected_stock_symbol.includes(d.symbol) ? 'selected' : ''
+                    }`)
+                    .transition().delay(enterDelay).duration(300)
+                    .attr("r", (d) => vis.radiusScale(d.marketcap))
+                    .selection()
+                    ,
+                update => update
+                    .transition().duration(300)
+                    .attr("cx", (d) => vis.xScale(d.marketcap))
+                    .attr("cy", (d) => vis.yScale(d.perChange))
+                    .attr("r", (d) => vis.radiusScale(d.marketcap))
+                    .selection(),
+                exit => exit
+                    .transition()
+                    .duration(300)
+                    .attr("r", 0)
+                    .remove()
             );
         vis.circle
-            .attr("cx", (d) => vis.xScale(d.marketcap))
-            .attr("cy", (d) => vis.yScale(d.perChange))
-            .attr("r", (d) => vis.radiusScale(d.marketcap))
-            .attr("fill", (d) => vis.color(d.industry))
-            .attr("opacity", 0.7)
-            .attr("class", (d) => `${d.industry} ${d.symbol} ${
-                selected_stock_symbol.includes(d.symbol) ? 'selected' : ''
-            }`)
             .on("mouseover",this.showToolTip)
             .on("mouseout",this.hideToolTip)
             .on('click',this.clickBubble )
@@ -206,8 +234,14 @@ class BubbleChart {
 
         }
 
+        if (enterDelay !== 0) {
+            vis.initialZoom();
+            vis.initFlag = false;
+        }
+
         // append zoom to svg
         vis.svg.call(vis.zoom);
+
 
         // reset button
         d3.select("#bubbleChart-reset-button")
@@ -261,11 +295,24 @@ class BubbleChart {
         vis.XaxisG.select(".domain").remove();
     }
 
+    autoZoomed(e) {
+        let vis = this;
+        vis.radiusScale.range([5/e.transform.k,50/e.transform.k]);
+        vis.circle
+            .attr("transform", e.transform)
+            .attr("r", (d) => vis.radiusScale(d.marketcap));
+
+        vis.XaxisG.transition().duration(30).call(vis.Xaxis.scale(e.transform.rescaleX(vis.xScale)));
+        vis.YaxisG.transition().duration(30).call(vis.Yaxis.scale(e.transform.rescaleY(vis.yScale)));
+        vis.YaxisG.select(".domain").remove();
+        vis.XaxisG.select(".domain").remove();
+    }
+
     resetZoom() {
         let vis = this;
         vis.svg.transition()
             .duration(500)
-            .call(vis.zoom.transform, d3.zoomIdentity);
+            .call(vis.autoZoom.transform, d3.zoomIdentity);
     }
 
     resetSelectedStockSymbol() {
@@ -286,7 +333,7 @@ class BubbleChart {
         // go back to normal
         vis.svg
             .transition()
-            .delay(100)
+            .delay(1000)
             .duration(1000)
             .ease(d3.easeQuadInOut)
             .call(vis.zoom.transform, d3.zoomIdentity)
