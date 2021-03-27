@@ -2,9 +2,9 @@ class BubbleChart {
     constructor(_config, _data) {
         this.config = {
             parentElement: _config.parentElement,
-            containerWidth: 1200,
+            containerWidth: 1300,
             containerHeight: 500,
-            margin: {top: 50, right: 30, bottom: 50, left: 60},
+            margin: {top: 50, right: 30, bottom: 50, left: 40},
         };
         this.data = _data
         this.initVis();
@@ -13,13 +13,13 @@ class BubbleChart {
         let vis = this;
 
         vis.custom_container_y=100
-        vis.custom_container_width=200
+        vis.custom_container_width=300
 
         // Calculate inner chart size. Margin specifies the space around the actual chart.
         vis.innerWidth = vis.config.containerWidth - vis.config.margin.left - vis.config.margin.right-vis.custom_container_width;
         vis.innerHeight = vis.config.containerHeight - vis.config.margin.top - vis.config.margin.bottom;
 
-        vis.custom_container_x=vis.innerWidth+100
+        vis.custom_container_x=vis.innerWidth+50
         // Define size of SVG drawing area
         vis.svg = d3
             .select(vis.config.parentElement)
@@ -32,10 +32,12 @@ class BubbleChart {
             .attr('width', vis.custom_container_width)
             .attr('height', vis.innerHeight)
             .attr("fill", '#dddddd')
-
+            .attr("rx", 6)
+            .attr("ry", 6)
             .attr("fill-opacity", '0.5')
 
         vis.custom_selection=[]
+        vis.clones={}
 
         // Append group element that will contain our actual chart
         // and position it according to the given margin config
@@ -46,7 +48,7 @@ class BubbleChart {
         // Initialize clipping mask that covers the whole chart
         vis.chartArea.append('defs')
             .append('clipPath')
-            // .attr('id', 'chart-mask')
+            .attr('id', 'chart-mask')
             .append('rect')
             .attr('width', vis.innerWidth)
             .attr('y', 0)
@@ -113,6 +115,7 @@ class BubbleChart {
 
     renderVis(){
         let vis = this;
+        let orginal;
         let clone
         vis.circle = vis.chart.selectAll("circle").data(vis.data).join("circle");
         vis.circle
@@ -126,89 +129,73 @@ class BubbleChart {
             }`)
             .on("mouseover",this.showToolTip)
             .on("mouseout",this.hideToolTip)
-            .on('click', function (event, d) {
-                const isSelected = (selected_stock_symbol.includes(d.symbol));
-                d3.select(this).classed("selected", !isSelected);
-                if(isSelected){
-                    selected_stock_symbol=selected_stock_symbol.filter(v=>{return (v!==d.symbol)})
-                }else{
-                    selected_stock_symbol.push(d.symbol)
-                }
-                updateLineChart();
-            })
+            .on('click',this.clickBubble )
             .call(
-                // function (d){
-                //     let original_x=d3.select(this).attr('cx')
-                //     let original_y=d3.select(this).attr('cx')
                     d3.drag()
                         .on("start", function (event,d){
-                            clone=d3.select(this).clone().attr('cx',0).attr('cy',0)
+                            orginal=d3.select(this)
+                            clone=d3.select(this)
+                                .clone()
+                                .attr('cx',-100)
+                                .attr('cy',-100)
+                            clone.attr('clip-path',"polygon(21% 51%, 41% 78%, 78% 26%, 89% 38%, 42% 97%, 11% 62%)")
+
+                            clone.each(function() { vis.custom_container.append(() => this); });
+
+
                         })
                         .on("drag", function (event,d){
-                            d3.select(this).attr( "opacity", 0.1)
-                            clone.attr("cx", d.x = event.x).attr("cy", d.y = event.y)
-                            })
-                        .on("end", function (event,d) {
-                            let orginal=d3.select(this)
-                                 if (clone.attr("cx") >= vis.custom_container_x && clone.attr("cx")  >= vis.custom_container_y) {
-                                     clone.call( d3.drag().on("drag", function (event,d){
-                                         d3.select(this).attr("cx", d.x = event.x).attr("cy", d.y = event.y)
-                                     }). on("end", function (event,d){
-                                         if (d3.select(this).attr("cx") >= vis.custom_container_x && d3.select(this)  >= vis.custom_container_y){
 
-                                         }
-                                         else{
-                                             custom_data=custom_data.filter(v=>{return v!==d.symbol})
-                                             if(custom_data.length===0){
-                                                         selected_stock_symbol=selected_stock_symbol.filter(v=>{return v!=='Your_Busket'})
-                                                     }
-                                             clone.remove()
-                                             lineChart.updateVis()
-                                         }
-
-                                     }))
-                                     custom_data.push(d.symbol)
-                                     selected_stock_symbol.push('Your_Busket')
-                                     lineChart.updateVis()
-                                 } else {
-
-                                     clone.remove()
-                                 }
-                            d3.select(this).attr( "opacity", 0.7)
-                                     // custom_data=custom_data.filter(v=>{return v!==d.symbol})
-                            //         // if(custom_data.length===0){
-                            //         //     selected_stock_symbol=selected_stock_symbol.filter(v=>{return v!=='Your_Busket'})
-                            //         // }
-                            //         // d3.select(this).attr("cx", (d) => vis.xScale(d.marketcap))
-                            //         //     .attr("cy", (d) => vis.yScale(d.perChange))
-                            //         // lineChart.updateVis()
-                            //     }
-                            //  }
-                            //  )
+                            clone.attr("cx",  event.x).attr("cy",  event.y)
+                                .attr('class','custom')
+                                .on("mouseover",vis.showToolTip)
+                                .on("mouseout",vis.hideToolTip)
+                                .on('click',vis.clickBubble )
                         })
+                        .on("end", dragend)
                 )
 
 
-        // function dragged(event) {
-        //     let d = d3.select(this).datum();
-        //     d.x = Math.max(0, Math.min(pos_x, event.x));
-        //     d.y = Math.max(0, Math.min(pos_y, event.y));
-        // }
+            function dragend(event,d){
+            let text
+            if (clone.attr("cx") >= vis.custom_container_x && clone.attr("cy")  >= vis.custom_container_y) {
+                text=vis.custom_container.append('text').text(d.symbol).attr("transform",`translate(${clone.attr("cx")},${clone.attr("cy")+10})`).attr('color','#000000').attr('font-size','20')
+                clone.call( d3.drag().on("drag", function (event,d){
+                    d3.select(this).attr("cx", event.x).attr("cy",  event.y)
+                }). on("end", function (event,d){
+                    if (d3.select(this).attr("cx")>= vis.custom_container_x && d3.select(this).attr("cy")>= vis.custom_container_y){
+                        text.remove()
+                        text=vis.custom_container.append('text').text(d.symbol).attr("transform",`translate(${clone.attr("cx")},${clone.attr("cy")+10})`).attr('color','#000000').attr('font-size','20')
 
-        function abc (event){
-            let d = d3.select(this).datum();
-            d.cx = event.x
-            d.cy = event.y
-            if(event.x>900 && event.y>100){
-                console.log('YEP')
+                    }
+                    else{
+                        custom_data=custom_data.filter(v=>{return v!==d.symbol})
+                        if(custom_data.length===0){
+                            selected_stock_symbol=selected_stock_symbol.filter(v=>{return v!=='Yours'})
+                        }
+                       // orginal.call(d3.drag().on("end", dragend))
+                       // orginal .attr("cx", (d) => vis.xScale(d.marketcap))
+                       //     .attr("cy", (d) => vis.yScale(d.perChange))
+                        d3.select(this).remove()
+                        text.remove()
+                        lineChart.updateVis()
+                    }
+                }))
+                custom_data.push(d.symbol)
+                selected_stock_symbol.push('Yours')
+                lineChart.updateVis()
+            } else {
+
+                // orginal .attr("cx", (d) => vis.xScale(d.marketcap))
+                //     .attr("cy", (d) => vis.yScale(d.perChange))
+                clone.remove()
             }
+
         }
 
-        // vis.circle.each(function (d) {
-        //     if(selected_stock_symbol.includes(d.symbol)){
-        //         d3.select(this).classed("selected", true);
-        //     }
-        // });
+
+
+
 
         // append zoom to svg
         vis.svg.call(vis.zoom);
@@ -222,6 +209,19 @@ class BubbleChart {
 
         vis.initialZoom();
 
+    }
+
+    clickBubble (event, d){
+        {
+            const isSelected = (selected_stock_symbol.includes(d.symbol));
+            d3.select(this).classed("selected", !isSelected);
+            if(isSelected){
+                selected_stock_symbol=selected_stock_symbol.filter(v=>{return (v!==d.symbol)})
+            }else{
+                selected_stock_symbol.push(d.symbol)
+            }
+            updateLineChart();
+        }
     }
 
     showToolTip(e,d){

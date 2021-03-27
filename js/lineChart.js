@@ -166,9 +166,9 @@ class LineChart {
         })
         vis.sector_data.push({
             "": "0",
-            "symbol": "Your_Busket",
-            "name": "Your_Busket",
-            "sector": "Your_Busket"
+            "symbol": "Yours",
+            "name": "Yours",
+            "sector": "Yours"
         })
 
         vis.get_closest_date = function get_closest_date(date, data) {
@@ -205,7 +205,7 @@ class LineChart {
 
         } else {
             selected_stock_symbol.forEach(stock_symbol => {
-                if(stock_symbol==='Your_Busket'){
+                if(stock_symbol==='Yours'){
                     let total={}
                     custom_data.forEach(stock_symbol => {
                         for (let i of Object.keys(stockData[stock_symbol].historical))
@@ -221,7 +221,7 @@ class LineChart {
 
                         }
                     })
-                    vis.selected_stock_data['Your_Busket']=total
+                    vis.selected_stock_data['Yours']=total
                 }
                 else {
                     if (stockData[stock_symbol]) {
