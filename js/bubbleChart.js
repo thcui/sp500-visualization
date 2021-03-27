@@ -113,6 +113,7 @@ class BubbleChart {
 
     renderVis(){
         let vis = this;
+        let clone
         vis.circle = vis.chart.selectAll("circle").data(vis.data).join("circle");
         vis.circle
             .attr("cx", (d) => vis.xScale(d.marketcap))
@@ -140,27 +141,51 @@ class BubbleChart {
                 //     let original_x=d3.select(this).attr('cx')
                 //     let original_y=d3.select(this).attr('cx')
                     d3.drag()
-                        .on("start", function (event,d){d3.select(this).raise().attr("stroke", "black")})
-                        .on("drag", function (event,d){d3.select(this).attr("cx", d.x = event.x).attr("cy", d.y = event.y)})
-                        .on("end", function (event,d){
-                            d3.select(this).each(
-                                function (d) {
-                                    if (d.x >= vis.custom_container_x && d.y >= vis.custom_container_y) {
-                                        custom_data.push(d.symbol)
-                                        selected_stock_symbol.push('Your_Busket')
-                                        lineChart.updateVis()
-                                    } else {
-                                        custom_data=custom_data.filter(v=>{return v!==d.symbol})
-                                        if(custom_data.length===0){
-                                            selected_stock_symbol=selected_stock_symbol.filter(v=>{return v!=='Your_Busket'})
-                                        }
-                                        d3.select(this).attr("cx", (d) => vis.xScale(d.marketcap))
-                                            .attr("cy", (d) => vis.yScale(d.perChange))
-                                        lineChart.updateVis()
-                                    }
-                                }
-                        )}
-                )
+                        .on("start", function (event,d){
+                            clone=d3.select(this).clone().attr('cx',0).attr('cy',0)
+                        })
+                        .on("drag", function (event,d){
+                            d3.select(this).attr( "opacity", 0.1)
+                            clone.attr("cx", d.x = event.x).attr("cy", d.y = event.y)
+                            })
+                        .on("end", function (event,d) {
+                            let orginal=d3.select(this)
+                                 if (clone.attr("cx") >= vis.custom_container_x && clone.attr("cx")  >= vis.custom_container_y) {
+                                     clone.call( d3.drag().on("drag", function (event,d){
+                                         d3.select(this).attr("cx", d.x = event.x).attr("cy", d.y = event.y)
+                                     }). on("end", function (event,d){
+                                         if (d3.select(this).attr("cx") >= vis.custom_container_x && d3.select(this)  >= vis.custom_container_y){
+
+                                         }
+                                         else{
+                                             custom_data=custom_data.filter(v=>{return v!==d.symbol})
+                                             if(custom_data.length===0){
+                                                         selected_stock_symbol=selected_stock_symbol.filter(v=>{return v!=='Your_Busket'})
+                                                     }
+                                             clone.remove()
+                                             lineChart.updateVis()
+                                         }
+
+                                     }))
+                                     custom_data.push(d.symbol)
+                                     selected_stock_symbol.push('Your_Busket')
+                                     lineChart.updateVis()
+                                 } else {
+
+                                     clone.remove()
+                                 }
+                            d3.select(this).attr( "opacity", 0.7)
+                                     // custom_data=custom_data.filter(v=>{return v!==d.symbol})
+                            //         // if(custom_data.length===0){
+                            //         //     selected_stock_symbol=selected_stock_symbol.filter(v=>{return v!=='Your_Busket'})
+                            //         // }
+                            //         // d3.select(this).attr("cx", (d) => vis.xScale(d.marketcap))
+                            //         //     .attr("cy", (d) => vis.yScale(d.perChange))
+                            //         // lineChart.updateVis()
+                            //     }
+                            //  }
+                            //  )
+                        })
                 )
 
 
