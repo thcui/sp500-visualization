@@ -237,11 +237,9 @@ class BubbleChart {
         if (enterDelay !== 0) {
             vis.initialZoom();
             vis.initFlag = false;
+            // append zoom to svg
+            vis.svg.call(vis.zoom);
         }
-
-        // append zoom to svg
-        vis.svg.call(vis.zoom);
-
 
         // reset button
         d3.select("#bubbleChart-reset-button")
