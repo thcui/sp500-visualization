@@ -9,6 +9,7 @@ let selected_stock_symbol = []
 let sectorFilter = [];
 let sp500_data = [];
 let data = [];
+let custom_data=[]
 
 
 //如何更新lineChart

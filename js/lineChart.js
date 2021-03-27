@@ -164,6 +164,12 @@ class LineChart {
             "name": "SP500",
             "sector": "SP500",
         })
+        vis.sector_data.push({
+            "": "0",
+            "symbol": "Your_Busket",
+            "name": "Your_Busket",
+            "sector": "Your_Busket"
+        })
 
         vis.get_closest_date = function get_closest_date(date, data) {
             // Get date that corresponds to current mouse x-coordinate
@@ -199,21 +205,40 @@ class LineChart {
 
         } else {
             selected_stock_symbol.forEach(stock_symbol => {
-                if (stockData[stock_symbol]) {
+                if(stock_symbol==='Your_Busket'){
+                    let total={}
+                    custom_data.forEach(stock_symbol => {
+                        for (let i of Object.keys(stockData[stock_symbol].historical))
+                        {
+                            if(total[i]){
+                                total[i].volume=(total[i].volume)+(stockData[stock_symbol].historical[i].volume)
+                                total[i].price=(total[i].price)+(+(stockData[stock_symbol].historical[i].price))
+                            }else{
+                                total[i]={}
+                                total[i].volume=stockData[stock_symbol].historical[i].volume
+                                total[i].price=(+(stockData[stock_symbol].historical[i].price))
+                            }
 
-                    vis.selected_stock_data[stock_symbol] = stockData[stock_symbol].historical
-                    d3.map(Object.keys(vis.selected_stock_data[stock_symbol]), d => vis.selected_stock_data[stock_symbol][d]['date'] = d)
-                    Object.values(vis.selected_stock_data[stock_symbol]).forEach(stock => {
-                        Object.keys(stock).forEach(attr => {
-                            if (attr === 'date') {
-                                stock[attr] = parseTime(stock[attr])
-                            }
-                            if (attr === 'price' || attr === 'Volume') {
-                                stock[attr] = +(stock[attr])
-                            }
-                        })
+                        }
                     })
+                    vis.selected_stock_data['Your_Busket']=total
                 }
+                else {
+                    if (stockData[stock_symbol]) {
+                        vis.selected_stock_data[stock_symbol] = stockData[stock_symbol].historical}}
+                        d3.map(Object.keys(vis.selected_stock_data[stock_symbol]), d => vis.selected_stock_data[stock_symbol][d]['date'] = d)
+                        Object.values(vis.selected_stock_data[stock_symbol]).forEach(stock => {
+                            Object.keys(stock).forEach(attr => {
+                                if (attr === 'date') {
+                                    stock[attr] = parseTime(stock[attr])
+                                }
+                                if (attr === 'price' || attr === 'Volume') {
+                                    stock[attr] = +(stock[attr])
+                                }
+                            })
+                        })
+
+
 
 
             });

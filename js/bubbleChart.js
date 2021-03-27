@@ -4,7 +4,7 @@ class BubbleChart {
             parentElement: _config.parentElement,
             containerWidth: 1200,
             containerHeight: 500,
-            margin: {top: 50, right: 50, bottom: 50, left: 60},
+            margin: {top: 50, right: 30, bottom: 50, left: 60},
         };
         this.data = _data
         this.initVis();
@@ -12,15 +12,30 @@ class BubbleChart {
     initVis(){
         let vis = this;
 
+        vis.custom_container_y=100
+        vis.custom_container_width=200
+
         // Calculate inner chart size. Margin specifies the space around the actual chart.
-        vis.innerWidth = vis.config.containerWidth - vis.config.margin.left - vis.config.margin.right;
+        vis.innerWidth = vis.config.containerWidth - vis.config.margin.left - vis.config.margin.right-vis.custom_container_width;
         vis.innerHeight = vis.config.containerHeight - vis.config.margin.top - vis.config.margin.bottom;
 
+        vis.custom_container_x=vis.innerWidth+100
         // Define size of SVG drawing area
         vis.svg = d3
             .select(vis.config.parentElement)
             .attr("width", vis.config.containerWidth)
             .attr("height", vis.config.containerHeight);
+
+        vis.custom_container=vis.svg.append('g').attr('id','custom_container')
+        vis.custom_container.append('rect')
+            .attr("transform", `translate(${vis.custom_container_x},${vis.custom_container_y})`)
+            .attr('width', vis.custom_container_width)
+            .attr('height', vis.innerHeight)
+            .attr("fill", '#dddddd')
+
+            .attr("fill-opacity", '0.5')
+
+        vis.custom_selection=[]
 
         // Append group element that will contain our actual chart
         // and position it according to the given margin config
@@ -31,7 +46,7 @@ class BubbleChart {
         // Initialize clipping mask that covers the whole chart
         vis.chartArea.append('defs')
             .append('clipPath')
-            .attr('id', 'chart-mask')
+            // .attr('id', 'chart-mask')
             .append('rect')
             .attr('width', vis.innerWidth)
             .attr('y', 0)
@@ -46,6 +61,10 @@ class BubbleChart {
                 "#C4C4C4", "#81E6D9", "#B7791F", "#E0CE61"]);
         vis.YaxisG = vis.chartArea.append("g");
         vis.XaxisG = vis.chartArea.append("g").attr("transform", `translate(0,${vis.innerHeight})`);
+
+
+
+
 
         // Apply clipping mask to 'vis.chart' to clip leader started before 1950
         vis.chart = vis.chartArea.append('g')
@@ -116,6 +135,49 @@ class BubbleChart {
                 }
                 updateLineChart();
             })
+            .call(
+                // function (d){
+                //     let original_x=d3.select(this).attr('cx')
+                //     let original_y=d3.select(this).attr('cx')
+                    d3.drag()
+                        .on("start", function (event,d){d3.select(this).raise().attr("stroke", "black")})
+                        .on("drag", function (event,d){d3.select(this).attr("cx", d.x = event.x).attr("cy", d.y = event.y)})
+                        .on("end", function (event,d){
+                            d3.select(this).each(
+                                function (d) {
+                                    if (d.x >= vis.custom_container_x && d.y >= vis.custom_container_y) {
+                                        custom_data.push(d.symbol)
+                                        selected_stock_symbol.push('Your_Busket')
+                                        lineChart.updateVis()
+                                    } else {
+                                        custom_data=custom_data.filter(v=>{return v!==d.symbol})
+                                        if(custom_data.length===0){
+                                            selected_stock_symbol=selected_stock_symbol.filter(v=>{return v!=='Your_Busket'})
+                                        }
+                                        d3.select(this).attr("cx", (d) => vis.xScale(d.marketcap))
+                                            .attr("cy", (d) => vis.yScale(d.perChange))
+                                        lineChart.updateVis()
+                                    }
+                                }
+                        )}
+                )
+                )
+
+
+        // function dragged(event) {
+        //     let d = d3.select(this).datum();
+        //     d.x = Math.max(0, Math.min(pos_x, event.x));
+        //     d.y = Math.max(0, Math.min(pos_y, event.y));
+        // }
+
+        function abc (event){
+            let d = d3.select(this).datum();
+            d.cx = event.x
+            d.cy = event.y
+            if(event.x>900 && event.y>100){
+                console.log('YEP')
+            }
+        }
 
         // vis.circle.each(function (d) {
         //     if(selected_stock_symbol.includes(d.symbol)){
