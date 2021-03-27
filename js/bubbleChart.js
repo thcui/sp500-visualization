@@ -4,7 +4,7 @@ class BubbleChart {
             parentElement: _config.parentElement,
             containerWidth: 1300,
             containerHeight: 500,
-            margin: {top: 50, right: 30, bottom: 50, left: 50},
+            margin: {top: 50, right: 30, bottom: 50, left: 60},
         };
         this.data = _data
         this.initVis();
@@ -21,7 +21,7 @@ class BubbleChart {
         vis.innerWidth = vis.config.containerWidth - vis.config.margin.left - vis.config.margin.right-vis.custom_container_width;
         vis.innerHeight = vis.config.containerHeight - vis.config.margin.top - vis.config.margin.bottom;
 
-        vis.custom_container_x=vis.innerWidth+50
+        vis.custom_container_x=vis.innerWidth+80
         // Define size of SVG drawing area
         vis.svg = d3
             .select(vis.config.parentElement)
@@ -237,8 +237,6 @@ class BubbleChart {
         if (enterDelay !== 0) {
             vis.initialZoom();
             vis.initFlag = false;
-            // append zoom to svg
-            vis.svg.call(vis.zoom);
         }
 
         // reset button
@@ -335,6 +333,10 @@ class BubbleChart {
             .duration(1000)
             .ease(d3.easeQuadInOut)
             .call(vis.zoom.transform, d3.zoomIdentity)
+            .on("end", function () {
+                // append zoom to svg after finish the initial zoom
+                vis.svg.call(vis.zoom);
+            });
     }
 
     add_legend(){
