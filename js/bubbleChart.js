@@ -66,8 +66,6 @@ class BubbleChart {
 
 
 
-
-
         // Apply clipping mask to 'vis.chart' to clip leader started before 1950
         vis.chart = vis.chartArea.append('g')
             .attr('clip-path', 'url(#chart-mask)');
@@ -148,7 +146,6 @@ class BubbleChart {
 
                             clone.each(function() { vis.custom_container.append(() => this); });
 
-
                         })
                         .on("drag", function (event,d){
 
@@ -156,15 +153,15 @@ class BubbleChart {
                                 .attr('class','custom')
                                 .on("mouseover",vis.showToolTip)
                                 .on("mouseout",vis.hideToolTip)
-                                .on('click',vis.clickBubble )
                         })
                         .on("end", dragend)
                 );
 
-
         function dragend(event,d){
             let text
-            if (clone.attr("cx") >= vis.custom_container_x && clone.attr("cy")  >= vis.custom_container_y) {
+            if (event.x >= vis.custom_container_x && event.y >= vis.custom_container_y) {
+                clone.attr("transform", `scale(${vis.transform})`)
+                    .attr("r", (d) => vis.radiusScale(d.marketcap));
                 text=vis.custom_container.append('text').text(d.symbol).attr("transform",`translate(${clone.attr("cx")},${clone.attr("cy")+10})`).attr('color','#000000').attr('font-size','20')
                 clone.call( d3.drag().on("drag", function (event,d){
                     d3.select(this).attr("cx", event.x).attr("cy",  event.y)
@@ -244,10 +241,10 @@ class BubbleChart {
 
     zoomed(e) {
         let vis = this;
+        vis.transform=e.transform.k
         vis.radiusScale.range([5/e.transform.k,50/e.transform.k]);
         vis.circle.attr("transform", e.transform)
             .attr("r", (d) => vis.radiusScale(d.marketcap));
-
         vis.XaxisG.call(vis.Xaxis.scale(e.transform.rescaleX(vis.xScale)));
         vis.YaxisG.call(vis.Yaxis.scale(e.transform.rescaleY(vis.yScale)));
         vis.YaxisG.select(".domain").remove();
