@@ -214,9 +214,6 @@ class BubbleChart {
                         if(custom_data.length===0){
                             selected_stock_symbol=selected_stock_symbol.filter(v=>{return v!=='Yours'})
                         }
-                       // original.call(d3.drag().on("end", dragend))
-                       // original .attr("cx", (d) => vis.xScale(d.marketcap))
-                       //     .attr("cy", (d) => vis.yScale(d.perChange))
                         d3.select(this).remove()
                         text.remove()
                         lineChart.updateVis()
@@ -226,9 +223,6 @@ class BubbleChart {
                 selected_stock_symbol.push('Yours')
                 lineChart.updateVis()
             } else {
-
-                // original .attr("cx", (d) => vis.xScale(d.marketcap))
-                //     .attr("cy", (d) => vis.yScale(d.perChange))
                 clone.remove()
             }
 
