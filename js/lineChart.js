@@ -15,7 +15,7 @@ class LineChart {
     initVis() {
         let vis = this
 
-        vis.selectedDomain = [new Date('2020-04-01'), new Date('2021-01-29')]
+        vis.selectedDomain = selectedDomain;
 
         vis.chart_height = vis.config.containerHeight - vis.config.margin.bottom - vis.config.margin.top
         vis.chart_width = vis.config.containerWidth - vis.config.margin.right - vis.config.margin.left

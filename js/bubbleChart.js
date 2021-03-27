@@ -4,7 +4,7 @@ class BubbleChart {
             parentElement: _config.parentElement,
             containerWidth: 1300,
             containerHeight: 500,
-            margin: {top: 50, right: 30, bottom: 50, left: 40},
+            margin: {top: 50, right: 30, bottom: 50, left: 50},
         };
         this.data = _data
         this.initVis();
@@ -115,9 +115,15 @@ class BubbleChart {
 
     renderVis(){
         let vis = this;
-        let orginal;
+        let original;
         let clone
-        vis.circle = vis.chart.selectAll("circle").data(vis.data).join("circle");
+
+        vis.circle = vis.chart.selectAll("circle").data(vis.data)
+            .join("circle"
+                // enter => enter.append("circle"),
+                // update => update,
+                // exit => exit
+            );
         vis.circle
             .attr("cx", (d) => vis.xScale(d.marketcap))
             .attr("cy", (d) => vis.yScale(d.perChange))
@@ -133,7 +139,7 @@ class BubbleChart {
             .call(
                     d3.drag()
                         .on("start", function (event,d){
-                            orginal=d3.select(this)
+                            original=d3.select(this)
                             clone=d3.select(this)
                                 .clone()
                                 .attr('cx',-100)
@@ -173,8 +179,8 @@ class BubbleChart {
                         if(custom_data.length===0){
                             selected_stock_symbol=selected_stock_symbol.filter(v=>{return v!=='Yours'})
                         }
-                       // orginal.call(d3.drag().on("end", dragend))
-                       // orginal .attr("cx", (d) => vis.xScale(d.marketcap))
+                       // original.call(d3.drag().on("end", dragend))
+                       // original .attr("cx", (d) => vis.xScale(d.marketcap))
                        //     .attr("cy", (d) => vis.yScale(d.perChange))
                         d3.select(this).remove()
                         text.remove()
@@ -186,30 +192,22 @@ class BubbleChart {
                 lineChart.updateVis()
             } else {
 
-                // orginal .attr("cx", (d) => vis.xScale(d.marketcap))
+                // original .attr("cx", (d) => vis.xScale(d.marketcap))
                 //     .attr("cy", (d) => vis.yScale(d.perChange))
                 clone.remove()
             }
 
         }
 
-
-
-
-
         // append zoom to svg
         vis.svg.call(vis.zoom);
-        console.log('ww')
+
         // reset button
         d3.select("#bubbleChart-reset-button")
             .on("click", function () {
-                console.log("hh");
                 vis.resetZoom();
                 vis.resetSelectedStockSymbol();
             });
-
-        vis.initialZoom();
-
     }
 
     clickBubble (event, d){
@@ -217,7 +215,7 @@ class BubbleChart {
             const isSelected = (selected_stock_symbol.includes(d.symbol));
             d3.select(this).classed("selected", !isSelected);
             if(isSelected){
-                selected_stock_symbol=selected_stock_symbol.filter(v=>{return (v!==d.symbol)})
+                selected_stock_symbol=selected_stock_symbol.filter(v=>{return (v!== d.symbol)})
             }else{
                 selected_stock_symbol.push(d.symbol)
             }
@@ -264,8 +262,11 @@ class BubbleChart {
     }
 
     resetSelectedStockSymbol() {
-        d3.selectAll("circle").classed("selected", false);
-        selected_stock_symbol = [];
+        d3.selectAll("circle.selected")
+            .classed("selected", false)
+            .each(function (d) {
+                selected_stock_symbol = selected_stock_symbol.filter(v => v!==d.symbol);
+            });
         updateLineChart();
     }
 

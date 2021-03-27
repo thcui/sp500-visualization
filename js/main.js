@@ -10,6 +10,7 @@ let sectorFilter = [];
 let sp500_data = [];
 let data = [];
 let custom_data=[]
+let selectedDomain = [new Date('2020-04-01'), new Date('2021-01-29')];
 
 
 //如何更新lineChart
@@ -82,7 +83,9 @@ let custom_data=[]
 // Avoid promise hell
 d3.json('data/companyData.json').then(_stock => {
     stockData = _stock;
-    getbubbleChartData("2020-09-11", "2020-09-18");
+    let startDate = selectedDomain[0].toISOString().split('T')[0];
+    let endDate = selectedDomain[1].toISOString().split('T')[0];
+    getbubbleChartData(startDate, endDate);
     return d3.csv('data/industryMC.csv');
 }).then(_data => {
     data = _data;
@@ -114,6 +117,7 @@ d3.json('data/companyData.json').then(_stock => {
     treeMap = new TreeMap({parentElement: "#treeMap"}, data);
     bubbleChart = new BubbleChart({parentElement: '#bubbleChart',}, bubbleChartData);
     lineChart = new LineChart({parentElement: '#lineChart',}, data);
+    bubbleChart.initialZoom();
     let a = companies_data
 
     $(() => {
@@ -161,10 +165,7 @@ function getbubbleChartData(start_date, end_date) {
 
 function filterSector() {
     if (sectorFilter.length !== 0) {
-        console.log(sectorFilter);
-        console.log(bubbleChartData);
         bubbleChart.data = bubbleChartData.filter(d => sectorFilter.includes(d.industry));
-        console.log(bubbleChart.data);
         bubbleChart.updateVis();
     } else {
         //no filter applied, get original data
@@ -173,8 +174,8 @@ function filterSector() {
     }
 }
 
-function filterDateRange(start_date, end_date) {
-    getbubbleChartData(start_date, end_date);
+function filterDateRange(startDate, endDate) {
+    getbubbleChartData(startDate, endDate);
     bubbleChart.data = bubbleChartData;
     filterSector();
 }
