@@ -180,3 +180,7 @@ input[type='submit'] {
     61% 41%, 31% 31%);
 
 }
+.ui-menu-item-wrapper:hover{
+    color: darkblue;
+    stroke: darkblue;
+}
