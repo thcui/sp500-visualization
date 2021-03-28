@@ -40,17 +40,14 @@ class LineChart {
             .attr('transform', `translate(${vis.config.margin.left},${vis.config.margin.top})`);
 
         vis.svg.append("text")
+            .attr("class", 'axis-name')
             .attr("x", vis.config.margin.left + 80)
             .attr("y", vis.config.margin.top)
             .attr("text-anchor", "middle")
-            .style("font-size", "15px")
-            .attr("font-weight", "700")
             .text("Stock Price in USD($)");
 
         vis.svg.append("text")
             .attr("class", 'axis-name')
-            .attr("font-weight", "700")
-            .attr('font-size', '15')
             .attr('transform', `translate(${vis.chart_width},${vis.detail_chart_height})`)
             .text("Date");
 

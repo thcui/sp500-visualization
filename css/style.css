@@ -78,6 +78,13 @@ body{
     font-size: 2em;
     font-weight: bold;
 }
+
+.axis-name{
+    color: white;
+    fill: white;
+    font-weight: 700;
+    font-size: 15px;
+}
 #Industrials{
     color: orange;
 }
