@@ -77,7 +77,6 @@ class BubbleChart {
         vis.XaxisG = vis.chartArea.append("g").attr("transform", `translate(0,${vis.innerHeight})`);
 
 
-
         // Apply clipping mask to 'vis.chart' to clip leader started before 1950
         vis.chart = vis.chartArea.append('g')
             .attr('clip-path', 'url(#chart-mask)');
@@ -95,6 +94,22 @@ class BubbleChart {
                     .tickPadding(10)
                     .ticks(10)
                     .tickFormat(d => d/10**9 +'B');
+
+        // Append axis titles
+        vis.chartArea.append('text')
+            .attr('class', 'axis-title')
+            .attr('y', vis.innerHeight - 20)
+            .attr('x', vis.innerWidth + 10)
+            .attr('dy', '.71em')
+            .style('text-anchor', 'end')
+            .text('Distance');
+
+        vis.svg.append('text')
+            .attr('class', 'axis-title')
+            .attr('x', 10)
+            .attr('y', 60)
+            .attr('dy', '.71em')
+            .text('Hours');
 
         // zoom and pan
         vis.zoom = d3.zoom()
