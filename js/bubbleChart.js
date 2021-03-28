@@ -14,7 +14,7 @@ class BubbleChart {
 
         vis.initFlag = true;
 
-        vis.custom_container_y=100
+        vis.custom_container_y=70
         vis.custom_container_width=300
 
 
