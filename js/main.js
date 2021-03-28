@@ -10,6 +10,7 @@ let sectorFilter = [];
 let sp500_data = [];
 let data = [];
 let custom_data=[]
+let custom_data2=[]
 let selectedDomain = [new Date('2020-04-01'), new Date('2021-01-29')];
 
 

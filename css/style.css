@@ -62,8 +62,13 @@ body{
 
 
 
-#lineChart .Yours{
+#lineChart .Basket{
     stroke: #dddddd;
+    stroke-dasharray: 1px;
+}
+
+#lineChart .Basket2{
+    stroke: yellow;
     stroke-dasharray: 1px;
 }
 
