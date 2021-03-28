@@ -17,10 +17,11 @@ class BubbleChart {
         vis.custom_container_y=100
         vis.custom_container_width=300
 
+
         // Calculate inner chart size. Margin specifies the space around the actual chart.
         vis.innerWidth = vis.config.containerWidth - vis.config.margin.left - vis.config.margin.right-vis.custom_container_width;
         vis.innerHeight = vis.config.containerHeight - vis.config.margin.top - vis.config.margin.bottom;
-
+        vis.custom_container_height=vis.innerHeight/2-10
         vis.custom_container_x=vis.innerWidth+80
         // Define size of SVG drawing area
         vis.svg = d3
@@ -39,15 +40,19 @@ class BubbleChart {
             .attr("transform", `translate(${vis.custom_container_x},${vis.custom_container_y-20})`)
             .text(' stocks by dragging the bubble here! ')
 
-        vis.custom_container.append('rect')
+        vis.custom_basket=vis.custom_container.append('rect')
             .attr("transform", `translate(${vis.custom_container_x},${vis.custom_container_y})`)
             .attr('width', vis.custom_container_width)
-            .attr('height', vis.innerHeight)
+            .attr('height', vis.custom_container_height)
             .attr("fill", '#dddddd')
             .attr("rx", 10)
             .attr("ry", 10)
             .attr("fill-opacity", '0.5')
 
+        vis.custom_basket2=vis.custom_basket.clone()
+            .attr("transform", `translate(${vis.custom_container_x},${vis.custom_container_y+vis.custom_container_height+10})`)
+            .attr("fill", 'yellow')
+            .attr("fill-opacity", '0.5')
         vis.custom_selection=[]
         vis.clones={}
 
@@ -197,30 +202,60 @@ class BubbleChart {
 
         function dragend(event,d){
             let text
+            let data
             if (event.x >= vis.custom_container_x && event.y >= vis.custom_container_y) {
                 clone.attr("transform", `scale(${vis.transform})`)
                     .attr("r", (d) => vis.radiusScale(d.marketcap));
                 text=vis.custom_container.append('text').text(d.symbol).attr("transform",`translate(${clone.attr("cx")},${clone.attr("cy")+10})`).attr('color','#000000').attr('font-size','20')
+                if(event.y <= vis.custom_container_y+vis.custom_container_height){
+                    data=custom_data
+                    data.push(d.symbol)
+                    selected_stock_symbol.push('Basket')
+                }
+            else{custom_data2.push(d.symbol)
+                    data=selected_stock_symbol
+                    data.push('Basket2')}
+
                 clone.call( d3.drag().on("drag", function (event,d){
                     d3.select(this).attr("cx", event.x).attr("cy",  event.y)
                 }). on("end", function (event,d){
                     if (d3.select(this).attr("cx")>= vis.custom_container_x && d3.select(this).attr("cy")>= vis.custom_container_y){
+                        if(event.y <= vis.custom_container_y+vis.custom_container_height){
+                            custom_data2=custom_data2.filter(v=>{return v!==d.symbol})
+                            custom_data.push(d.symbol)
+                            selected_stock_symbol.push('Basket')
+                            if(custom_data.length===0){
+                                selected_stock_symbol=selected_stock_symbol.filter(v=>{return v!=='Basket2'})
+                            }
+                        }
+                        else{
+                            custom_data=custom_data.filter(v=>{return v!==d.symbol})
+                            custom_data2.push(d.symbol)
+                            selected_stock_symbol.push('Basket2')
+                            if(custom_data.length===0){
+                                selected_stock_symbol=selected_stock_symbol.filter(v=>{return v!=='Basket'})
+                            }
+
+                        }
+
                         text.remove()
                         text=vis.custom_container.append('text').text(d.symbol).attr("transform",`translate(${clone.attr("cx")},${clone.attr("cy")+10})`).attr('color','#000000').attr('font-size','20')
 
                     }
                     else{
                         custom_data=custom_data.filter(v=>{return v!==d.symbol})
+                        custom_data2=custom_data2.filter(v=>{return v!==d.symbol})
                         if(custom_data.length===0){
-                            selected_stock_symbol=selected_stock_symbol.filter(v=>{return v!=='Yours'})
+                            selected_stock_symbol=selected_stock_symbol.filter(v=>{return v!=='Basket'})
+                        }
+                        if(custom_data2.length===0){
+                            selected_stock_symbol=selected_stock_symbol.filter(v=>{return v!=='Basket2'})
                         }
                         d3.select(this).remove()
                         text.remove()
                         lineChart.updateVis()
                     }
                 }))
-                custom_data.push(d.symbol)
-                selected_stock_symbol.push('Yours')
                 lineChart.updateVis()
             } else {
                 clone.remove()
