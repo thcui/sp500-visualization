@@ -54,8 +54,8 @@ body{
 
 }
 .Materials{
-    stroke: #C4C4C4;
-    fill: #C4C4C4;
+    stroke: #718096;
+    fill: #718096;
 
 }
 .Financials {
@@ -64,13 +64,13 @@ body{
 
 }
 .Real_Estate{
-     stroke: #81E6D9;
-    fill: #81E6D9;
+     stroke: #38B2AC;
+    fill: #38B2AC;
 
 }
 .Consumer_Staples{
-     stroke: #B7791F;
-    fill:#B7791F;
+     stroke: #975A16;
+    fill:#975A16;
 
  }
 .Energy {
