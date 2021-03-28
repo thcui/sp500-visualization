@@ -201,6 +201,7 @@ class BubbleChart {
                 );
 
         function dragend(event,d){
+            let basket_index=0
             let text
             let data
             if (event.x >= vis.custom_container_x && event.y >= vis.custom_container_y) {
@@ -209,13 +210,20 @@ class BubbleChart {
                 text=vis.custom_container.append('text').text(d.symbol).attr("transform",`translate(${event.x},${event.y+10})`).attr('color','#000000').attr('font-size','20')
                 if(event.y <= vis.custom_container_y+vis.custom_container_height){
                     data=custom_data
-                    data.push(d.symbol)
+                    basket_index=1
                     selected_stock_symbol.push('Basket')
                 }
             else{
+                    basket_index=2
                     data=custom_data2
-                    data.push(d.symbol)
                     selected_stock_symbol.push('Basket2')}
+            if(data.includes(d.symbol)){
+                clone.remove()
+                text.remove()
+                window.alert('You have already included this stock in the target basket')
+                return
+            }
+                data.push(d.symbol)
 
                 clone.call( d3.drag().on("drag", function (event,d){
                     d3.select(this).attr("cx", event.x).attr("cy",  event.y)
@@ -225,18 +233,11 @@ class BubbleChart {
                             custom_data2=custom_data2.filter(v=>{return v!==d.symbol})
                             custom_data.push(d.symbol)
                             selected_stock_symbol.push('Basket')
-                            if(custom_data.length===0){
-                                selected_stock_symbol=selected_stock_symbol.filter(v=>{return v!=='Basket2'})
-                            }
                         }
                         else{
                             custom_data=custom_data.filter(v=>{return v!==d.symbol})
                             custom_data2.push(d.symbol)
                             selected_stock_symbol.push('Basket2')
-                            if(custom_data.length===0){
-                                selected_stock_symbol=selected_stock_symbol.filter(v=>{return v!=='Basket'})
-                            }
-
                         }
 
                         text.remove()
@@ -244,18 +245,24 @@ class BubbleChart {
 
                     }
                     else{
+                        if(basket_index===1){
                         custom_data=custom_data.filter(v=>{return v!==d.symbol})
+                        }
+                        if(basket_index===2){
                         custom_data2=custom_data2.filter(v=>{return v!==d.symbol})
-                        if(custom_data.length===0){
-                            selected_stock_symbol=selected_stock_symbol.filter(v=>{return v!=='Basket'})
                         }
-                        if(custom_data2.length===0){
-                            selected_stock_symbol=selected_stock_symbol.filter(v=>{return v!=='Basket2'})
-                        }
+
                         d3.select(this).remove()
                         text.remove()
-                        lineChart.updateVis()
+
                     }
+                    if(custom_data.length===0){
+                        selected_stock_symbol=selected_stock_symbol.filter(v=>{return v!=='Basket'})
+                    }
+                    if(custom_data2.length===0){
+                        selected_stock_symbol=selected_stock_symbol.filter(v=>{return v!=='Basket2'})
+                    }
+                    lineChart.updateVis()
                 }))
                 lineChart.updateVis()
             } else {
