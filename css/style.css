@@ -24,7 +24,7 @@ body{
     stroke:  #FFFFFF;
 }
 
-#lineChart .Industrials{
+.Industrials{
     stroke: #ED8936;
 }
 
@@ -47,27 +47,28 @@ body{
 #lineChart .Materials{
     stroke: #C4C4C4
 }
-#lineChart .Financials{
-    stroke:  #C53030
-}#lineChart .Real_Estate{
+.Financials {
+    stroke: #C53030
+}
+.Real_Estate{
      stroke: #81E6D9
  }
- #lineChart .Consumer_Staples{
+.Consumer_Staples{
      stroke: #B7791F
 
  }
-#lineChart .Energy {
+.Energy {
     stroke: #E0CE61
 }
 
 
 
-#lineChart .Basket{
+.Basket{
     stroke: #dddddd;
     stroke-dasharray: 1px;
 }
 
-#lineChart .Basket2{
+.Basket2{
     stroke: yellow;
     stroke-dasharray: 1px;
 }
