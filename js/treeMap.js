@@ -23,6 +23,14 @@ class TreeMap {
         vis.chartArea = vis.svg
             .append("g")
             .attr("transform", `translate(${vis.config.margin.left},${vis.config.margin.top})`);
+        vis.svg
+            .append("text")
+            .attr("class","annotation")
+            .attr("x", 10)
+            .attr("y", 370)
+            .attr("font-size", 14)
+            .attr("stroke", "white")
+            .text("size of rectangle encodes amount of market capitalization in the given industry");
         vis.renderVis()
 
     }
