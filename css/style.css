@@ -191,3 +191,9 @@ input[type='submit'] {
     color: darkblue;
     stroke: darkblue;
 }
+.ui-autocomplete{
+    max-height: 450px;
+    overflow: scroll;
+    padding: 5px;
+
+}
