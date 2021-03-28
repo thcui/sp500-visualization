@@ -20,56 +20,12 @@ body{
     color: #4A5568;
 }
 
-#lineChart .SP500{
-    stroke:  #FFFFFF;
-}
-
-.Industrials{
-    stroke: #ED8936;
-}
-
-#lineChart .Consumer_Discretionary{
-    stroke:#805AD5
-}
-#lineChart .Health_Care{
-    stroke:#2F855A
-}
-#lineChart .Information_Technology{
-    stroke:#3182CE
-}
-#lineChart .Communication_Services{
-    stroke:#702459
-}
-
-#lineChart .Utilities{
-    stroke:  #FC8181
-}
-#lineChart .Materials{
-    stroke: #C4C4C4
-}
-.Financials {
-    stroke: #C53030
-}
-.Real_Estate{
-    stroke: #81E6D9
-}
-.Consumer_Staples{
-    stroke: #B7791F
-
-}
-.Energy {
-    stroke: #E0CE61
-}
-
-
 
 .Basket{
-    stroke: #dddddd;
     stroke-dasharray: 1px;
 }
 
 .Basket2{
-    stroke: yellow;
     stroke-dasharray: 1px;
 }
 

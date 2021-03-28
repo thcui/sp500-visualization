@@ -90,6 +90,7 @@ class LineChart {
         vis.sp500_legend=vis.legend.append("line")
             .attr('class','SP500')
             .style("stroke-width", "8")
+            .attr('stroke',colorScheme('SP500'))
             .attr("x1", 0)
             .attr("y1", 0)
             .attr("x2", 30)
@@ -97,12 +98,12 @@ class LineChart {
         vis.legend.append('text').text('SP500').attr('transform', `translate(0,20)`).attr('font-size',10)
         let legend_x1=0
         let legend_x2=30
-        for (let legend of ['Basket','Basket2',"Industrials", "Health_Care", "Information_Technology", "Communication_Services",
-            "Consumer_Discretionary", "Utilities", "Financials", "Materials", "Real_Estate",
-            "Consumer_Staples", "Energy"]){
+        for (let legend of ['Basket','Basket2',"Industrials", "Health Care", "Information Technology", "Communication Services",
+            "Consumer Discretionary", "Utilities", "Financials", "Materials", "Real_Estate",
+            "Consumer Staples", "Energy"]){
             legend_x1=legend_x2+10
             legend_x2=legend_x1+30
-            vis.sp500_legend.clone().attr('class',legend).attr("x1", legend_x1).attr("x2", legend_x2)
+            vis.sp500_legend.clone().attr('class',legend).attr("x1", legend_x1).attr("x2", legend_x2).attr('stroke',colorScheme(legend))
 
         }
         vis.legend.append('text').text('Basket').attr('transform', `translate(40,20)`).attr('font-size',10)
@@ -311,7 +312,10 @@ class LineChart {
 
             let lineEnter = line.enter().append('path')
             let lineMerge = lineEnter.merge(line)
-            lineMerge.attr('class', d => 'line ' + vis.sector_data.filter(v => {
+            lineMerge.attr('stroke',d=>colorScheme( vis.sector_data.filter(v => {
+                return v.symbol === d
+            })[0].sector))
+                .attr('class', d => 'line ' + vis.sector_data.filter(v => {
                 return v.symbol === d
             })[0].sector.replace(' ', '_'))
 
@@ -319,6 +323,7 @@ class LineChart {
             lineMerge.datum(d => Object.values(vis.selected_stock_data[d]))
                 .attr("fill", "none")
                 .attr("stroke-width", 2)
+
                 .attr("d", d3.line()
                     .x(function (d) {
                         return x_scale(d.date)
