@@ -78,12 +78,7 @@ class BubbleChart {
             .attr('height', vis.innerHeight);
 
         // Initialize the axis and scale
-        vis.color = d3.scaleOrdinal()
-            .domain(["Industrials", "Health Care", "Information Technology", "Communication Services",
-                "Consumer Discretionary", "Utilities", "Financials", "Materials", "Real Estate",
-                "Consumer Staples", "Energy"])
-            .range(["#ED8936", "#2F855A", "#3182CE", "#702459", "#805AD5", "#FC8181", "#C53030",
-                "#C4C4C4", "#81E6D9", "#B7791F", "#E0CE61"]);
+
         vis.YaxisG = vis.chartArea.append("g");
         vis.XaxisG = vis.chartArea.append("g").attr("transform", `translate(0,${vis.innerHeight})`);
 
@@ -172,9 +167,8 @@ class BubbleChart {
                     .attr("cx", (d) => vis.xScale(d.marketcap))
                     .attr("cy", (d) => vis.yScale(d.perChange))
                     .attr("r", 0)
-                    .attr("fill", (d) => vis.color(d.industry))
                     .attr("opacity", 0.7)
-                    .attr("class", (d) => `${d.industry} ${d.symbol} ${
+                    .attr("class", (d) => d.industry.replace(' ', '_')+` ${d.symbol} ${
                         selected_stock_symbol.includes(d.symbol) ? 'selected' : ''
                     }`)
                     .transition().delay(enterDelay).duration(300)

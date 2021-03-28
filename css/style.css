@@ -26,39 +26,57 @@ body{
 
 .Industrials{
     stroke: #ED8936;
+    fill: #ED8936;
+
 }
 
-#lineChart .Consumer_Discretionary{
-    stroke:#805AD5
+.Consumer_Discretionary{
+    stroke:#805AD5;
+    fill:#805AD5;
 }
-#lineChart .Health_Care{
-    stroke:#2F855A
+.Health_Care{
+    stroke:#2F855A;
+    fill:#2F855A;
 }
-#lineChart .Information_Technology{
-    stroke:#3182CE
-}
-#lineChart .Communication_Services{
-    stroke:#702459
-}
+.Information_Technology{
+    stroke:#3182CE;
+    fill:#3182CE;
 
-#lineChart .Utilities{
-   stroke:  #FC8181
 }
-#lineChart .Materials{
-    stroke: #C4C4C4
+.Communication_Services{
+    stroke:#702459;
+    fill:#702459;
+
+}
+.Utilities{
+   stroke:  #FC8181;
+    fill:  #FC8181;
+
+}
+.Materials{
+    stroke: #C4C4C4;
+    fill: #C4C4C4;
+
 }
 .Financials {
-    stroke: #C53030
+    stroke: #C53030;
+    fill: #C53030;
+
 }
 .Real_Estate{
-     stroke: #81E6D9
- }
+     stroke: #81E6D9;
+    fill: #81E6D9;
+
+}
 .Consumer_Staples{
-     stroke: #B7791F
+     stroke: #B7791F;
+    fill:#B7791F;
 
  }
 .Energy {
-    stroke: #E0CE61
+    stroke: #E0CE61;
+    fill: #E0CE61;
+
 }
 
 
@@ -85,9 +103,7 @@ body{
     font-weight: 700;
     font-size: 15px;
 }
-#Industrials{
-    color: orange;
-}
+
 #tooltip {
     position: absolute;
     display: none;
@@ -109,11 +125,11 @@ body{
 }
 circle{
     stroke-width:1;
-    stroke: #000000;
+    stroke: #000000 !important;
     vector-effect: non-scaling-stroke;
 }
 circle:hover{
-    stroke: white;
+    stroke: white !important;
 }
 circle.selected {
     stroke: white;

@@ -12,12 +12,7 @@ class TreeMap {
 
     initVis() {
         let vis = this;
-        vis.color = d3.scaleOrdinal()
-            .domain(["Industrials", "Health Care", "Information Technology", "Communication Services",
-                "Consumer Discretionary", "Utilities", "Financials", "Materials", "Real Estate",
-                "Consumer Staples", "Energy"])
-            .range(["#ED8936", "#2F855A", "#3182CE", "#702459", "#805AD5", "#FC8181", "#C53030",
-                "#C4C4C4", "#81E6D9", "#B7791F", "#E0CE61"]);
+
         vis.svg = d3
             .select(vis.config.parentElement)
             .attr("width", vis.config.containerWidth)
@@ -46,10 +41,10 @@ class TreeMap {
         var root = d3.stratify()
             .id(function (d) {
                 return d.sector;
-            })   // Name of the entity (column name is name in csv)
+            })
             .parentId(function (d) {
                 return d.parent;
-            })   // Name of the parent (column name is parent in csv)
+            })
             (data);
         root.sum(function (d) {
             return +d.marketcap
@@ -66,7 +61,7 @@ class TreeMap {
             .data(root.leaves())
             .enter()
             .append("rect")
-            .attr("class","treeBlock")
+            .attr("class",d => 'treeBlock '+d.data.sector.replace(' ', '_'))
             .attr('x', function (d) {
                 return d.x0;
             })
@@ -79,7 +74,6 @@ class TreeMap {
             .attr('height', function (d) {
                 return d.y1 - d.y0;
             })
-            .style("fill", function(d){ return vis.color(d.data.sector)})
             .on("mouseover",this.showToolTip)
             .on("mouseout",this.hideToolTip)
             .on("click", this.selectSector);
