@@ -78,7 +78,6 @@ class BubbleChart {
             .attr('height', vis.innerHeight);
 
         // Initialize the axis and scale
-
         vis.YaxisG = vis.chartArea.append("g");
         vis.XaxisG = vis.chartArea.append("g").attr("transform", `translate(0,${vis.innerHeight})`);
 
@@ -86,20 +85,20 @@ class BubbleChart {
         // Apply clipping mask to 'vis.chart' to clip leader started before 1950
         vis.chart = vis.chartArea.append('g')
             .attr('clip-path', 'url(#chart-mask)');
-        
+
         vis.xScale = d3.scaleLinear().range([10, vis.innerWidth-55]);
         vis.yScale = d3.scaleLinear().range([vis.innerHeight-55, 55]);
         vis.radiusScale = d3.scaleSqrt().range([5, 50]);
         vis.Yaxis = d3.axisLeft(vis.yScale)
-                    .tickSize(-vis.innerWidth)
-                    .tickPadding(10)
-                    .ticks(6)
-                    .tickFormat(number => d3.format(".2%")(number))
+            .tickSize(-vis.innerWidth)
+            .tickPadding(10)
+            .ticks(6)
+            .tickFormat(number => d3.format(".2%")(number))
         vis.Xaxis = d3.axisBottom(vis.xScale)
-                    .tickSize(-vis.innerHeight)
-                    .tickPadding(10)
-                    .ticks(10)
-                    .tickFormat(d => d/10**9 +'B');
+            .tickSize(-vis.innerHeight)
+            .tickPadding(10)
+            .ticks(10)
+            .tickFormat(d => d/10**9 +'B');
 
         // Append axis titles
         vis.chartArea.append('text')
@@ -167,14 +166,15 @@ class BubbleChart {
                     .attr("cx", (d) => vis.xScale(d.marketcap))
                     .attr("cy", (d) => vis.yScale(d.perChange))
                     .attr("r", 0)
+                    .attr("fill", (d) => colorScheme(d.industry))
                     .attr("opacity", 0.7)
-                    .attr("class", (d) => d.industry.replace(' ', '_')+` ${d.symbol} ${
+                    .attr("class", (d) => `${d.industry} ${d.symbol} ${
                         selected_stock_symbol.includes(d.symbol) ? 'selected' : ''
                     }`)
                     .transition().delay(enterDelay).duration(300)
                     .attr("r", (d) => vis.radiusScale(d.marketcap))
                     .selection()
-                    ,
+                ,
                 update => update
                     .transition().duration(300)
                     .attr("cx", (d) => vis.xScale(d.marketcap))
@@ -192,27 +192,27 @@ class BubbleChart {
             .on("mouseout",this.hideToolTip)
             .on('click',this.clickBubble )
             .call(
-                    d3.drag()
-                        .on("start", function (event,d){
-                            original=d3.select(this)
-                            clone=d3.select(this)
-                                .clone()
-                                .attr('cx',-100)
-                                .attr('cy',-100)
-                            clone.attr('clip-path',"polygon(21% 51%, 41% 78%, 78% 26%, 89% 38%, 42% 97%, 11% 62%)")
+                d3.drag()
+                    .on("start", function (event,d){
+                        original=d3.select(this)
+                        clone=d3.select(this)
+                            .clone()
+                            .attr('cx',-100)
+                            .attr('cy',-100)
+                        clone.attr('clip-path',"polygon(21% 51%, 41% 78%, 78% 26%, 89% 38%, 42% 97%, 11% 62%)")
 
-                            clone.each(function() { vis.custom_container.append(() => this); });
+                        clone.each(function() { vis.custom_container.append(() => this); });
 
-                        })
-                        .on("drag", function (event,d){
+                    })
+                    .on("drag", function (event,d){
 
-                            clone.attr("cx",  event.x).attr("cy",  event.y)
-                                .attr('class','custom')
-                                .on("mouseover",vis.showToolTip)
-                                .on("mouseout",vis.hideToolTip)
-                        })
-                        .on("end", dragend)
-                );
+                        clone.attr("cx",  event.x).attr("cy",  event.y)
+                            .attr('class','custom')
+                            .on("mouseover",vis.showToolTip)
+                            .on("mouseout",vis.hideToolTip)
+                    })
+                    .on("end", dragend)
+            );
 
         function dragend(event,d){
             let basket_index=0
@@ -227,16 +227,16 @@ class BubbleChart {
                     basket_index=1
                     selected_stock_symbol.push('Basket')
                 }
-            else{
+                else{
                     basket_index=2
                     data=custom_data2
                     selected_stock_symbol.push('Basket2')}
-            if(data.includes(d.symbol)){
-                clone.remove()
-                text.remove()
-                window.alert('You have already included this stock in the target basket')
-                return
-            }
+                if(data.includes(d.symbol)){
+                    clone.remove()
+                    text.remove()
+                    window.alert('You have already included this stock in the target basket')
+                    return
+                }
                 data.push(d.symbol)
 
                 clone.call( d3.drag().on("drag", function (event,d){
@@ -260,10 +260,10 @@ class BubbleChart {
                     }
                     else{
                         if(basket_index===1){
-                        custom_data=custom_data.filter(v=>{return v!==d.symbol})
+                            custom_data=custom_data.filter(v=>{return v!==d.symbol})
                         }
                         if(basket_index===2){
-                        custom_data2=custom_data2.filter(v=>{return v!==d.symbol})
+                            custom_data2=custom_data2.filter(v=>{return v!==d.symbol})
                         }
 
                         d3.select(this).remove()
@@ -398,91 +398,91 @@ class BubbleChart {
         let height=100
 
 
-            let svg = vis.chartArea.append('svg')
-                .style("overflow", "visible")
-                .datum([{x: pos_x, y: pos_y, r: 0, id:0}, {x: pos_x, y: pos_y, r: 0,id:1}]);
-            //
-            // let delta = svg.append("line")
-            //     .attr("stroke", "red")
-            //     .attr("stroke-width", 2)
-            //     .attr("stroke-linecap", "round");
+        let svg = vis.chartArea.append('svg')
+            .style("overflow", "visible")
+            .datum([{x: pos_x, y: pos_y, r: 0, id:0}, {x: pos_x, y: pos_y, r: 0,id:1}]);
+        //
+        // let delta = svg.append("line")
+        //     .attr("stroke", "red")
+        //     .attr("stroke-width", 2)
+        //     .attr("stroke-linecap", "round");
 
-            let e = svg.append("g");
+        let e = svg.append("g");
 
-            e.append("circle")
-                .attr("fill", "darkgrey")
-                .attr("r",'80')
-                .attr("fill-opacity", 0.3)
-                .attr("stroke", "red")
-                // .call(d3.drag().on("drag", dragged_large));
+        e.append("circle")
+            .attr("fill", "darkgrey")
+            .attr("r",'80')
+            .attr("fill-opacity", 0.3)
+            .attr("stroke", "red")
+        // .call(d3.drag().on("drag", dragged_large));
 
-            // e.append("circle")
-            //     .attr("fill", "red")
-            //     .attr("r", 3.5);
+        // e.append("circle")
+        //     .attr("fill", "red")
+        //     .attr("r", 3.5);
 
-            let circle = svg.append("g")
-                .selectAll("g")
-                .data(d => d)
-                .enter().append("g")
-                .attr("transform", d => `translate(${d.x},${d.y})`)
-                .each(function (d){
-                    if(d.id===0){
-                        d3.select(this).call(d3.drag().on("drag", dragged));
-                        d3.select(this).append("path")
-                            .attr("fill", "white")
-                            .attr("transform", `scale(0.05)`)
-                            .attr("d", "M0,-300l100,100h-50v150h150v-50L300,0l-100,100v-50h-150v150h50L0,300l-100,-100h50v-150h-150v50L-300,0l100,-100v50h150v-150h-50z")
+        let circle = svg.append("g")
+            .selectAll("g")
+            .data(d => d)
+            .enter().append("g")
+            .attr("transform", d => `translate(${d.x},${d.y})`)
+            .each(function (d){
+                if(d.id===0){
+                    d3.select(this).call(d3.drag().on("drag", dragged));
+                    d3.select(this).append("path")
+                        .attr("fill", "white")
+                        .attr("transform", `scale(0.05)`)
+                        .attr("d", "M0,-300l100,100h-50v150h150v-50L300,0l-100,100v-50h-150v150h50L0,300l-100,-100h50v-150h-150v50L-300,0l100,-100v50h150v-150h-50z")
 
-                    }})
+                }})
 
-            circle.append("circle")
-                .attr("id", "circle_minimum")
-                .attr("cursor", "move")
-                .attr("stroke", "black")
-                .attr("fill-opacity", 0.3)
-                .attr("r", d => d.r)
-                .call(d3.drag().on("drag", null));
+        circle.append("circle")
+            .attr("id", "circle_minimum")
+            .attr("cursor", "move")
+            .attr("stroke", "black")
+            .attr("fill-opacity", 0.3)
+            .attr("r", d => d.r)
+            .call(d3.drag().on("drag", null));
 
 
-            function dragged(event) {
-                let d = d3.select(this).datum();
-                d.x = Math.max(0, Math.min(pos_x, event.x));
-                d.y = Math.max(0, Math.min(pos_y, event.y));
-                update();
-            }
-
-            function update() {
-                let circles = svg.datum(),
-                    ad = circles[0],
-                    bd = circles[1],
-                    dx = bd.x - ad.x,
-                    dy = bd.y - ad.y,
-                    l = Math.sqrt(dx * dx + dy * dy);
-
-                circle
-                    .attr("transform", d => `translate(${d.x},${d.y})`);
-
-                if (vis.encloses(ad, bd) || vis.encloses(bd, ad)) {
-                    e.style("display", "none");
-                    return;
-                }
-
-                let ed = vis.encloseBasis2(ad, bd);
-
-                e
-                    .style("display", null)
-                    .attr("transform",`translate(${ed.x},${ed.y})`)
-                    .select("circle")
-                    .attr("r", ed.r);
-            }
-
+        function dragged(event) {
+            let d = d3.select(this).datum();
+            d.x = Math.max(0, Math.min(pos_x, event.x));
+            d.y = Math.max(0, Math.min(pos_y, event.y));
             update();
+        }
 
-            return svg.node();
+        function update() {
+            let circles = svg.datum(),
+                ad = circles[0],
+                bd = circles[1],
+                dx = bd.x - ad.x,
+                dy = bd.y - ad.y,
+                l = Math.sqrt(dx * dx + dy * dy);
+
+            circle
+                .attr("transform", d => `translate(${d.x},${d.y})`);
+
+            if (vis.encloses(ad, bd) || vis.encloses(bd, ad)) {
+                e.style("display", "none");
+                return;
+            }
+
+            let ed = vis.encloseBasis2(ad, bd);
+
+            e
+                .style("display", null)
+                .attr("transform",`translate(${ed.x},${ed.y})`)
+                .select("circle")
+                .attr("r", ed.r);
+        }
+
+        update();
+
+        return svg.node();
 
     }
 
-     encloseBasis2(a, b) {
+    encloseBasis2(a, b) {
         const x1 = a.x, y1 = a.y, r1 = a.r;
         const x2 = b.x, y2 = b.y, r2 = b.r;
         const x21 = x2 - x1, y21 = y2 - y1, r21 = r2 - r1;
