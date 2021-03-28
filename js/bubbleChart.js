@@ -218,6 +218,14 @@ class BubbleChart {
             let basket_index=0
             let text
             let data
+            function remove_one_item(arr, value) {
+                let index = arr.indexOf(value);
+                if (index > -1) {
+                    arr.splice(index, 1);
+                }
+                return arr;
+            }
+
             if (event.x >= vis.custom_container_x && event.y >= vis.custom_container_y) {
                 clone.attr("transform", `scale(${vis.transform})`)
                     .attr("r", (d) => vis.radiusScale(d.marketcap));
@@ -231,12 +239,12 @@ class BubbleChart {
                     basket_index=2
                     data=custom_data2
                     selected_stock_symbol.push('Basket2')}
-                if(data.includes(d.symbol)){
-                    clone.remove()
-                    text.remove()
-                    window.alert('You have already included this stock in the target basket')
-                    return
-                }
+                // if(data.includes(d.symbol)){
+                //     clone.remove()
+                //     text.remove()
+                //     window.alert('You have already included this stock in the target basket')
+                //     return
+                // }
                 data.push(d.symbol)
 
                 clone.call( d3.drag().on("drag", function (event,d){
@@ -244,12 +252,12 @@ class BubbleChart {
                 }). on("end", function (event,d){
                     if (d3.select(this).attr("cx")>= vis.custom_container_x && d3.select(this).attr("cy")>= vis.custom_container_y){
                         if(event.y <= vis.custom_container_y+vis.custom_container_height){
-                            custom_data2=custom_data2.filter(v=>{return v!==d.symbol})
+                            remove_one_item(custom_data2,d.symbol)
                             custom_data.push(d.symbol)
                             selected_stock_symbol.push('Basket')
                         }
                         else{
-                            custom_data=custom_data.filter(v=>{return v!==d.symbol})
+                            remove_one_item(custom_data,d.symbol)
                             custom_data2.push(d.symbol)
                             selected_stock_symbol.push('Basket2')
                         }
@@ -260,10 +268,10 @@ class BubbleChart {
                     }
                     else{
                         if(basket_index===1){
-                            custom_data=custom_data.filter(v=>{return v!==d.symbol})
+                            remove_one_item(custom_data,d.symbol)
                         }
                         if(basket_index===2){
-                            custom_data2=custom_data2.filter(v=>{return v!==d.symbol})
+                            remove_one_item(custom_data2,d.symbol)
                         }
 
                         d3.select(this).remove()

@@ -292,7 +292,6 @@ class LineChart {
                 let closestDate = vis.get_closest_date(vis.xScale_detail.invert(d3.pointer(event, this.svg.node())[0] - vis.config.margin.left),
                     Object.values(vis.selected_stock_data))
 
-
                 let tooltip_circle = vis.tooltip.selectAll('.tooltip_point').data(closestDate)
                 let tooltip_circleEnter = tooltip_circle.enter().append('g').attr('class', 'tooltip_point')
                 tooltip_circleEnter.append('circle')
