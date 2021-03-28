@@ -108,19 +108,18 @@ class BubbleChart {
 
         // Append axis titles
         vis.chartArea.append('text')
-            .attr('class', 'axis-title')
-            .attr('y', vis.innerHeight - 20)
-            .attr('x', vis.innerWidth + 10)
-            .attr('dy', '.71em')
-            .style('text-anchor', 'end')
-            .text('Distance');
+            .attr('class', 'axis-name')
+            .attr('y', vis.innerHeight - 15)
+            .attr('x', vis.innerWidth - 30)
+            .attr("text-anchor", "middle")
+            .text("Market Cap");
 
         vis.svg.append('text')
-            .attr('class', 'axis-title')
+            .attr('class', 'axis-name')
             .attr('x', 10)
-            .attr('y', 60)
-            .attr('dy', '.71em')
-            .text('Hours');
+            .attr('y', 80)
+            .attr("text-anchor", "middle")
+            .text("Price Change");
 
         // zoom and pan
         vis.zoom = d3.zoom()
