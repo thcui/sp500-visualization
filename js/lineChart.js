@@ -6,7 +6,7 @@ class LineChart {
             parentElement: _config.parentElement,
             containerWidth: 680,
             containerHeight: 400,
-            margin: _config.margin || {top: 20, right: 40, bottom: 20, left: 30}
+            margin: _config.margin || {top: 20, right: 45, bottom: 60, left: 30}
         }
         this.data = _data;
         this.initVis();
@@ -88,7 +88,34 @@ class LineChart {
         vis.yAxisG = vis.chart.append('g')
             .attr('class', 'axis y-axis');
 
-        // Initialize clipping mask that covers the whchole chart
+
+        vis.legend= vis.svg.append('g').attr('class', 'lineChart_legend') .attr('transform', `translate(50,${vis.chart_height+vis.overview_chart_height})`);
+        vis.sp500_legend=vis.legend.append("line")
+            .attr('class','SP500')
+            .style("stroke-width", "8")
+            .attr("x1", 0)
+            .attr("y1", 0)
+            .attr("x2", 30)
+            .attr("y2", 0);
+        vis.legend.append('text').text('SP500').attr('transform', `translate(0,20)`).attr('font-size',10)
+        let legend_x1=0
+        let legend_x2=30
+        for (let legend of ['Basket','Basket2',"Industrials", "Health_Care", "Information_Technology", "Communication_Services",
+            "Consumer_Discretionary", "Utilities", "Financials", "Materials", "Real_Estate",
+            "Consumer_Staples", "Energy"]){
+            legend_x1=legend_x2+10
+            legend_x2=legend_x1+30
+            vis.sp500_legend.clone().attr('class',legend).attr("x1", legend_x1).attr("x2", legend_x2)
+
+        }
+        vis.legend.append('text').text('Basket').attr('transform', `translate(40,20)`).attr('font-size',10)
+        vis.legend.append('text').text('Basket2').attr('transform', `translate(80,20)`).attr('font-size',10)
+        vis.legend.append('text').text('Other types of the line shows the sector of the stock, color corresponding to the treemap').attr('transform', `translate(150,20)`).attr('font-size',10)
+
+
+
+
+        // Initialize clipping mask that covers the whole chart
         vis.chart.append('defs')
             .append('clipPath')
             .attr('id', 'lineChart-mask')
@@ -166,9 +193,15 @@ class LineChart {
         })
         vis.sector_data.push({
             "": "0",
-            "symbol": "Yours",
-            "name": "Yours",
-            "sector": "Yours"
+            "symbol": "Basket",
+            "name": "Basket",
+            "sector": "Basket"
+        })
+        vis.sector_data.push({
+            "": "0",
+            "symbol": "Basket2",
+            "name": "Basket2",
+            "sector": "Basket2"
         })
 
         vis.get_closest_date = function get_closest_date(date, data) {
@@ -204,10 +237,17 @@ class LineChart {
             vis.selected_stock_data['SP500'] = Object.assign({}, temp_sp500)
 
         } else {
+            let data=[]
             selected_stock_symbol.forEach(stock_symbol => {
-                if(stock_symbol==='Yours'){
+                if(stock_symbol==='Basket'||stock_symbol==='Basket2'){
+                    if (stock_symbol==='Basket'){
+                        data=custom_data
+                    }else{
+                        data=custom_data2
+                    }
+
                     let total={}
-                    custom_data.forEach(stock_symbol => {
+                    data.forEach(stock_symbol => {
                         for (let i of Object.keys(stockData[stock_symbol].historical))
                         {
                             if(total[i]){
@@ -221,7 +261,7 @@ class LineChart {
 
                         }
                     })
-                    vis.selected_stock_data['Yours']=total
+                    vis.selected_stock_data[stock_symbol]=total
                 }
                 else {
                     if (stockData[stock_symbol]) {
