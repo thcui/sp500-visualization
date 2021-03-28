@@ -206,15 +206,16 @@ class BubbleChart {
             if (event.x >= vis.custom_container_x && event.y >= vis.custom_container_y) {
                 clone.attr("transform", `scale(${vis.transform})`)
                     .attr("r", (d) => vis.radiusScale(d.marketcap));
-                text=vis.custom_container.append('text').text(d.symbol).attr("transform",`translate(${clone.attr("cx")},${clone.attr("cy")+10})`).attr('color','#000000').attr('font-size','20')
+                text=vis.custom_container.append('text').text(d.symbol).attr("transform",`translate(${event.x},${event.y+10})`).attr('color','#000000').attr('font-size','20')
                 if(event.y <= vis.custom_container_y+vis.custom_container_height){
                     data=custom_data
                     data.push(d.symbol)
                     selected_stock_symbol.push('Basket')
                 }
-            else{custom_data2.push(d.symbol)
-                    data=selected_stock_symbol
-                    data.push('Basket2')}
+            else{
+                    data=custom_data2
+                    data.push(d.symbol)
+                    selected_stock_symbol.push('Basket2')}
 
                 clone.call( d3.drag().on("drag", function (event,d){
                     d3.select(this).attr("cx", event.x).attr("cy",  event.y)
@@ -239,7 +240,7 @@ class BubbleChart {
                         }
 
                         text.remove()
-                        text=vis.custom_container.append('text').text(d.symbol).attr("transform",`translate(${clone.attr("cx")},${clone.attr("cy")+10})`).attr('color','#000000').attr('font-size','20')
+                        text=vis.custom_container.append('text').text(d.symbol).attr("transform",`translate(${event.x},${event.y+10})`).attr('color','#000000').attr('font-size','20')
 
                     }
                     else{
