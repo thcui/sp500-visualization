@@ -12,6 +12,7 @@ let sp500_data = [];
 let data = [];
 let custom_data=[]
 let custom_data2=[]
+//define color scheme
 let colorScheme = d3.scaleOrdinal()
     .domain(["Industrials", "Health Care", "Information Technology", "Communication Services",
         "Consumer Discretionary", "Utilities", "Financials", "Materials", "Real Estate",
@@ -156,7 +157,7 @@ d3.json('data/companyData.json').then(_stock => {
 
 });
 
-
+//compute stock price percentage change for bubble chart base on the given interval
 function getbubbleChartData(start_date, end_date) {
     bubbleChartData = [];
     for (var comp of Object.keys(stockData)) {
@@ -174,7 +175,7 @@ function getbubbleChartData(start_date, end_date) {
         }
     }
 }
-
+//filter bubble chart based on selected sector in treemap
 function filterSector() {
     if (sectorFilter.length !== 0) {
         bubbleChart.data = bubbleChartData.filter(d => sectorFilter.includes(d.industry));

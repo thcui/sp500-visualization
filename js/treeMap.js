@@ -20,7 +20,7 @@ class TreeMap {
             .attr("width", vis.config.containerWidth)
             .attr("height", vis.config.containerHeight)
 
-
+    //append title
         vis.svg.append('text')
             .attr('id','#bubbleChart_title')
             .attr("x", 300)
@@ -30,6 +30,7 @@ class TreeMap {
             .attr('font-size','18px')
             .attr('font-weight','bold')
             .text("Market Capitalization Distribution By Sectors")
+        // append annotation
         vis.svg
             .append("text")
             .attr("x", 20)
@@ -39,7 +40,8 @@ class TreeMap {
             .text("Size of rectangle encodes amount market capitalization in the given sector");
 
 
-
+        // Append group element that will contain our actual chart
+        // and position it according to the given margin config
         vis.innerWidth = vis.config.containerWidth - vis.config.margin.left - vis.config.margin.right;
         vis.innerHeight = vis.config.containerHeight - vis.config.margin.top - vis.config.margin.bottom;
         vis.chartArea = vis.svg
@@ -48,10 +50,6 @@ class TreeMap {
         vis.renderVis()
 
     }
-
-
-
-
 
 
     updateVis(){}
@@ -63,10 +61,10 @@ class TreeMap {
         var root = d3.stratify()
             .id(function (d) {
                 return d.sector;
-            })   // Name of the entity (column name is name in csv)
+            })
             .parentId(function (d) {
                 return d.parent;
-            })   // Name of the parent (column name is parent in csv)
+            })
             (data);
         root.sum(function (d) {
             return +d.marketcap
@@ -101,7 +99,7 @@ class TreeMap {
             .on("mouseout",this.hideToolTip)
             .on("click", this.selectSector);
 
-        // and to add the text labels
+        // append the text labels for sectors
         vis.chartArea
             .selectAll("text")
             .data(root.leaves())
@@ -120,6 +118,7 @@ class TreeMap {
             .attr("fill", "white")
 
     }
+    //show tooltip function that displays market capitalization
     showToolTip(e,d){
         const formatMarketCap = number => d3.format('.3s')(number).replace('G','Billions').replace('T','Trillions')
         let num = formatMarketCap(d.data.marketcap);
@@ -131,13 +130,11 @@ class TreeMap {
               <div><i>Amount of Market Capitalization:</i></div>
               <div> ${num}  USD</div>
                `);
-        d3.select
-
-
     }
     hideToolTip() {
         d3.select("#tooltip").style("display", "none");
     }
+    // apply filter for selected sector
     selectSector(e,d){
         console.log(d.data.sector);
         if(sectorFilter.includes(d.data.sector)){

@@ -10,12 +10,12 @@ d3.csv('data/marketcap_preprocessed.csv').then(data =>{
         industry.push(d.sector);
     });
 });
+// load csv and parse to json format
 d3.csv('data/preprocessed_data.csv').then(data => {
     data.forEach(d => {
         d.marketcap = +d.marketcap;
     });
     let stockData = {};
-    console.log("hi");
     for (let i = 0; i < companies.length; i++) {
         let historical = {};
         let filterData = data;
