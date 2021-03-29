@@ -30,6 +30,13 @@ class TreeMap {
             .attr('font-size','18px')
             .attr('font-weight','bold')
             .text("Market Capitalization Distribution By Sectors")
+        vis.svg
+            .append("text")
+            .attr("x", 20)
+            .attr("y", 405)
+            .style("font-size", 12)
+            .attr('fill','white')
+            .text("Size of rectangle encodes amount market capitalization in the given sector");
 
 
 
