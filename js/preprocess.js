@@ -41,12 +41,26 @@ d3.csv('data/preprocessed_data.csv').then(data => {
         sectorData = d3.rollup(sectorData, v => d3.sum(v, d=>d.Adj_Close), (d) => d.Date);
         let obj = {}
         obj['historical']={}
-        obj['symbol']=sector+" total"
-        obj['name']=sector
+        obj['symbol']=sector+" sector in total"
+        obj['name']=sector+" sector in total"
         obj['sector']=sector
+        let mut=1
+        // if(sector==="Information Technology"){mut=0.2748}
+            // if(sector==="Health Care"){mut=0.1458}
+            // if(sector==="Consumer Discretionary"){mut=0.1118}
+            // if(sector==="Communication Services"){mut=0.1090}
+            // if(sector==="Financials"){mut=0.0989}
+            // if(sector==="Industrials"){mut=0.079}
+            // if(sector==="Consumer Staples"){mut=0.0705}
+            // if(sector==="Utilities"){mut=0.0313}
+            // if(sector==="Real Estate"){mut=0.0280}
+            // if(sector==="Materials"){mut=0.0256}
+            // if(sector==="Energy"){mut=0.0253}
+            // if(sector==="Utilities"){mut=0.1458}
+
         for(let [key, value] of sectorData){
            obj['historical'][key]={}
-           obj['historical'][key]["price"]= value;
+           obj['historical'][key]["price"]= value*mut;
         }
         stockIndex[sector] = obj;
 

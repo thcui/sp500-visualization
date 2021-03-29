@@ -6,7 +6,7 @@ class LineChart {
             parentElement: _config.parentElement,
             containerWidth: 680,
             containerHeight: 450,
-            margin: _config.margin || {top: 30, right: 45, bottom: 60, left: 30}
+            margin: _config.margin || {top: 30, right: 45, bottom: 60, left: 40}
         }
         this.data = _data;
         this.initVis();
@@ -44,8 +44,9 @@ class LineChart {
 
         vis.svg.append("text")
             .attr("class", 'axis-name')
+            .attr("id", 'y-axis-name')
             .attr("x", vis.config.margin.left + 50)
-            .attr("y", vis.config.margin.top+vis.title_height)
+            .attr("y", vis.config.margin.top+vis.title_height-10)
             .attr("text-anchor", "middle")
             .text("Stock Price in USD($)");
 
@@ -222,20 +223,29 @@ class LineChart {
 
     updateVis() {
         let vis = this
+        vis.data_indicator_string=0
+        vis.type_indicator_string=0
+        vis.axis_name="Stock Price in USD($)"
 
         vis.selected_stock_data = {}
 
         if (selected_stock_symbol.length === 0) {
             if(sectorTotal_Data[sectorFilter[0]]){
+                vis.data_indicator_string="Sector Total Stock Price"
                 vis.selected_stock_data[sectorFilter[0]] = sectorTotal_Data[sectorFilter[0]].historical
                 updateDataType(sectorFilter[0])
+                vis.type_indicator_string= "(Per Sector)"
+
             }else {
+                vis.data_indicator_string="SP500 Index"
                 let temp_sp500 = sp500_data
                 delete temp_sp500['columns'];
                 vis.selected_stock_data['SP500'] = Object.assign({}, temp_sp500)
+                vis.axis_name="SP500 index(no unit)"
             }
 
         } else {
+
             let data = []
             selected_stock_symbol.forEach(stock_symbol => {
                 if (stock_symbol === 'Basket' || stock_symbol === 'Basket2') {
@@ -259,12 +269,15 @@ class LineChart {
 
                         }
                     })
+
                     vis.selected_stock_data[stock_symbol] = total
                 } else {
                     if (stockData[stock_symbol]) {
                         vis.selected_stock_data[stock_symbol] = stockData[stock_symbol].historical
                     }
                 }
+                vis.data_indicator_string="Stock Price(s)"
+                vis.type_indicator_string= "(Per Company)"
                 updateDataType(stock_symbol)
             });
         }
@@ -292,7 +305,7 @@ function updateDataType(stock_symbol) {
 
 
         let vis = this
-        vis.updateTitle()
+        vis.update_Title_and_AxisName()
 
 
         // vis.renderLine(vis.drawing_area,Object.keys(vis.selected_stock_data),vis.xScale_detail,vis.yScale_detail,true)
@@ -346,7 +359,7 @@ function updateDataType(stock_symbol) {
 
 
         // Update the brush and define a default position
-        const defaultBrushSelection = [vis.xScale_detail(vis.defaultDomain[0]), vis.xScale_detail(vis.defaultDomain[1])];
+        const defaultBrushSelection = [vis.xScale_detail(selectedDomain[0]), vis.xScale_detail(selectedDomain[1])];
         vis.brushG
             .call(vis.brush)
             .call(vis.brush.move, defaultBrushSelection);
@@ -388,7 +401,7 @@ function updateDataType(stock_symbol) {
                 vis.xScale_detail.domain(newDomain);
                 let from = vis.get_closest_date(newDomain[0], Object.values(vis.selected_stock_data))[0].date
                 let end = vis.get_closest_date(newDomain[1], Object.values(vis.selected_stock_data))[0].date
-                vis.updateTitle()
+                vis.update_Title_and_AxisName()
                 filterDateRange(formatTime(from), formatTime(end))
             } else {
                 vis.xScale_detail.domain(currentDomain);
@@ -478,14 +491,15 @@ function updateDataType(stock_symbol) {
         text.exit().remove()
     }
 
-    updateTitle(){
+    update_Title_and_AxisName(){
         let vis=this
+        vis.svg.select('#y-axis-name').text(vis.axis_name)
         vis.svg.select('#linechart_title')
             .attr("x", vis.config.margin.left + 300)
             .attr("y", vis.title_height)
             .attr("text-anchor", "middle")
-            .attr('font-size','18px')
+            .attr('font-size','15px')
             .attr('font-weight','bold')
-            .text("Stock Price(s) From "+selectedDomain[0].toDateString()+" to "+selectedDomain[1].toDateString())
+            .text(vis.data_indicator_string+" From "+selectedDomain[0].toDateString()+" to "+selectedDomain[1].toDateString()+vis.type_indicator_string)
     }
 }
