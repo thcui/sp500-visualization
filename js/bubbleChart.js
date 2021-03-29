@@ -204,6 +204,7 @@ class BubbleChart {
                     .on("start", function (event, d) {
                         original = d3.select(this)
                         clone = original.clone()
+                            .attr('class', 'custom')
                             .attr("r", vis.unzommed_radiusScale(d.marketcap))
                             .attr('cx', -100)
                             .attr('cy', -100)
@@ -219,7 +220,7 @@ class BubbleChart {
                     })
                     .on("drag", function (event, d) {
                         clone.attr("cx", event.x).attr("cy", event.y)
-                            .attr('class', 'custom')
+
                     })
                     .on("end", dragend)
             );
