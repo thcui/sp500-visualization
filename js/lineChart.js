@@ -224,7 +224,6 @@ class LineChart {
     updateVis() {
         let vis = this
         vis.data_indicator_string=0
-        vis.type_indicator_string=0
         vis.axis_name="Stock Price in USD($)"
 
         vis.selected_stock_data = {}
@@ -234,7 +233,6 @@ class LineChart {
                 vis.data_indicator_string="Sector Total Stock Price"
                 vis.selected_stock_data[sectorFilter[0]] = sectorTotal_Data[sectorFilter[0]].historical
                 updateDataType(sectorFilter[0])
-                vis.type_indicator_string= "(Per Sector)"
 
             }else {
                 vis.data_indicator_string="SP500 Index"
@@ -277,7 +275,6 @@ class LineChart {
                     }
                 }
                 vis.data_indicator_string="Stock Price(s)"
-                vis.type_indicator_string= "(Per Company)"
                 updateDataType(stock_symbol)
             });
         }
@@ -500,6 +497,6 @@ function updateDataType(stock_symbol) {
             .attr("text-anchor", "middle")
             .attr('font-size','15px')
             .attr('font-weight','bold')
-            .text(vis.data_indicator_string+" From "+selectedDomain[0].toDateString()+" to "+selectedDomain[1].toDateString()+vis.type_indicator_string)
+            .text(vis.data_indicator_string+" From "+selectedDomain[0].toDateString()+" to "+selectedDomain[1].toDateString())
     }
 }
