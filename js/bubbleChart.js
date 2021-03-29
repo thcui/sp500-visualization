@@ -13,6 +13,7 @@ class BubbleChart {
         let vis = this;
 
         vis.initFlag = true;
+        vis.title_height=30
 
         vis.custom_container_y=70
         vis.custom_container_width=300
@@ -28,6 +29,9 @@ class BubbleChart {
             .select(vis.config.parentElement)
             .attr("width", vis.config.containerWidth)
             .attr("height", vis.config.containerHeight);
+
+        vis.svg.append('text')
+            .attr('id','bubblechart_title')
 
         vis.custom_container=vis.svg.append('g').attr('id','custom_container')
             .style("font-size", "15px")
@@ -156,6 +160,7 @@ class BubbleChart {
         let clone;
 
         let enterDelay = vis.initFlag ? 1050 : 0;
+        vis.updateTitle()
 
 
         // Bond transition to circles
@@ -239,28 +244,30 @@ class BubbleChart {
                     basket_index=2
                     data=custom_data2
                     selected_stock_symbol.push('Basket2')}
-                // if(data.includes(d.symbol)){
-                //     clone.remove()
-                //     text.remove()
-                //     window.alert('You have already included this stock in the target basket')
-                //     return
-                // }
                 data.push(d.symbol)
 
                 clone.call( d3.drag().on("drag", function (event,d){
                     d3.select(this).attr("cx", event.x).attr("cy",  event.y)
                 }). on("end", function (event,d){
                     if (d3.select(this).attr("cx")>= vis.custom_container_x && d3.select(this).attr("cy")>= vis.custom_container_y){
-                        if(event.y <= vis.custom_container_y+vis.custom_container_height){
+                        if(event.y <= vis.custom_container_y+vis.custom_container_height&& basket_index===2){
+                            basket_index=1
                             remove_one_item(custom_data2,d.symbol)
                             custom_data.push(d.symbol)
                             selected_stock_symbol.push('Basket')
                         }
-                        else{
+                        if(event.y > vis.custom_container_y+vis.custom_container_height&& basket_index===1){
+                            basket_index=2
                             remove_one_item(custom_data,d.symbol)
                             custom_data2.push(d.symbol)
                             selected_stock_symbol.push('Basket2')
                         }
+                        // else{
+                        //     if(basket_index===2)
+                        //     remove_one_item(custom_data,d.symbol)
+                        //     custom_data2.push(d.symbol)
+                        //     selected_stock_symbol.push('Basket2')
+                        // }
 
                         text.remove()
                         text=vis.custom_container.append('text').text(d.symbol).attr("transform",`translate(${event.x},${event.y+10})`).attr('color','#000000').attr('font-size','20')
@@ -506,5 +513,19 @@ class BubbleChart {
         const dx = b.x - a.x;
         const dy = b.y - a.y;
         return dr >= 0 && dr * dr > dx * dx + dy * dy;
+    }
+
+
+    updateTitle() {
+        let vis = this
+        vis.svg.select('#bubblechart_title')
+            .attr("x", 500)
+            .attr("y", 30)
+            .attr('fill','white')
+            .attr("text-anchor", "middle")
+            .attr('font-size', '18px')
+            .attr('font-weight', 'bold')
+            .text("Market Capitalization for Companies & Percent Change from "
+                + selectedDomain[0].toDateString() + " to " + selectedDomain[1].toDateString())
     }
 }
