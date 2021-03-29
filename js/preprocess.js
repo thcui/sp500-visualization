@@ -40,8 +40,13 @@ d3.csv('data/preprocessed_data.csv').then(data => {
         let sectorData = data.filter(d => d.sector === sector);
         sectorData = d3.rollup(sectorData, v => d3.sum(v, d=>d.Adj_Close), (d) => d.Date);
         let obj = {}
+        obj['historical']={}
+        obj['symbol']=sector+" total"
+        obj['name']=sector
+        obj['sector']=sector
         for(let [key, value] of sectorData){
-            obj[key] = value;
+           obj['historical'][key]={}
+           obj['historical'][key]["price"]= value;
         }
         stockIndex[sector] = obj;
 

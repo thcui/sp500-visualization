@@ -41,9 +41,6 @@ body{
     font-weight: 700;
     font-size: 12px;
 }
-#Industrials{
-    color: orange;
-}
 #tooltip {
     position: absolute;
     display: none;

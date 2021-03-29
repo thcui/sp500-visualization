@@ -262,12 +262,6 @@ class BubbleChart {
                             custom_data2.push(d.symbol)
                             selected_stock_symbol.push('Basket2')
                         }
-                        // else{
-                        //     if(basket_index===2)
-                        //     remove_one_item(custom_data,d.symbol)
-                        //     custom_data2.push(d.symbol)
-                        //     selected_stock_symbol.push('Basket2')
-                        // }
 
                         text.remove()
                         text=vis.custom_container.append('text').text(d.symbol).attr("transform",`translate(${event.x},${event.y+10})`).attr('color','#000000').attr('font-size','20')
@@ -404,117 +398,6 @@ class BubbleChart {
                 vis.svg.call(vis.zoom);
             });
     }
-
-    add_legend(){
-        let vis=this
-        let pos_x=1100
-        let pos_y=200
-
-        let height=100
-
-
-        let svg = vis.chartArea.append('svg')
-            .style("overflow", "visible")
-            .datum([{x: pos_x, y: pos_y, r: 0, id:0}, {x: pos_x, y: pos_y, r: 0,id:1}]);
-        //
-        // let delta = svg.append("line")
-        //     .attr("stroke", "red")
-        //     .attr("stroke-width", 2)
-        //     .attr("stroke-linecap", "round");
-
-        let e = svg.append("g");
-
-        e.append("circle")
-            .attr("fill", "darkgrey")
-            .attr("r",'80')
-            .attr("fill-opacity", 0.3)
-            .attr("stroke", "red")
-        // .call(d3.drag().on("drag", dragged_large));
-
-        // e.append("circle")
-        //     .attr("fill", "red")
-        //     .attr("r", 3.5);
-
-        let circle = svg.append("g")
-            .selectAll("g")
-            .data(d => d)
-            .enter().append("g")
-            .attr("transform", d => `translate(${d.x},${d.y})`)
-            .each(function (d){
-                if(d.id===0){
-                    d3.select(this).call(d3.drag().on("drag", dragged));
-                    d3.select(this).append("path")
-                        .attr("fill", "white")
-                        .attr("transform", `scale(0.05)`)
-                        .attr("d", "M0,-300l100,100h-50v150h150v-50L300,0l-100,100v-50h-150v150h50L0,300l-100,-100h50v-150h-150v50L-300,0l100,-100v50h150v-150h-50z")
-
-                }})
-
-        circle.append("circle")
-            .attr("id", "circle_minimum")
-            .attr("cursor", "move")
-            .attr("stroke", "black")
-            .attr("fill-opacity", 0.3)
-            .attr("r", d => d.r)
-            .call(d3.drag().on("drag", null));
-
-
-        function dragged(event) {
-            let d = d3.select(this).datum();
-            d.x = Math.max(0, Math.min(pos_x, event.x));
-            d.y = Math.max(0, Math.min(pos_y, event.y));
-            update();
-        }
-
-        function update() {
-            let circles = svg.datum(),
-                ad = circles[0],
-                bd = circles[1],
-                dx = bd.x - ad.x,
-                dy = bd.y - ad.y,
-                l = Math.sqrt(dx * dx + dy * dy);
-
-            circle
-                .attr("transform", d => `translate(${d.x},${d.y})`);
-
-            if (vis.encloses(ad, bd) || vis.encloses(bd, ad)) {
-                e.style("display", "none");
-                return;
-            }
-
-            let ed = vis.encloseBasis2(ad, bd);
-
-            e
-                .style("display", null)
-                .attr("transform",`translate(${ed.x},${ed.y})`)
-                .select("circle")
-                .attr("r", ed.r);
-        }
-
-        update();
-
-        return svg.node();
-
-    }
-
-    encloseBasis2(a, b) {
-        const x1 = a.x, y1 = a.y, r1 = a.r;
-        const x2 = b.x, y2 = b.y, r2 = b.r;
-        const x21 = x2 - x1, y21 = y2 - y1, r21 = r2 - r1;
-        const l = Math.sqrt(x21 * x21 + y21 * y21);
-        return {
-            x: (x1 + x2 + x21 / l * r21) / 2,
-            y: (y1 + y2 + y21 / l * r21) / 2,
-            r: (l + r1 + r2) / 2
-        };
-    }
-    encloses(a, b) {
-        const dr = a.r - b.r;
-        const dx = b.x - a.x;
-        const dy = b.y - a.y;
-        return dr >= 0 && dr * dr > dx * dx + dy * dy;
-    }
-
 
     updateTitle() {
         let vis = this

@@ -2,6 +2,7 @@ const parseTime = d3.timeParse("%Y-%m-%d");
 const formatTime = d3.timeFormat("%Y-%m-%d");
 
 let stockData = [];
+let sectorTotal_Data = [];
 let companies_data = []
 let bubbleChartData = [];
 let lineChart, treeMap, bubbleChart
@@ -93,6 +94,9 @@ d3.json('data/companyData.json').then(_stock => {
     let startDate = selectedDomain[0].toISOString().split('T')[0];
     let endDate = selectedDomain[1].toISOString().split('T')[0];
     getbubbleChartData(startDate, endDate);
+    return d3.json('data/sectorIndex.json')})
+    .then(_sector=>{
+        sectorTotal_Data=_sector
     return d3.csv('data/industryMC.csv');
 }).then(_data => {
     data = _data;
@@ -174,12 +178,12 @@ function getbubbleChartData(start_date, end_date) {
 function filterSector() {
     if (sectorFilter.length !== 0) {
         bubbleChart.data = bubbleChartData.filter(d => sectorFilter.includes(d.industry));
-        bubbleChart.updateVis();
     } else {
         //no filter applied, get original data
         bubbleChart.data = bubbleChartData;
-        bubbleChart.updateVis();
     }
+    bubbleChart.updateVis();
+    lineChart.updateVis()
 }
 
 function filterDateRange(startDate, endDate) {
