@@ -93,6 +93,7 @@ class BubbleChart {
         vis.xScale = d3.scaleLinear().range([10, vis.innerWidth-55]);
         vis.yScale = d3.scaleLinear().range([vis.innerHeight-55, 55]);
         vis.radiusScale = d3.scaleSqrt().range([5, 50]);
+        vis.unzommed_radiusScale= d3.scaleSqrt().range([5, 50]);
         vis.Yaxis = d3.axisLeft(vis.yScale)
             .tickSize(-vis.innerWidth)
             .tickPadding(10)
@@ -145,6 +146,7 @@ class BubbleChart {
         vis.xScale.domain(d3.extent(vis.data, d => d.marketcap));
         vis.yScale.domain(d3.extent(vis.data, d => d.perChange));
         vis.radiusScale.domain(d3.extent(vis.data, d => d.marketcap));
+        vis.unzommed_radiusScale.domain(d3.extent(vis.data, d => d.marketcap));
         vis.YaxisG.call(vis.Yaxis);
         vis.XaxisG.call(vis.Xaxis);
         //remove domain
@@ -200,10 +202,14 @@ class BubbleChart {
                 d3.drag()
                     .on("start", function (event,d){
                         original=d3.select(this)
-                        clone=d3.select(this)
-                            .clone()
+                        clone=vis.svg.append('circle')
+                            .attr("fill",  colorScheme(d.industry))
+                            .attr("r", vis.unzommed_radiusScale(d.marketcap))
+                            .on("mouseover",vis.showToolTip)
+                            .on("mouseout",vis.hideToolTip)
                             .attr('cx',-100)
                             .attr('cy',-100)
+                            .attr("opacity", 0.7)
                         clone.attr('clip-path',"polygon(21% 51%, 41% 78%, 78% 26%, 89% 38%, 42% 97%, 11% 62%)")
 
                         clone.each(function() { vis.custom_container.append(() => this); });
@@ -232,8 +238,6 @@ class BubbleChart {
             }
 
             if (event.x >= vis.custom_container_x && event.y >= vis.custom_container_y) {
-                clone.attr("transform", `scale(${vis.transform})`)
-                    .attr("r", (d) => vis.radiusScale(d.marketcap));
                 text=vis.custom_container.append('text').text(d.symbol).attr("transform",`translate(${event.x},${event.y+10})`).attr('color','#000000').attr('font-size','20')
                 if(event.y <= vis.custom_container_y+vis.custom_container_height){
                     data=custom_data
