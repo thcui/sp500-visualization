@@ -83,6 +83,11 @@ circle.selected {
     pointer-events: none;
 
 }
+
+.custom{
+    cursor: pointer;
+
+}
 #search_bar{
     position: absolute;
     display:inline-flex;
