@@ -3,8 +3,8 @@ class TreeMap {
         this.config = {
             parentElement: _config.parentElement,
             containerWidth: 646,
-            containerHeight: 380,
-            margin: {top: 15, right: 10, bottom: 10, left: 15},
+            containerHeight: 405,
+            margin: {top: 30, right: 10, bottom: 10, left: 15},
         };
         this.data = _data
         this.initVis();
@@ -12,10 +12,26 @@ class TreeMap {
 
     initVis() {
         let vis = this;
+
+
+
         vis.svg = d3
             .select(vis.config.parentElement)
             .attr("width", vis.config.containerWidth)
             .attr("height", vis.config.containerHeight)
+
+
+        vis.svg.append('text')
+            .attr('id','#bubbleChart_title')
+            .attr("x", 300)
+            .attr("y", 20)
+            .attr('fill','white')
+            .attr("text-anchor", "middle")
+            .attr('font-size','18px')
+            .attr('font-weight','bold')
+            .text("Market Capitalization Distribution By Sectors")
+
+
 
         vis.innerWidth = vis.config.containerWidth - vis.config.margin.left - vis.config.margin.right;
         vis.innerHeight = vis.config.containerHeight - vis.config.margin.top - vis.config.margin.bottom;
@@ -55,7 +71,7 @@ class TreeMap {
             .size([vis.innerWidth, vis.innerHeight])
             .padding(4)
             (root)
-        vis.svg
+        vis.chartArea
             .selectAll("rect")
             .data(root.leaves())
             .enter()
@@ -79,7 +95,7 @@ class TreeMap {
             .on("click", this.selectSector);
 
         // and to add the text labels
-        vis.svg
+        vis.chartArea
             .selectAll("text")
             .data(root.leaves())
             .enter()

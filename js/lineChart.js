@@ -5,8 +5,8 @@ class LineChart {
         this.config = {
             parentElement: _config.parentElement,
             containerWidth: 680,
-            containerHeight: 400,
-            margin: _config.margin || {top: 20, right: 45, bottom: 60, left: 30}
+            containerHeight: 450,
+            margin: _config.margin || {top: 30, right: 45, bottom: 60, left: 30}
         }
         this.data = _data;
         this.initVis();
@@ -15,9 +15,9 @@ class LineChart {
     initVis() {
         let vis = this
 
-        vis.selectedDomain = selectedDomain;
-
-        vis.chart_height = vis.config.containerHeight - vis.config.margin.bottom - vis.config.margin.top
+        vis.defaultDomain = selectedDomain;
+        vis.title_height=30
+        vis.chart_height = vis.config.containerHeight - vis.config.margin.bottom - vis.config.margin.top-vis.title_height
         vis.chart_width = vis.config.containerWidth - vis.config.margin.right - vis.config.margin.left
 
         vis.margin_btw = 20
@@ -37,18 +37,21 @@ class LineChart {
             .attr('id', 'chart')
             .attr('width', vis.chart_width)
             .attr('height', vis.chart_height)
-            .attr('transform', `translate(${vis.config.margin.left},${vis.config.margin.top})`);
+            .attr('transform', `translate(${vis.config.margin.left},${vis.config.margin.top+vis.title_height})`);
+
+        vis.svg.append("text")
+            .attr("id", 'linechart_title')
 
         vis.svg.append("text")
             .attr("class", 'axis-name')
-            .attr("x", vis.config.margin.left + 80)
-            .attr("y", vis.config.margin.top)
+            .attr("x", vis.config.margin.left + 50)
+            .attr("y", vis.config.margin.top+vis.title_height)
             .attr("text-anchor", "middle")
             .text("Stock Price in USD($)");
 
         vis.svg.append("text")
             .attr("class", 'axis-name')
-            .attr('transform', `translate(${vis.chart_width},${vis.detail_chart_height})`)
+            .attr('transform', `translate(${vis.chart_width},${vis.detail_chart_height+vis.title_height})`)
             .text("Date");
 
 
@@ -87,7 +90,7 @@ class LineChart {
 
 
         //Create the legend for the line chart
-        vis.legend = vis.svg.append('g').attr('class', 'lineChart_legend').attr('transform', `translate(50,${vis.chart_height + vis.overview_chart_height})`);
+        vis.legend = vis.svg.append('g').attr('class', 'lineChart_legend').attr('transform', `translate(50,${vis.chart_height + vis.overview_chart_height+vis.title_height})`);
         vis.sp500_legend = vis.legend.append("line")
             .attr('class', 'SP500')
             .style("stroke-width", "8")
@@ -274,7 +277,11 @@ class LineChart {
 
     renderVis() {
 
+
         let vis = this
+        vis.updateTitle()
+
+
         // vis.renderLine(vis.drawing_area,Object.keys(vis.selected_stock_data),vis.xScale_detail,vis.yScale_detail,true)
         vis.renderLine(vis.overview_area, Object.keys(vis.selected_stock_data), vis.xScale_overview, vis.yScale_overview, false)
 
@@ -326,7 +333,7 @@ class LineChart {
 
 
         // Update the brush and define a default position
-        const defaultBrushSelection = [vis.xScale_detail(vis.selectedDomain[0]), vis.xScale_detail(vis.selectedDomain[1])];
+        const defaultBrushSelection = [vis.xScale_detail(vis.defaultDomain[0]), vis.xScale_detail(vis.defaultDomain[1])];
         vis.brushG
             .call(vis.brush)
             .call(vis.brush.move, defaultBrushSelection);
@@ -359,15 +366,16 @@ class LineChart {
         let currentDomain = selection.map(vis.xScale_overview.invert, vis.xScale_overview)
         // Check if the brush is still active or if it has been removed
         if (selection) {
-            if (JSON.stringify(vis.selectedDomain) !== JSON.stringify(currentDomain)) {
+            if (JSON.stringify(selectedDomain) !== JSON.stringify(currentDomain)) {
                 // Convert given pixel coordinates (range: [x0,x1]) into a time period (domain: [Date, Date])
-                vis.selectedDomain = selection.map(vis.xScale_overview.invert, vis.xScale_overview);
-                let selectedDomain = vis.selectedDomain
+                selectedDomain = selection.map(vis.xScale_overview.invert, vis.xScale_overview);
+                let newDomain = selectedDomain
 
                 // Update x-scale of the focus view accordingly
-                vis.xScale_detail.domain(selectedDomain);
-                let from = vis.get_closest_date(selectedDomain[0], Object.values(vis.selected_stock_data))[0].date
-                let end = vis.get_closest_date(selectedDomain[1], Object.values(vis.selected_stock_data))[0].date
+                vis.xScale_detail.domain(newDomain);
+                let from = vis.get_closest_date(newDomain[0], Object.values(vis.selected_stock_data))[0].date
+                let end = vis.get_closest_date(newDomain[1], Object.values(vis.selected_stock_data))[0].date
+                vis.updateTitle()
                 filterDateRange(formatTime(from), formatTime(end))
             } else {
                 vis.xScale_detail.domain(currentDomain);
@@ -454,5 +462,16 @@ class LineChart {
             .attr('font-size', 12)
 
         text.exit().remove()
+    }
+
+    updateTitle(){
+        let vis=this
+        vis.svg.select('#linechart_title')
+            .attr("x", vis.config.margin.left + 300)
+            .attr("y", vis.title_height)
+            .attr("text-anchor", "middle")
+            .attr('font-size','18px')
+            .attr('font-weight','bold')
+            .text("Stock Price(s) From "+selectedDomain[0].toDateString()+" to "+selectedDomain[1].toDateString())
     }
 }
