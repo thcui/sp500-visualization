@@ -208,6 +208,8 @@ class BubbleChart {
                             .attr('cx', -100)
                             .attr('cy', -100)
                             .attr('transform', null)
+                            .on("mouseover", vis.showToolTip)
+                            .on("mouseout", vis.hideToolTip)
                         clone.attr('clip-path', "polygon(21% 51%, 41% 78%, 78% 26%, 89% 38%, 42% 97%, 11% 62%)")
 
                         clone.each(function () {
