@@ -79,7 +79,7 @@ class LineChart {
         vis.add_legend()
         //Create the area for putting different elements in the line chart
         vis.create_the_area()
-
+        vis.last_selected_stock_data={}
         vis.transition = function transition(path) {
             path.transition()
                 .duration(2000)
@@ -124,7 +124,7 @@ class LineChart {
         //Initialize the variable component in the title of the line chart
         vis.data_indicator_string = 0
         vis.axis_name = "Stock Price in USD($)"
-        vis.selected_stock_data = {}
+        vis.if_animation=true
 
         //use the proper data based on the user's selection
         vis.import_data()
@@ -152,7 +152,7 @@ class LineChart {
             .on('mouseleave', () => {
                 vis.tooltip.style('display', 'none');
             })
-            .on('mousemove', vis.update_tooltip())
+            .on('mousemove', function (event){vis.update_tooltip(event)})
 
 
         vis.xAxisG_detail
@@ -267,7 +267,10 @@ class LineChart {
                 .y(function (d) {
                     return y_scale(d.price)
                 })
-            ).call(vis.transition);
+            )
+        if(vis.if_animation){
+        lineMerge.call(vis.transition);
+        }
 
         line.exit().remove()
 
@@ -287,7 +290,9 @@ class LineChart {
 
 
         textMerge.text(d => d)
-            .attr('stroke', d => colorScheme(vis.getSectors(d)))
+            .attr('fill', d => colorScheme(vis.getSectors(d)))
+            .attr('stroke', 'white')
+            .attr('stroke-width', '0.1')
             .attr('class', d => 'stock_name ' + vis.getSectors(d).replace(' ', '_'))
         textMerge.datum(d => Object.values(vis.selected_stock_data[d]).filter(v =>
             v.date.toDateString() === boundary_date.toDateString()))
@@ -346,6 +351,7 @@ class LineChart {
 
     import_data() {
         let vis = this
+        vis.selected_stock_data = {}
         if (selected_stock_symbol.length === 0) {
             if (sectorTotal_Data[sectorFilter[0]]) {
                 vis.data_indicator_string = "Sector Total Stock Price"
@@ -361,7 +367,7 @@ class LineChart {
             }
 
         } else {
-
+            vis.selected_stock_data = {}
             let data = []
             selected_stock_symbol.forEach(stock_symbol => {
                 if (stock_symbol === 'Basket' || stock_symbol === 'Basket2') {
@@ -396,6 +402,10 @@ class LineChart {
                 vis.updateDataType(stock_symbol)
             });
         }
+        if(JSON.stringify(vis.last_selected_stock_data)===JSON.stringify(vis.selected_stock_data)){
+            vis.if_animation=false
+        }
+        vis.last_selected_stock_data = vis.selected_stock_data
     }
 
     updateDataType(stock_symbol) {
@@ -510,7 +520,8 @@ class LineChart {
         }
     }
 
-    update_tooltip() {
+    update_tooltip(event) {
+        let vis=this
 
         // Find nearest data point
 
