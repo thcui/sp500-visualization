@@ -125,7 +125,7 @@ class LineChart {
             .append('rect')
             .attr('width', vis.detail_chart_width)
             .attr('y', -vis.config.margin.top)
-            .attr('height', vis.detail_chart_height);
+            .attr('height', vis.detail_chart_height+vis.config.margin.top);
 
         // Apply clipping mask to 'vis.drawing_area' to clip semicircles at the very beginning and end of a year
         vis.drawing_area = vis.chart.append('g')
@@ -180,7 +180,8 @@ class LineChart {
                 if (selection) vis.brushed(selection);
             })
             .on('end', function ({selection}) {
-                if (!selection) vis.brushed(null);
+                if (!selection)
+                    vis.brushed(null);
             });
 
 
@@ -204,9 +205,14 @@ class LineChart {
             "sector": "Basket2"
         })
         vis.getSectors = d => {
-            return vis.sector_data.filter(v => {
+            let company=vis.sector_data.filter(v => {
                 return v.symbol === d
-            })[0].sector
+            })[0]
+
+            if(company){
+            return company.sector
+            }
+            return d
         }
 
 
@@ -220,10 +226,14 @@ class LineChart {
         vis.selected_stock_data = {}
 
         if (selected_stock_symbol.length === 0) {
-
-            let temp_sp500 = sp500_data
-            delete temp_sp500['columns'];
-            vis.selected_stock_data['SP500'] = Object.assign({}, temp_sp500)
+            if(sectorTotal_Data[sectorFilter[0]]){
+                vis.selected_stock_data[sectorFilter[0]] = sectorTotal_Data[sectorFilter[0]].historical
+                updateDataType(sectorFilter[0])
+            }else {
+                let temp_sp500 = sp500_data
+                delete temp_sp500['columns'];
+                vis.selected_stock_data['SP500'] = Object.assign({}, temp_sp500)
+            }
 
         } else {
             let data = []
@@ -255,21 +265,24 @@ class LineChart {
                         vis.selected_stock_data[stock_symbol] = stockData[stock_symbol].historical
                     }
                 }
-                d3.map(Object.keys(vis.selected_stock_data[stock_symbol]), d => vis.selected_stock_data[stock_symbol][d]['date'] = d)
-                Object.values(vis.selected_stock_data[stock_symbol]).forEach(stock => {
-                    Object.keys(stock).forEach(attr => {
-                        if (attr === 'date') {
-                            stock[attr] = parseTime(stock[attr])
-                        }
-                        if (attr === 'price' || attr === 'Volume') {
-                            stock[attr] = +(stock[attr])
-                        }
-                    })
-                })
-
-
+                updateDataType(stock_symbol)
             });
         }
+function updateDataType(stock_symbol) {
+    d3.map(Object.keys(vis.selected_stock_data[stock_symbol]), d => vis.selected_stock_data[stock_symbol][d]['date'] = d)
+    Object.values(vis.selected_stock_data[stock_symbol]).forEach(stock => {
+        Object.keys(stock).forEach(attr => {
+            if (attr === 'date') {
+                stock[attr] = parseTime(stock[attr])
+            }
+            if (attr === 'price' || attr === 'Volume') {
+                stock[attr] = +(stock[attr])
+            }
+        })
+    })
+}
+
+
 
         vis.set_lineChart_property()
     }
@@ -416,7 +429,8 @@ class LineChart {
 
         let lineEnter = line.enter().append('path')
         let lineMerge = lineEnter.merge(line)
-        lineMerge.attr('stroke', d => colorScheme(vis.getSectors(d)))
+        lineMerge.attr('stroke',
+                d => colorScheme(vis.getSectors(d)))
             .attr('class', d => 'line ' + vis.getSectors(d).replace(' ', '_'))
 
 
@@ -456,8 +470,8 @@ class LineChart {
         textMerge.datum(d => Object.values(vis.selected_stock_data[d]).filter(v =>
             v.date.toDateString() === boundary_date.toDateString()))
             .attr('transform',
-                d => `translate(${vis.chart_width + 20},${y_scale(d[0].price)})`)
-            .attr('text-anchor', 'middle')
+                d => `translate(${vis.chart_width + 40},${y_scale(d[0].price)})`)
+            .attr('text-anchor', 'end')
             .attr('vertical-align', 'text-bottom')
             .attr('font-size', 12)
 
