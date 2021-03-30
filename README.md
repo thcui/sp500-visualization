@@ -48,6 +48,7 @@ js/main.js:
 - handle search submission and update line chart view
 - getbubbleChartData() function computes stock price percentage change for bubble chart base on the given interval
 - filterSector() filter bubble chart data points based on the selected sector in tree map
+- filterDateRange() filter bubble chart data points based on the selected date range in the line chart
 
 js/treeMap.js
 - 
@@ -78,8 +79,8 @@ function vis.brushed will be called and it then calls renderline to draw the lin
 
 js/bubbleChart.js
 -
-- initialize the bubblechart based on https://codesandbox.io/s/github/UBC-InfoVis/2021-436V-examples/tree/master/d3-interactive-scatter-plot and Programming Assignment 2.
-- user can click to select/unselect bubble for detailed trend on linechart via `clickBubble()`.
+- initialize the bubble chart based on https://codesandbox.io/s/github/UBC-InfoVis/2021-436V-examples/tree/master/d3-interactive-scatter-plot and Programming Assignment 2.
+- user can click to select/unselect bubble for detailed trend on line chart via `clickBubble()`.
 - hover over each bubble, the app will display detailed tooltips for each company. Implementation are in `showTooltip()` and `hideToolTip()`.
 - d3 zoom referred to https://www.freecodecamp.org/news/get-ready-to-zoom-and-pan-like-a-pro-after-reading-this-in-depth-tutorial-5d963b0a153e/
 - `initialZoom()` provides the functionality of a initial zooming + panning transition when the page is loaded up, to advise the user of the functionality of zooming.
@@ -89,8 +90,8 @@ js/bubbleChart.js
 - resize/drag the brush, click on button `Reset Stocks Selection`, and click on a block of treemap will trigger transition of circles bound in `renderVis()`.
 - `Reset Stocks Selection` is bound to a click event on `vis.resetZoom()` and `vis.resetSelectedStockSymbol()`. Click on `Reset Stocks Selection` will reset the selections and viewpoint.
 - For each bubble, we added the support for drag by `.call(d3.drag().…………………`,   
-  - When the drag is started: It will create a new circle with clip-path on it, so that it will looks like a check mark, we will call it the "new shape"
-  - When the drag is moving: The new shape will adjust the position based on the pointer: `clone.attr("cx", event.x+vis.config.margin.left).attr("cy", event.y+vis.config.margin.top)`  
+  - When the drag is started: It will create a new circle with clip-path on it, so that it will look like a check mark, we will call it the "new shape". The position will be the current position of the mouse pointer.
+  - When the drag is moving: The new shape will adjust the position based on the mouse pointer: `clone.attr("cx", event.x+vis.config.margin.left).attr("cy", event.y+vis.config.margin.top)`  
   - When the drag is end: The function dragend() will be called, and it performs different action based on the final position of the drag:
     1. If it is in the area of one of the rectangle for the 'basket', we will put the symbol of this stock into the `custom_data` or `custom_data2`, and then update the line chart based on it. Also, we will let the “new shape” can be dragged so that the user can remove it from the basket.  
     2. If it is not in the area of 'basket', we will treat it as the user want to cancel the drag and nothing will happen(the "new shape" will be removed).
