@@ -34,7 +34,7 @@ class TreeMap {
         vis.svg
             .append("text")
             .attr("x", 20)
-            .attr("y", 405)
+            .attr("y", 403)
             .style("font-size", 12)
             .attr('fill','white')
             .text("Size of rectangle encodes amount market capitalization in the given sector");
