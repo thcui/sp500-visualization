@@ -13,7 +13,7 @@
 #### CSID: 
 
 # I. External Sources Used:
-### (The changed from the cited resources is included in the next part)
+### (The change from the cited resources is included in the next part)
 #### lineChart Animation:
 https://observablehq.com/@jurestabuc/animated-line-chart
 #### dragging:
