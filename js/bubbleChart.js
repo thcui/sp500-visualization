@@ -165,7 +165,7 @@ class BubbleChart {
                     .append("circle")
                     .attr("cx", (d) => vis.xScale(d.marketcap))
                     .attr("cy", (d) => vis.yScale(d.perChange))
-                    .attr("cursor","pointer")
+                    .attr("cursor", "pointer")
                     .attr("r", 0)
                     .attr("fill", (d) => colorScheme(d.industry))
                     .attr("opacity", 0.7)
@@ -214,12 +214,13 @@ class BubbleChart {
 
                     })
                     .on("drag", function (event, d) {
-                        clone.attr("cx", event.x+vis.config.margin.left).attr("cy", event.y+vis.config.margin.top)
+                        clone.attr("cx", event.x + vis.config.margin.left).attr("cy", event.y + vis.config.margin.top)
 
                     })
-                    .on("end", function (event, d) {vis.dragend(event,d,clone)})
+                    .on("end", function (event, d) {
+                        vis.dragend(event, d, clone)
+                    })
             );
-
 
 
         // Render zoom function
@@ -343,79 +344,87 @@ class BubbleChart {
                 + selectedDomain[0].toDateString() + " to " + selectedDomain[1].toDateString())
     }
 
-    dragend(event, d,clone) {
-        let vis=this
+    dragend(event, d, clone) {
+        let vis = this
         let basket_index = 0
         let text
         let data
-
-        function remove_one_item(arr, value) {
-            let index = arr.indexOf(value);
-            if (index > -1) {
-                arr.splice(index, 1);
-            }
-            return arr;
-        }
 
         if (event.x >= vis.custom_container_x && event.y >= vis.custom_container_y) {
             text = vis.custom_container.append('text').text(d.symbol).attr("transform", `translate(${event.x},${event.y + vis.config.margin.top})`).attr('color', '#000000').attr('font-size', '20')
             if (event.y <= vis.custom_container_y + vis.custom_container_height) {
                 data = custom_data
                 basket_index = 1
-                // selected_stock_symbol.push('Basket')
             } else {
                 basket_index = 2
                 data = custom_data2
-                // selected_stock_symbol.push('Basket2')
             }
-            selected_stock_symbol.push('Basket'+basket_index.toString())
+            selected_stock_symbol.push('Basket' + basket_index.toString())
             data.push(d.symbol)
 
-            clone.call(d3.drag().on("drag", function (event, d) {
-                text.attr("transform", `translate(${event.x-vis.config.margin.left},${event.y})`)
-                d3.select(this).attr("cx", event.x).attr("cy", event.y)
-            }).on("end", function (event, d) {
-                if (d3.select(this).attr("cx") >= vis.custom_container_x && d3.select(this).attr("cy") >= vis.custom_container_y) {
-                    if (event.y <= vis.custom_container_y + vis.custom_container_height && basket_index === 2) {
-                        basket_index = 1
-                        remove_one_item(custom_data2, d.symbol)
-                        custom_data.push(d.symbol)
-                        // selected_stock_symbol.push('Basket')
-                    }
-                    if (event.y > vis.custom_container_y + vis.custom_container_height && basket_index === 1) {
-                        basket_index = 2
-                        remove_one_item(custom_data, d.symbol)
-                        custom_data2.push(d.symbol)
-                        // selected_stock_symbol.push('Basket2')
-                    }
-                } else {
-                    if (basket_index === 1) {
-                        remove_one_item(custom_data, d.symbol)
-                    }
-                    if (basket_index === 2) {
-                        remove_one_item(custom_data2, d.symbol)
-                    }
-
-                    d3.select(this).remove()
-                    text.remove()
-
-                }
-                if (custom_data.length === 0) {
-                    selected_stock_symbol = selected_stock_symbol.filter(v => {
-                        return v !== 'Basket1'
-                    })
-                }
-                if (custom_data2.length === 0) {
-                    selected_stock_symbol = selected_stock_symbol.filter(v => {
-                        return v !== 'Basket2'
-                    })
-                }
-                lineChart.updateVis()
-            }))
+            clone.call(d3.drag()
+                .on("drag", function (event, d) {
+                    text.attr("transform", `translate(${event.x - vis.config.margin.left},${event.y})`)
+                    d3.select(this).attr("cx", event.x).attr("cy", event.y)
+                })
+                .on("end", function (event, d) {
+                    basket_index = vis.dragend_for_new_shape(event, d, basket_index, text, d3.select(this))
+                }))
             lineChart.updateVis()
         } else {
             clone.remove()
         }
 
+    }
+
+    dragend_for_new_shape(event, d, basket_index, text, parent) {
+        let vis = this
+
+        if (event.x >= vis.custom_container_x && event.y >= vis.custom_container_y) {
+            if (event.y <= vis.custom_container_y + vis.custom_container_height && basket_index === 2) {
+                basket_index = 1
+                vis.remove_one_item(custom_data2, d.symbol)
+                custom_data.push(d.symbol)
+            } else {
+                if (event.y > vis.custom_container_y + vis.custom_container_height && basket_index === 1) {
+                    basket_index = 2
+                    vis.remove_one_item(custom_data, d.symbol)
+                    custom_data2.push(d.symbol)
+                }
+            }
+            selected_stock_symbol.push('Basket' + basket_index.toString())
+
+        } else {
+            if (basket_index === 1) {
+                vis.remove_one_item(custom_data, d.symbol)
+            }
+            if (basket_index === 2) {
+                vis.remove_one_item(custom_data2, d.symbol)
+            }
+
+            parent.remove()
+            text.remove()
+
+        }
+        if (custom_data.length === 0) {
+            selected_stock_symbol = selected_stock_symbol.filter(v => {
+                return v !== 'Basket1'
+            })
+        }
+        if (custom_data2.length === 0) {
+            selected_stock_symbol = selected_stock_symbol.filter(v => {
+                return v !== 'Basket2'
+            })
+        }
+        lineChart.updateVis()
+        return basket_index
+    }
+
+    remove_one_item(arr, value) {
+        let index = arr.indexOf(value);
+        if (index > -1) {
+            arr.splice(index, 1);
+        }
+        return arr;
     }
 }
