@@ -1,1 +1,6 @@
-# 436v-project_d6h0b_l6q1b_y7r1b
+# 436v-project Group 6
+preprocess.js
+main.js
+treemap.js
+linChart.js
+bubbleChart.js
