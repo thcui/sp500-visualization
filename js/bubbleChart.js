@@ -173,6 +173,7 @@ class BubbleChart {
                     .append("circle")
                     .attr("cx", (d) => vis.xScale(d.marketcap))
                     .attr("cy", (d) => vis.yScale(d.perChange))
+                    .attr("cursor","pointer")
                     .attr("r", 0)
                     .attr("fill", (d) => colorScheme(d.industry))
                     .attr("opacity", 0.7)
