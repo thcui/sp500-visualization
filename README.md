@@ -8,9 +8,9 @@
 #### Student Number: 19279158
 #### CSID: d6h0b
   
-### Name: 
-#### Student Number:
-#### CSID: 
+### Name: Emily Lian
+#### Student Number: 36054062
+#### CSID: l6q1b
 
 # I. External Sources Used:
 ### (The change from the cited resources is included in the next part)
@@ -52,8 +52,8 @@ js/main.js:
 js/treeMap.js
 - 
 - referred to treemap examples in https://www.d3-graph-gallery.com/treemap\
-- render treemap and show tooltips on a hover
-- implemented filter interaction on a sector selection
+- hover over each rectangle will display detailed tooltips for each sector. Implementation are in `showTooltip()` and `hideToolTip()`.
+- user can select/deselect a sector to filter elements on bubble chart using selectSector(e,d), this function will further call filterSector() in main.js
 
 js/lineChart.js
 - 
