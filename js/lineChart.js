@@ -198,9 +198,10 @@ class LineChart {
 
         let vis = this;
 
-        let currentDomain = selection.map(vis.xScale_overview.invert, vis.xScale_overview)
+
         // Check if the brush is still active or if it has been removed
         if (selection) {
+            let currentDomain = selection.map(vis.xScale_overview.invert, vis.xScale_overview)
             if (JSON.stringify(selectedDomain) !== JSON.stringify(currentDomain)) {
                 // Convert given pixel coordinates (range: [x0,x1]) into a time period (domain: [Date, Date])
                 selectedDomain = selection.map(vis.xScale_overview.invert, vis.xScale_overview);
