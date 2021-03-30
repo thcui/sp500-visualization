@@ -328,7 +328,7 @@ class LineChart {
         let legend_x1 = 0
         let legend_x2 = 30
         for (let legend of ['Basket1', 'Basket2', "Industrials", "Health Care", "Information Technology", "Communication Services",
-            "Consumer Discretionary", "Utilities", "Financials", "Materials", "Real_Estate",
+            "Consumer Discretionary", "Utilities", "Financials", "Materials", "Real Estate",
             "Consumer Staples", "Energy"]) {
             legend_x1 = legend_x2 + 10
             legend_x2 = legend_x1 + 30
