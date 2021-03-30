@@ -362,12 +362,13 @@ class BubbleChart {
             if (event.y <= vis.custom_container_y + vis.custom_container_height) {
                 data = custom_data
                 basket_index = 1
-                selected_stock_symbol.push('Basket')
+                // selected_stock_symbol.push('Basket')
             } else {
                 basket_index = 2
                 data = custom_data2
-                selected_stock_symbol.push('Basket2')
+                // selected_stock_symbol.push('Basket2')
             }
+            selected_stock_symbol.push('Basket'+basket_index.toString())
             data.push(d.symbol)
 
             clone.call(d3.drag().on("drag", function (event, d) {
@@ -379,13 +380,13 @@ class BubbleChart {
                         basket_index = 1
                         remove_one_item(custom_data2, d.symbol)
                         custom_data.push(d.symbol)
-                        selected_stock_symbol.push('Basket')
+                        // selected_stock_symbol.push('Basket')
                     }
                     if (event.y > vis.custom_container_y + vis.custom_container_height && basket_index === 1) {
                         basket_index = 2
                         remove_one_item(custom_data, d.symbol)
                         custom_data2.push(d.symbol)
-                        selected_stock_symbol.push('Basket2')
+                        // selected_stock_symbol.push('Basket2')
                     }
                 } else {
                     if (basket_index === 1) {
@@ -401,7 +402,7 @@ class BubbleChart {
                 }
                 if (custom_data.length === 0) {
                     selected_stock_symbol = selected_stock_symbol.filter(v => {
-                        return v !== 'Basket'
+                        return v !== 'Basket1'
                     })
                 }
                 if (custom_data2.length === 0) {

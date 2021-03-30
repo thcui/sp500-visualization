@@ -327,7 +327,7 @@ class LineChart {
 
         let legend_x1 = 0
         let legend_x2 = 30
-        for (let legend of ['Basket', 'Basket2', "Industrials", "Health Care", "Information Technology", "Communication Services",
+        for (let legend of ['Basket1', 'Basket2', "Industrials", "Health Care", "Information Technology", "Communication Services",
             "Consumer Discretionary", "Utilities", "Financials", "Materials", "Real_Estate",
             "Consumer Staples", "Energy"]) {
             legend_x1 = legend_x2 + 10
@@ -338,7 +338,7 @@ class LineChart {
 
         //Add text to the legend for the line chart
         vis.legend.append('text').text('SP500').attr('transform', `translate(0,20)`).attr('font-size', 10)
-        vis.legend.append('text').text('Basket').attr('transform', `translate(40,20)`).attr('font-size', 10)
+        vis.legend.append('text').text('Basket1').attr('transform', `translate(40,20)`).attr('font-size', 10)
         vis.legend.append('text').text('Basket2').attr('transform', `translate(80,20)`).attr('font-size', 10)
         vis.legend.append('text').text('Other types of the line shows the sector of the stock, color corresponding to the treemap').attr('transform', `translate(150,20)`).attr('font-size', 10)
 
@@ -366,8 +366,8 @@ class LineChart {
             vis.selected_stock_data = {}
             let data = []
             selected_stock_symbol.forEach(stock_symbol => {
-                if (stock_symbol === 'Basket' || stock_symbol === 'Basket2') {
-                    if (stock_symbol === 'Basket') {
+                if (stock_symbol === 'Basket1' || stock_symbol === 'Basket2') {
+                    if (stock_symbol === 'Basket1') {
                         data = custom_data
                     } else {
                         data = custom_data2
@@ -487,7 +487,7 @@ class LineChart {
         let vis = this
         vis.sector_data = companies_data
         //There are some special data do not have sectors they belonged to, so we need to manually set them
-        for (let special_d of ["SP500", "Basket", "Basket2"]) {
+        for (let special_d of ["SP500", "Basket1", "Basket2"]) {
             vis.sector_data.push({
                 "symbol": special_d,
                 "name": special_d,
