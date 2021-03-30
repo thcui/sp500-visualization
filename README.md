@@ -1,4 +1,4 @@
-# 436v-project Group 6: S&P 500 Visualization
+# CPSC436V-Project Group 6: S&P 500 Visualization
 
 ### Name: Tianhang Cui
 #### Student Number:32968299
