@@ -73,6 +73,7 @@ d3.json('data/companyData.json').then(_stock => {
             if (searched_company) {
                 let symbol = searched_company.symbol
                 selected_stock_symbol.push(symbol)
+                bubbleChart.updateVis()
                 lineChart.updateVis()
             }
             else {
