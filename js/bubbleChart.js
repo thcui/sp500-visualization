@@ -103,16 +103,16 @@ class BubbleChart {
         // Append axis titles
         vis.chartArea.append('text')
             .attr('class', 'axis-name')
-            .attr('y', vis.innerHeight - 15)
-            .attr('x', vis.innerWidth - 30)
+            .attr('y', vis.innerHeight)
+            .attr('x', vis.innerWidth -80)
             .attr("text-anchor", "middle")
-            .text("Market Cap");
+            .text("Amount of Market Capitalization");
         vis.svg.append('text')
             .attr('class', 'axis-name')
-            .attr('x', 35)
+            .attr('x', 60)
             .attr('y', 60)
             .attr("text-anchor", "middle")
-            .text("Price Change");
+            .text("Stock Price Change");
 
         // zoom and pan
         vis.zoom = d3.zoom()
@@ -340,7 +340,7 @@ class BubbleChart {
             .attr("text-anchor", "middle")
             .attr('font-size', '18px')
             .attr('font-weight', 'bold')
-            .text("Market Capitalization & Price Change for Companies from "
+            .text("Market Capitalization & Stock Price Change for Companies from "
                 + selectedDomain[0].toDateString() + " to " + selectedDomain[1].toDateString())
     }
 
