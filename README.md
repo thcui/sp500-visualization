@@ -4,9 +4,9 @@
 #### Student Number:32968299
 #### CSID: y7r1b
   
-### Name: 
-#### Student Number:
-#### CSID: 
+### Name: Yuchen Liu
+#### Student Number: 19279158
+#### CSID: d6h0b
   
 ### Name: 
 #### Student Number:
@@ -21,7 +21,10 @@ https://observablehq.com/@d3/circle-dragging-i
 #### brush for the line chart
 https://codesandbox.io/s/github/UBC-InfoVis/2021-436V-examples/tree/master/d3-brushing-linking?file=/js/focusContextVis.js
 #### treemap
-https://www.d3-graph-gallery.com/treemap\
+https://www.d3-graph-gallery.com/treemap
+#### bubbleChart
+https://codesandbox.io/s/github/UBC-InfoVis/2021-436V-examples/tree/master/d3-interactive-scatter-plot
+https://www.freecodecamp.org/news/get-ready-to-zoom-and-pan-like-a-pro-after-reading-this-in-depth-tutorial-5d963b0a153e/
 
 # II. High-level Process/Changes Made:
 css/style.css:

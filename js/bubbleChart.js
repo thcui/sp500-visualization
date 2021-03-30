@@ -181,6 +181,9 @@ class BubbleChart {
                     .attr("cx", (d) => vis.xScale(d.marketcap))
                     .attr("cy", (d) => vis.yScale(d.perChange))
                     .attr("r", (d) => vis.radiusScale(d.marketcap))
+                    .attr("class", (d) => `${d.industry} ${d.symbol} ${
+                        selected_stock_symbol.includes(d.symbol) ? 'selected' : ''
+                    }`)
                     .selection(),
                 exit => exit
                     .transition()
