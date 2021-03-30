@@ -220,7 +220,7 @@ class BubbleChart {
 
                     })
                     .on("drag", function (event, d) {
-                        clone.attr("cx", event.x).attr("cy", event.y)
+                        clone.attr("cx", event.x+vis.config.margin.left).attr("cy", event.y+vis.config.margin.top)
 
                     })
                     .on("end", dragend)
