@@ -3,8 +3,8 @@ class TreeMap {
         this.config = {
             parentElement: _config.parentElement,
             containerWidth: 646,
-            containerHeight: 405,
-            margin: {top: 30, right: 10, bottom: 10, left: 15},
+            containerHeight: 410,
+            margin: {top: 30, right: 10, bottom: 15, left: 15},
         };
         this.data = _data
         this.initVis();
@@ -37,7 +37,7 @@ class TreeMap {
             .attr("y", 403)
             .style("font-size", 12)
             .attr('fill','white')
-            .text("Size of rectangle encodes amount market capitalization in the given sector");
+            .text("Size of rectangle encodes the amount of market capitalization in the given sector");
 
 
         // Append group element that will contain our actual chart
