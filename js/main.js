@@ -16,14 +16,14 @@ let custom_data2=[]
 let colorScheme = d3.scaleOrdinal()
     .domain(["Industrials", "Health Care", "Information Technology", "Communication Services",
         "Consumer Discretionary", "Utilities", "Financials", "Materials", "Real Estate",
-        "Consumer Staples", "Energy","SP500","Basket","Basket2"])
+        "Consumer Staples", "Energy","SP500","Basket1","Basket2"])
     .range(["#ED8936", "#2F855A", "#3182CE", "#702459", "#805AD5", "#FC8181", "#C53030",
         "#718096", "#38B2AC", "#B7791F", "#E0CE61","#FFFFFF","#dddddd","Yellow"]);
 let selectedDomain = [new Date('2020-04-01'), new Date('2021-01-29')];
 
 
 
-// Avoid promise hell
+// Avoid promise hell, read all the data needed for this visualization
 d3.json('data/companyData.json').then(_stock => {
     stockData = _stock;
     let startDate = selectedDomain[0].toISOString().split('T')[0];
@@ -63,9 +63,6 @@ d3.json('data/companyData.json').then(_stock => {
     treeMap = new TreeMap({parentElement: "#treeMap"}, data);
     bubbleChart = new BubbleChart({parentElement: '#bubbleChart',}, bubbleChartData);
     lineChart = new LineChart({parentElement: '#lineChart',}, data);
-    // bubbleChart.initialZoom();
-
-    let a = companies_data
 
     $(() => {
         const submitSearch = () => {

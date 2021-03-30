@@ -79,10 +79,14 @@ class LineChart {
         vis.add_legend()
         //Create the area for putting different elements in the line chart
         vis.create_the_area()
-        vis.last_selected_stock_data={}
+        vis.last_selected_stock_data = {}
         vis.transition = function transition(path) {
+            let duration = 2000
+            if (!vis.if_animation) {
+                duration = 0
+            }
             path.transition()
-                .duration(2000)
+                .duration(duration)
                 .attrTween("stroke-dasharray", tweenDash)
                 .on("end", () => {
                     d3.select(this).call(vis.transition);
@@ -124,7 +128,7 @@ class LineChart {
         //Initialize the variable component in the title of the line chart
         vis.data_indicator_string = 0
         vis.axis_name = "Stock Price in USD($)"
-        vis.if_animation=true
+        vis.if_animation = true
 
         //use the proper data based on the user's selection
         vis.import_data()
@@ -152,17 +156,17 @@ class LineChart {
             .on('mouseleave', () => {
                 vis.tooltip.style('display', 'none');
             })
-            .on('mousemove', function (event){vis.update_tooltip(event)})
+            .on('mousemove', function (event) {
+                vis.update_tooltip(event)
+            })
 
 
         vis.xAxisG_detail
             .call(vis.xAxis_detail)
             .call(g => g.select('.domain').remove())
 
-
         vis.xAxisG_overview
             .call(vis.xAxis_overview)
-
 
         vis.yAxisG
             .call(vis.yAxis_detail)
@@ -187,9 +191,8 @@ class LineChart {
         }
         vis.xScale_detail.domain([d3.min(vis.All_date), d3.max(vis.All_date)])
         vis.yScale_detail.domain([d3.max(vis.All_price), d3.min(vis.All_price)])
-        vis.xScale_overview.domain([d3.min(vis.All_date), d3.max(vis.All_date)])
-        vis.yScale_overview.domain([d3.max(vis.All_price), d3.min(vis.All_price)])
-
+        vis.xScale_overview.domain(vis.xScale_detail.domain())
+        vis.yScale_overview.domain(vis.yScale_detail.domain())
     }
 
 
@@ -198,30 +201,31 @@ class LineChart {
 
         let vis = this;
 
-        let currentDomain = selection.map(vis.xScale_overview.invert, vis.xScale_overview)
         // Check if the brush is still active or if it has been removed
         if (selection) {
+            let currentDomain = selection.map(vis.xScale_overview.invert, vis.xScale_overview)
+            // Update x-scale of the focus view accordingly
+            vis.xScale_detail.domain(currentDomain);
             if (JSON.stringify(selectedDomain) !== JSON.stringify(currentDomain)) {
                 // Convert given pixel coordinates (range: [x0,x1]) into a time period (domain: [Date, Date])
-                selectedDomain = selection.map(vis.xScale_overview.invert, vis.xScale_overview);
-                let newDomain = selectedDomain
-
-                // Update x-scale of the focus view accordingly
-                vis.xScale_detail.domain(newDomain);
-                let from = vis.get_closest_date(newDomain[0], Object.values(vis.selected_stock_data))[0].date
-                let end = vis.get_closest_date(newDomain[1], Object.values(vis.selected_stock_data))[0].date
-                vis.update_Title_and_AxisName()
+                selectedDomain = currentDomain
+                let from = vis.get_closest_date(selectedDomain[0], Object.values(vis.selected_stock_data))[0].date
+                let end = vis.get_closest_date(selectedDomain[1], Object.values(vis.selected_stock_data))[0].date
                 filterDateRange(formatTime(from), formatTime(end))
-            } else {
-                vis.xScale_detail.domain(currentDomain);
             }
         } else {
             // Reset x-scale of the focus view (full time period)
+            selectedDomain = vis.xScale_overview.domain()
             vis.xScale_detail.domain(vis.xScale_overview.domain());
+            filterDateRange(formatTime(vis.xScale_overview.domain()[0]), formatTime(vis.xScale_overview.domain()[1]))
         }
 
-        // Redraw line and update x-axis labels in focus view
+
+        vis.update_Title_and_AxisName()
+
+        // Redraw line
         vis.renderLine(vis.detailedView_area, Object.keys(vis.selected_stock_data), vis.xScale_detail, vis.yScale_detail, true)
+        // update x-axis labels in focus view
         vis.xAxisG_detail.call(vis.xAxis_detail);
     }
 
@@ -232,14 +236,13 @@ class LineChart {
         let temp = []
         for (let stock of data) {
             stock = Object.values(stock)
-            if (stock.length === 0) {
-                continue
+            if (stock.length !== 0) {
+                const index = vis.bisectDate(stock, date, 1);
+                const a = stock[index - 1];
+                const b = stock[index];
+                const d = b && (date - a.date > b.date - date) ? b : a;
+                temp.push(d)
             }
-            const index = vis.bisectDate(stock, date, 1);
-            const a = stock[index - 1];
-            const b = stock[index];
-            const d = b && (date - a.date > b.date - date) ? b : a;
-            temp.push(d)
         }
         return temp
     }
@@ -259,7 +262,6 @@ class LineChart {
         lineMerge.datum(d => Object.values(vis.selected_stock_data[d]))
             .attr("fill", "none")
             .attr("stroke-width", 2)
-
             .attr("d", d3.line()
                 .x(function (d) {
                     return x_scale(d.date)
@@ -267,18 +269,13 @@ class LineChart {
                 .y(function (d) {
                     return y_scale(d.price)
                 })
-            )
-        if(vis.if_animation){
-        lineMerge.call(vis.transition);
-        }
+            ).call(vis.transition);
 
         line.exit().remove()
 
         if (if_text) {
             vis.render_text(vis.chart, data, x_scale, y_scale)
         }
-
-
     }
 
     render_text(area, data, x_scale, y_scale) {
@@ -287,7 +284,6 @@ class LineChart {
         let textEnter = text.enter().append('text')
         let textMerge = textEnter.merge(text)
         let boundary_date = vis.get_closest_date(vis.xScale_detail.invert(x_scale.range()[1]), Object.values(vis.selected_stock_data))[0].date
-
 
         textMerge.text(d => d)
             .attr('fill', d => colorScheme(vis.getSectors(d)))
@@ -331,7 +327,7 @@ class LineChart {
 
         let legend_x1 = 0
         let legend_x2 = 30
-        for (let legend of ['Basket', 'Basket2', "Industrials", "Health Care", "Information Technology", "Communication Services",
+        for (let legend of ['Basket1', 'Basket2', "Industrials", "Health Care", "Information Technology", "Communication Services",
             "Consumer Discretionary", "Utilities", "Financials", "Materials", "Real_Estate",
             "Consumer Staples", "Energy"]) {
             legend_x1 = legend_x2 + 10
@@ -342,7 +338,7 @@ class LineChart {
 
         //Add text to the legend for the line chart
         vis.legend.append('text').text('SP500').attr('transform', `translate(0,20)`).attr('font-size', 10)
-        vis.legend.append('text').text('Basket').attr('transform', `translate(40,20)`).attr('font-size', 10)
+        vis.legend.append('text').text('Basket1').attr('transform', `translate(40,20)`).attr('font-size', 10)
         vis.legend.append('text').text('Basket2').attr('transform', `translate(80,20)`).attr('font-size', 10)
         vis.legend.append('text').text('Other types of the line shows the sector of the stock, color corresponding to the treemap').attr('transform', `translate(150,20)`).attr('font-size', 10)
 
@@ -370,8 +366,8 @@ class LineChart {
             vis.selected_stock_data = {}
             let data = []
             selected_stock_symbol.forEach(stock_symbol => {
-                if (stock_symbol === 'Basket' || stock_symbol === 'Basket2') {
-                    if (stock_symbol === 'Basket') {
+                if (stock_symbol === 'Basket1' || stock_symbol === 'Basket2') {
+                    if (stock_symbol === 'Basket1') {
                         data = custom_data
                     } else {
                         data = custom_data2
@@ -402,8 +398,8 @@ class LineChart {
                 vis.updateDataType(stock_symbol)
             });
         }
-        if(JSON.stringify(vis.last_selected_stock_data)===JSON.stringify(vis.selected_stock_data)){
-            vis.if_animation=false
+        if (JSON.stringify(vis.last_selected_stock_data) === JSON.stringify(vis.selected_stock_data)) {
+            vis.if_animation = false
         }
         vis.last_selected_stock_data = vis.selected_stock_data
     }
@@ -490,24 +486,17 @@ class LineChart {
     initialize_the_sector_data() {
         let vis = this
         vis.sector_data = companies_data
-        vis.sector_data.push({
-            "": "0",
-            "symbol": "SP500",
-            "name": "SP500",
-            "sector": "SP500",
-        })
-        vis.sector_data.push({
-            "": "0",
-            "symbol": "Basket",
-            "name": "Basket",
-            "sector": "Basket"
-        })
-        vis.sector_data.push({
-            "": "0",
-            "symbol": "Basket2",
-            "name": "Basket2",
-            "sector": "Basket2"
-        })
+        //There are some special data do not have sectors they belonged to, so we need to manually set them
+        for (let special_d of ["SP500", "Basket1", "Basket2"]) {
+            vis.sector_data.push({
+                "symbol": special_d,
+                "name": special_d,
+                "sector": special_d
+            })
+        }
+
+        //set a small helper function to easily get the sectors of
+        // given company or other types of data (such as: sector itself).
         vis.getSectors = d => {
             let company = vis.sector_data.filter(v => {
                 return v.symbol === d
@@ -521,10 +510,8 @@ class LineChart {
     }
 
     update_tooltip(event) {
-        let vis=this
-
+        let vis = this
         // Find nearest data point
-
         let closestDate = vis.get_closest_date(vis.xScale_detail.invert(d3.pointer(event, this.svg.node())[0] - vis.config.margin.left),
             Object.values(vis.selected_stock_data))
 
