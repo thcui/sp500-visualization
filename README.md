@@ -4,9 +4,9 @@
 #### Student Number:32968299
 #### CSID: y7r1b
   
-### Name: 
-#### Student Number:
-#### CSID: 
+### Name: Yuchen Liu
+#### Student Number: 19279158
+#### CSID: d6h0b
   
 ### Name: 
 #### Student Number:
