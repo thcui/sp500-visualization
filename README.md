@@ -32,7 +32,7 @@ js/lineChart.js
 -
 js/bubbleChart.js
 -
-- initialize the bubblechart based on https://codesandbox.io/s/github/UBC-InfoVis/2021-436V-examples/tree/master/d3-interactive-scatter-plot
+- initialize the bubblechart based on https://codesandbox.io/s/github/UBC-InfoVis/2021-436V-examples/tree/master/d3-interactive-scatter-plot and Programming Assignment 2.
 - user can click to select/unselect bubble for detailed trend on linechart via `clickBubble()`.
 - hover over each bubble, the app will display detailed tooltips for each company. Implementation are in `showTooltip()` and `hideToolTip()`.
 - d3 zoom referred to https://www.freecodecamp.org/news/get-ready-to-zoom-and-pan-like-a-pro-after-reading-this-in-depth-tutorial-5d963b0a153e/
