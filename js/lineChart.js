@@ -211,15 +211,20 @@ class LineChart {
             if (JSON.stringify(selectedDomain) !== JSON.stringify(currentDomain)) {
                 // Convert given pixel coordinates (range: [x0,x1]) into a time period (domain: [Date, Date])
                 selectedDomain = currentDomain
-                let from = vis.get_closest_date(currentDomain[0], Object.values(vis.selected_stock_data))[0].date
-                let end = vis.get_closest_date(currentDomain[1], Object.values(vis.selected_stock_data))[0].date
-                vis.update_Title_and_AxisName()
+                let from = vis.get_closest_date(selectedDomain[0], Object.values(vis.selected_stock_data))[0].date
+                let end = vis.get_closest_date(selectedDomain[1], Object.values(vis.selected_stock_data))[0].date
                 filterDateRange(formatTime(from), formatTime(end))
             }
         } else {
+            selectedDomain=vis.xScale_overview.domain()
             // Reset x-scale of the focus view (full time period)
             vis.xScale_detail.domain(vis.xScale_overview.domain());
+            filterDateRange(formatTime(vis.xScale_overview.domain()[0]), formatTime(vis.xScale_overview.domain()[1]))
         }
+
+
+        vis.update_Title_and_AxisName()
+
 
         // Redraw line and update x-axis labels in focus view
         vis.renderLine(vis.detailedView_area, Object.keys(vis.selected_stock_data), vis.xScale_detail, vis.yScale_detail, true)
