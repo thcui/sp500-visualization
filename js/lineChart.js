@@ -81,8 +81,12 @@ class LineChart {
         vis.create_the_area()
         vis.last_selected_stock_data={}
         vis.transition = function transition(path) {
+            let duration=2000
+            if(!vis.if_animation) {
+                duration=0
+            }
             path.transition()
-                .duration(2000)
+                .duration(duration)
                 .attrTween("stroke-dasharray", tweenDash)
                 .on("end", () => {
                     d3.select(this).call(vis.transition);
@@ -202,19 +206,15 @@ class LineChart {
         // Check if the brush is still active or if it has been removed
         if (selection) {
             let currentDomain = selection.map(vis.xScale_overview.invert, vis.xScale_overview)
+            // Update x-scale of the focus view accordingly
+            vis.xScale_detail.domain(currentDomain);
             if (JSON.stringify(selectedDomain) !== JSON.stringify(currentDomain)) {
                 // Convert given pixel coordinates (range: [x0,x1]) into a time period (domain: [Date, Date])
-                selectedDomain = selection.map(vis.xScale_overview.invert, vis.xScale_overview);
-                let newDomain = selectedDomain
-
-                // Update x-scale of the focus view accordingly
-                vis.xScale_detail.domain(newDomain);
-                let from = vis.get_closest_date(newDomain[0], Object.values(vis.selected_stock_data))[0].date
-                let end = vis.get_closest_date(newDomain[1], Object.values(vis.selected_stock_data))[0].date
+                selectedDomain = currentDomain
+                let from = vis.get_closest_date(currentDomain[0], Object.values(vis.selected_stock_data))[0].date
+                let end = vis.get_closest_date(currentDomain[1], Object.values(vis.selected_stock_data))[0].date
                 vis.update_Title_and_AxisName()
                 filterDateRange(formatTime(from), formatTime(end))
-            } else {
-                vis.xScale_detail.domain(currentDomain);
             }
         } else {
             // Reset x-scale of the focus view (full time period)
@@ -260,7 +260,6 @@ class LineChart {
         lineMerge.datum(d => Object.values(vis.selected_stock_data[d]))
             .attr("fill", "none")
             .attr("stroke-width", 2)
-
             .attr("d", d3.line()
                 .x(function (d) {
                     return x_scale(d.date)
@@ -268,10 +267,7 @@ class LineChart {
                 .y(function (d) {
                     return y_scale(d.price)
                 })
-            )
-        if(vis.if_animation){
-        lineMerge.call(vis.transition);
-        }
+            ).call(vis.transition);
 
         line.exit().remove()
 
