@@ -51,7 +51,8 @@ js/main.js:
 
 js/treeMap.js
 - 
-- referred to treemap examples in https://www.d3-graph-gallery.com/treemap\
+- referred to treemap examples in https://www.d3-graph-gallery.com/treemap
+- render rectangle size base on market capitalization
 - hover over each rectangle will display detailed tooltips for each sector. Implementation are in `showTooltip()` and `hideToolTip()`.
 - user can select/deselect a sector to filter elements on bubble chart using selectSector(e,d), this function will further call filterSector() in main.js
 
