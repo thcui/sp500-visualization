@@ -25,15 +25,14 @@ class BubbleChart {
         vis.innerHeight = vis.config.containerHeight - vis.config.margin.top - vis.config.margin.bottom;
         vis.custom_container_height = vis.innerHeight / 2 - 10
         vis.custom_container_x = vis.innerWidth + 80
+
         // Define size of SVG drawing area
         vis.svg = d3
             .select(vis.config.parentElement)
             .attr("width", vis.config.containerWidth)
             .attr("height", vis.config.containerHeight);
-
         vis.svg.append('text')
             .attr('id', 'bubblechart_title')
-
         vis.custom_container = vis.svg.append('g').attr('id', 'custom_container')
             .style("font-size", "15px")
             .attr("font-weight", "700")
@@ -44,7 +43,6 @@ class BubbleChart {
         vis.custom_container.append('text')
             .attr("transform", `translate(${vis.custom_container_x},${vis.custom_container_y - 20})`)
             .text(' stocks by dragging the bubble here! ')
-
         vis.custom_basket = vis.custom_container.append('rect')
             .attr("transform", `translate(${vis.custom_container_x},${vis.custom_container_y})`)
             .attr('width', vis.custom_container_width)
@@ -55,15 +53,12 @@ class BubbleChart {
             .attr("fill-opacity", '0.5')
         vis.custom_container.append('text').attr("transform", `translate(${vis.custom_container_x},${vis.custom_container_y + 15})`)
             .text('Basket1')
-
         vis.custom_basket2 = vis.custom_basket.clone()
             .attr("transform", `translate(${vis.custom_container_x},${vis.custom_container_y + vis.custom_container_height + 10})`)
             .attr("fill", 'yellow')
             .attr("fill-opacity", '0.5')
         vis.custom_container.append('text').attr("transform", `translate(${vis.custom_container_x},${vis.custom_container_y + vis.custom_container_height + 25})`)
             .text('Basket2')
-
-
         vis.custom_selection = []
         vis.clones = {}
 
@@ -86,8 +81,7 @@ class BubbleChart {
         vis.YaxisG = vis.chartArea.append("g");
         vis.XaxisG = vis.chartArea.append("g").attr("transform", `translate(0,${vis.innerHeight})`);
 
-
-        // Apply clipping mask to 'vis.chart' to clip leader started before 1950
+        // Apply clipping mask to 'vis.chart'
         vis.chart = vis.chartArea.append('g')
             .attr('clip-path', 'url(#chart-mask)');
 
@@ -113,11 +107,10 @@ class BubbleChart {
             .attr('x', vis.innerWidth - 30)
             .attr("text-anchor", "middle")
             .text("Market Cap");
-
         vis.svg.append('text')
             .attr('class', 'axis-name')
-            .attr('x', 10)
-            .attr('y', 80)
+            .attr('x', 35)
+            .attr('y', 60)
             .attr("text-anchor", "middle")
             .text("Price Change");
 
@@ -165,7 +158,6 @@ class BubbleChart {
         let enterDelay = vis.initFlag ? 1050 : 0;
         vis.updateTitle()
 
-
         // Bond transition to circles
         vis.circle = vis.chart.selectAll("circle").data(vis.data, d => d.symbol)
             .join(
@@ -196,6 +188,8 @@ class BubbleChart {
                     .attr("r", 0)
                     .remove()
             );
+
+        // Bond tooltips, click event and drag event to circles
         vis.circle
             .on("mouseover", this.showToolTip)
             .on("mouseout", this.hideToolTip)
@@ -220,95 +214,21 @@ class BubbleChart {
 
                     })
                     .on("drag", function (event, d) {
-                        clone.attr("cx", event.x).attr("cy", event.y)
+                        clone.attr("cx", event.x+vis.config.margin.left).attr("cy", event.y+vis.config.margin.top)
 
                     })
-                    .on("end", dragend)
+                    .on("end", function (event, d) {vis.dragend(event,d,clone)})
             );
 
-        function dragend(event, d) {
-            let basket_index = 0
-            let text
-            let data
 
-            function remove_one_item(arr, value) {
-                let index = arr.indexOf(value);
-                if (index > -1) {
-                    arr.splice(index, 1);
-                }
-                return arr;
-            }
 
-            if (event.x >= vis.custom_container_x && event.y >= vis.custom_container_y) {
-                text = vis.custom_container.append('text').text(d.symbol).attr("transform", `translate(${event.x},${event.y + 10})`).attr('color', '#000000').attr('font-size', '20')
-                if (event.y <= vis.custom_container_y + vis.custom_container_height) {
-                    data = custom_data
-                    basket_index = 1
-                    selected_stock_symbol.push('Basket')
-                } else {
-                    basket_index = 2
-                    data = custom_data2
-                    selected_stock_symbol.push('Basket2')
-                }
-                data.push(d.symbol)
-
-                clone.call(d3.drag().on("drag", function (event, d) {
-                    d3.select(this).attr("cx", event.x).attr("cy", event.y)
-                }).on("end", function (event, d) {
-                    if (d3.select(this).attr("cx") >= vis.custom_container_x && d3.select(this).attr("cy") >= vis.custom_container_y) {
-                        if (event.y <= vis.custom_container_y + vis.custom_container_height && basket_index === 2) {
-                            basket_index = 1
-                            remove_one_item(custom_data2, d.symbol)
-                            custom_data.push(d.symbol)
-                            selected_stock_symbol.push('Basket')
-                        }
-                        if (event.y > vis.custom_container_y + vis.custom_container_height && basket_index === 1) {
-                            basket_index = 2
-                            remove_one_item(custom_data, d.symbol)
-                            custom_data2.push(d.symbol)
-                            selected_stock_symbol.push('Basket2')
-                        }
-
-                        text.remove()
-                        text = vis.custom_container.append('text').text(d.symbol).attr("transform", `translate(${event.x},${event.y + 10})`).attr('color', '#000000').attr('font-size', '20')
-
-                    } else {
-                        if (basket_index === 1) {
-                            remove_one_item(custom_data, d.symbol)
-                        }
-                        if (basket_index === 2) {
-                            remove_one_item(custom_data2, d.symbol)
-                        }
-
-                        d3.select(this).remove()
-                        text.remove()
-
-                    }
-                    if (custom_data.length === 0) {
-                        selected_stock_symbol = selected_stock_symbol.filter(v => {
-                            return v !== 'Basket'
-                        })
-                    }
-                    if (custom_data2.length === 0) {
-                        selected_stock_symbol = selected_stock_symbol.filter(v => {
-                            return v !== 'Basket2'
-                        })
-                    }
-                    lineChart.updateVis()
-                }))
-                lineChart.updateVis()
-            } else {
-                clone.remove()
-            }
-
-        }
-
+        // Render zoom function
         if (enterDelay !== 0) {
             vis.initialZoom();
             vis.initFlag = false;
         }
 
-        // reset button
+        // reset button for zoom and point selection
         d3.select("#bubbleChart-reset-button")
             .on("click", function () {
                 vis.resetZoom();
@@ -414,12 +334,88 @@ class BubbleChart {
         let vis = this
         vis.svg.select('#bubblechart_title')
             .attr("x", 500)
-            .attr("y", 30)
+            .attr("y", 15)
             .attr('fill', 'white')
             .attr("text-anchor", "middle")
             .attr('font-size', '18px')
             .attr('font-weight', 'bold')
-            .text("Market Capitalization for Companies & Percent Change from "
+            .text("Market Capitalization & Price Change for Companies from "
                 + selectedDomain[0].toDateString() + " to " + selectedDomain[1].toDateString())
+    }
+
+    dragend(event, d,clone) {
+        let vis=this
+        let basket_index = 0
+        let text
+        let data
+
+        function remove_one_item(arr, value) {
+            let index = arr.indexOf(value);
+            if (index > -1) {
+                arr.splice(index, 1);
+            }
+            return arr;
+        }
+
+        if (event.x >= vis.custom_container_x && event.y >= vis.custom_container_y) {
+            text = vis.custom_container.append('text').text(d.symbol).attr("transform", `translate(${event.x},${event.y + vis.config.margin.top})`).attr('color', '#000000').attr('font-size', '20')
+            if (event.y <= vis.custom_container_y + vis.custom_container_height) {
+                data = custom_data
+                basket_index = 1
+                // selected_stock_symbol.push('Basket')
+            } else {
+                basket_index = 2
+                data = custom_data2
+                // selected_stock_symbol.push('Basket2')
+            }
+            selected_stock_symbol.push('Basket'+basket_index.toString())
+            data.push(d.symbol)
+
+            clone.call(d3.drag().on("drag", function (event, d) {
+                text.attr("transform", `translate(${event.x-vis.config.margin.left},${event.y})`)
+                d3.select(this).attr("cx", event.x).attr("cy", event.y)
+            }).on("end", function (event, d) {
+                if (d3.select(this).attr("cx") >= vis.custom_container_x && d3.select(this).attr("cy") >= vis.custom_container_y) {
+                    if (event.y <= vis.custom_container_y + vis.custom_container_height && basket_index === 2) {
+                        basket_index = 1
+                        remove_one_item(custom_data2, d.symbol)
+                        custom_data.push(d.symbol)
+                        // selected_stock_symbol.push('Basket')
+                    }
+                    if (event.y > vis.custom_container_y + vis.custom_container_height && basket_index === 1) {
+                        basket_index = 2
+                        remove_one_item(custom_data, d.symbol)
+                        custom_data2.push(d.symbol)
+                        // selected_stock_symbol.push('Basket2')
+                    }
+                } else {
+                    if (basket_index === 1) {
+                        remove_one_item(custom_data, d.symbol)
+                    }
+                    if (basket_index === 2) {
+                        remove_one_item(custom_data2, d.symbol)
+                    }
+
+                    d3.select(this).remove()
+                    text.remove()
+
+                }
+                if (custom_data.length === 0) {
+                    selected_stock_symbol = selected_stock_symbol.filter(v => {
+                        return v !== 'Basket1'
+                    })
+                }
+                if (custom_data2.length === 0) {
+                    selected_stock_symbol = selected_stock_symbol.filter(v => {
+                        return v !== 'Basket2'
+                    })
+                }
+                lineChart.updateVis()
+            }))
+            lineChart.updateVis()
+        } else {
+            clone.remove()
+        }
+
     }
 }

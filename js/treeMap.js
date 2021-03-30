@@ -136,7 +136,6 @@ class TreeMap {
     }
     // apply filter for selected sector
     selectSector(e,d){
-        console.log(d.data.sector);
         if(sectorFilter.includes(d.data.sector)){
             d3.select(this).classed("selected", false);
             sectorFilter = [];
