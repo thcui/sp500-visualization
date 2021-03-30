@@ -3,8 +3,8 @@ class TreeMap {
         this.config = {
             parentElement: _config.parentElement,
             containerWidth: 646,
-            containerHeight: 405,
-            margin: {top: 30, right: 10, bottom: 10, left: 15},
+            containerHeight: 410,
+            margin: {top: 30, right: 10, bottom: 15, left: 15},
         };
         this.data = _data
         this.initVis();
