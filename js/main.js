@@ -23,7 +23,7 @@ let selectedDomain = [new Date('2020-04-01'), new Date('2021-01-29')];
 
 
 
-// Avoid promise hell
+// Avoid promise hell, read all the data needed for this visualization
 d3.json('data/companyData.json').then(_stock => {
     stockData = _stock;
     let startDate = selectedDomain[0].toISOString().split('T')[0];

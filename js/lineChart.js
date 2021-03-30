@@ -79,11 +79,11 @@ class LineChart {
         vis.add_legend()
         //Create the area for putting different elements in the line chart
         vis.create_the_area()
-        vis.last_selected_stock_data={}
+        vis.last_selected_stock_data = {}
         vis.transition = function transition(path) {
-            let duration=2000
-            if(!vis.if_animation) {
-                duration=0
+            let duration = 2000
+            if (!vis.if_animation) {
+                duration = 0
             }
             path.transition()
                 .duration(duration)
@@ -128,7 +128,7 @@ class LineChart {
         //Initialize the variable component in the title of the line chart
         vis.data_indicator_string = 0
         vis.axis_name = "Stock Price in USD($)"
-        vis.if_animation=true
+        vis.if_animation = true
 
         //use the proper data based on the user's selection
         vis.import_data()
@@ -156,17 +156,17 @@ class LineChart {
             .on('mouseleave', () => {
                 vis.tooltip.style('display', 'none');
             })
-            .on('mousemove', function (event){vis.update_tooltip(event)})
+            .on('mousemove', function (event) {
+                vis.update_tooltip(event)
+            })
 
 
         vis.xAxisG_detail
             .call(vis.xAxis_detail)
             .call(g => g.select('.domain').remove())
 
-
         vis.xAxisG_overview
             .call(vis.xAxis_overview)
-
 
         vis.yAxisG
             .call(vis.yAxis_detail)
@@ -191,9 +191,8 @@ class LineChart {
         }
         vis.xScale_detail.domain([d3.min(vis.All_date), d3.max(vis.All_date)])
         vis.yScale_detail.domain([d3.max(vis.All_price), d3.min(vis.All_price)])
-        vis.xScale_overview.domain([d3.min(vis.All_date), d3.max(vis.All_date)])
-        vis.yScale_overview.domain([d3.max(vis.All_price), d3.min(vis.All_price)])
-
+        vis.xScale_overview.domain(vis.xScale_detail.domain())
+        vis.yScale_overview.domain(vis.yScale_detail.domain())
     }
 
 
@@ -201,7 +200,6 @@ class LineChart {
     brushed(selection) {
 
         let vis = this;
-
 
         // Check if the brush is still active or if it has been removed
         if (selection) {
@@ -216,8 +214,8 @@ class LineChart {
                 filterDateRange(formatTime(from), formatTime(end))
             }
         } else {
-            selectedDomain=vis.xScale_overview.domain()
             // Reset x-scale of the focus view (full time period)
+            selectedDomain = vis.xScale_overview.domain()
             vis.xScale_detail.domain(vis.xScale_overview.domain());
             filterDateRange(formatTime(vis.xScale_overview.domain()[0]), formatTime(vis.xScale_overview.domain()[1]))
         }
@@ -225,9 +223,9 @@ class LineChart {
 
         vis.update_Title_and_AxisName()
 
-
-        // Redraw line and update x-axis labels in focus view
+        // Redraw line
         vis.renderLine(vis.detailedView_area, Object.keys(vis.selected_stock_data), vis.xScale_detail, vis.yScale_detail, true)
+        // update x-axis labels in focus view
         vis.xAxisG_detail.call(vis.xAxis_detail);
     }
 
@@ -238,14 +236,13 @@ class LineChart {
         let temp = []
         for (let stock of data) {
             stock = Object.values(stock)
-            if (stock.length === 0) {
-                continue
+            if (stock.length !== 0) {
+                const index = vis.bisectDate(stock, date, 1);
+                const a = stock[index - 1];
+                const b = stock[index];
+                const d = b && (date - a.date > b.date - date) ? b : a;
+                temp.push(d)
             }
-            const index = vis.bisectDate(stock, date, 1);
-            const a = stock[index - 1];
-            const b = stock[index];
-            const d = b && (date - a.date > b.date - date) ? b : a;
-            temp.push(d)
         }
         return temp
     }
@@ -279,8 +276,6 @@ class LineChart {
         if (if_text) {
             vis.render_text(vis.chart, data, x_scale, y_scale)
         }
-
-
     }
 
     render_text(area, data, x_scale, y_scale) {
@@ -289,7 +284,6 @@ class LineChart {
         let textEnter = text.enter().append('text')
         let textMerge = textEnter.merge(text)
         let boundary_date = vis.get_closest_date(vis.xScale_detail.invert(x_scale.range()[1]), Object.values(vis.selected_stock_data))[0].date
-
 
         textMerge.text(d => d)
             .attr('fill', d => colorScheme(vis.getSectors(d)))
@@ -404,8 +398,8 @@ class LineChart {
                 vis.updateDataType(stock_symbol)
             });
         }
-        if(JSON.stringify(vis.last_selected_stock_data)===JSON.stringify(vis.selected_stock_data)){
-            vis.if_animation=false
+        if (JSON.stringify(vis.last_selected_stock_data) === JSON.stringify(vis.selected_stock_data)) {
+            vis.if_animation = false
         }
         vis.last_selected_stock_data = vis.selected_stock_data
     }
@@ -492,24 +486,17 @@ class LineChart {
     initialize_the_sector_data() {
         let vis = this
         vis.sector_data = companies_data
-        vis.sector_data.push({
-            "": "0",
-            "symbol": "SP500",
-            "name": "SP500",
-            "sector": "SP500",
-        })
-        vis.sector_data.push({
-            "": "0",
-            "symbol": "Basket",
-            "name": "Basket",
-            "sector": "Basket"
-        })
-        vis.sector_data.push({
-            "": "0",
-            "symbol": "Basket2",
-            "name": "Basket2",
-            "sector": "Basket2"
-        })
+        //There are some special data do not have sectors they belonged to, so we need to manually set them
+        for (let special_d of ["SP500", "Basket", "Basket2"]) {
+            vis.sector_data.push({
+                "symbol": special_d,
+                "name": special_d,
+                "sector": special_d
+            })
+        }
+
+        //set a small helper function to easily get the sectors of
+        // given company or other types of data (such as: sector itself).
         vis.getSectors = d => {
             let company = vis.sector_data.filter(v => {
                 return v.symbol === d
@@ -523,10 +510,8 @@ class LineChart {
     }
 
     update_tooltip(event) {
-        let vis=this
-
+        let vis = this
         // Find nearest data point
-
         let closestDate = vis.get_closest_date(vis.xScale_detail.invert(d3.pointer(event, this.svg.node())[0] - vis.config.margin.left),
             Object.values(vis.selected_stock_data))
 
