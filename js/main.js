@@ -120,6 +120,7 @@ function filterSector() {
 }
 
 function filterDateRange(startDate, endDate) {
+    bubbleChart.brushFlag = true;
     getbubbleChartData(startDate, endDate);
     bubbleChart.data = bubbleChartData;
     filterSector();
