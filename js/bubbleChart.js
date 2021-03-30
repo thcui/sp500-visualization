@@ -116,8 +116,8 @@ class BubbleChart {
 
         vis.svg.append('text')
             .attr('class', 'axis-name')
-            .attr('x', 10)
-            .attr('y', 80)
+            .attr('x', 35)
+            .attr('y', 60)
             .attr("text-anchor", "middle")
             .text("Price Change");
 
@@ -414,7 +414,7 @@ class BubbleChart {
         let vis = this
         vis.svg.select('#bubblechart_title')
             .attr("x", 500)
-            .attr("y", 30)
+            .attr("y", 15)
             .attr('fill', 'white')
             .attr("text-anchor", "middle")
             .attr('font-size', '18px')
