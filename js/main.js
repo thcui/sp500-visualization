@@ -125,7 +125,3 @@ function filterDateRange(startDate, endDate) {
     filterSector();
 }
 
-function updateLineChart() {
-    lineChart.updateVis();
-}
-

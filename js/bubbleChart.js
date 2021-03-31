@@ -104,7 +104,7 @@ class BubbleChart {
         vis.chartArea.append('text')
             .attr('class', 'axis-name')
             .attr('y', vis.innerHeight)
-            .attr('x', vis.innerWidth -80)
+            .attr('x', vis.innerWidth - 80)
             .attr("text-anchor", "middle")
             .text("Amount of Market Capitalization");
         vis.svg.append('text')
@@ -251,7 +251,7 @@ class BubbleChart {
             } else {
                 selected_stock_symbol.push(d.symbol)
             }
-            updateLineChart();
+            lineChart.updateVis()
         }
     }
 
@@ -312,7 +312,7 @@ class BubbleChart {
             .each(function (d) {
                 selected_stock_symbol = selected_stock_symbol.filter(v => v !== d.symbol);
             });
-        updateLineChart();
+        lineChart.updateVis()
     }
 
     initialZoom() {
@@ -347,6 +347,7 @@ class BubbleChart {
                 + selectedDomain[0].toDateString() + " to " + selectedDomain[1].toDateString())
     }
 
+    //the function that react to the drag when the drag is end, for the bubble
     dragend(event, d, clone) {
         let vis = this
         let basket_index = 0
@@ -380,6 +381,7 @@ class BubbleChart {
 
     }
 
+    //the function that react to the drag when the drag is end, for the new created shape(check mark)
     dragend_for_new_shape(event, d, basket_index, text, parent) {
         let vis = this
 
@@ -423,6 +425,7 @@ class BubbleChart {
         return basket_index
     }
 
+    //only remove one 'value' from 'arr' for each time
     remove_one_item(arr, value) {
         let index = arr.indexOf(value);
         if (index > -1) {
