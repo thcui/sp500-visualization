@@ -14,6 +14,7 @@ class BubbleChart {
         let vis = this;
 
         vis.initFlag = true;
+        vis.brushFlag = false;
         vis.title_height = 30
 
         vis.custom_container_y = 70
@@ -135,7 +136,12 @@ class BubbleChart {
     updateVis() {
         let vis = this;
 
-        vis.resetZoom();
+        // If updateVis is called from moving brush, no need to reset zoom scale
+        if (!vis.brushFlag) {
+            vis.resetZoom();
+        } else {
+            vis.brushFlag = false;
+        }
 
         vis.xScale.domain(d3.extent(vis.data, d => d.marketcap));
         vis.yScale.domain(d3.extent(vis.data, d => d.perChange));
