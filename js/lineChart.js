@@ -97,6 +97,8 @@ class LineChart {
                     vis.brushed(null);
             });
 
+
+
         //Prepare the data that let us know the sector information for each company
         vis.initialize_the_sector_data()
         vis.updateVis()
@@ -232,6 +234,30 @@ class LineChart {
 // scales and if need to label the name
     renderLine(area, data, x_scale, y_scale, if_text) {
         let vis = this
+
+        //the function for the animation for the line chart, function needs to be created before use
+        vis.transition=function transition(path) {
+            let duration = 2000
+            if (!vis.if_animation) {
+                duration = 0
+            }
+            path.transition()
+                .duration(duration)
+                .attrTween("stroke-dasharray", function () {
+                    const l = this.getTotalLength(),
+                        i = d3.interpolateString("0," + l, l + "," + l);
+                    return function (t) {
+                        return i(t)
+                    }
+                })
+                .on("end", () => {
+                    d3.select(this).call(
+                        vis.transition
+                    );
+                })
+        }
+
+
         let line = area.selectAll('.line').data(data)
 
         let lineEnter = line.enter().append('path')
@@ -251,9 +277,9 @@ class LineChart {
                 .y(function (d) {
                     return y_scale(d.price)
                 })
-            ).call((path) => {
-            vis.transition(path, vis)
-        });
+            ).call(
+            vis.transition
+        );
 
         line.exit().remove()
 
@@ -484,6 +510,7 @@ class LineChart {
             .attr('class', 'axis y-axis');
     }
 
+
     //we need to prepare some data so that we know the sectors that each company belongs to.
     initialize_the_sector_data() {
         let vis = this
@@ -511,29 +538,7 @@ class LineChart {
         }
     }
 
-    //the function for the animation for the line chart.
-    transition(path, vis) {
-        let duration = 2000
-        if (!vis.if_animation) {
-            duration = 0
-        }
-        path.transition()
-            .duration(duration)
-            .attrTween("stroke-dasharray", tweenDash)
-            .on("end", () => {
-                d3.select(this).call((path, vis) => {
-                    vis.transition(path, vis)
-                });
-            });
 
-        function tweenDash() {
-            const l = this.getTotalLength(),
-                i = d3.interpolateString("0," + l, l + "," + l);
-            return function (t) {
-                return i(t)
-            };
-        }
-    }
 
     //update the tooltip when the mouse is entered the tracking area, or moving on the tracking area
     update_tooltip(event) {
