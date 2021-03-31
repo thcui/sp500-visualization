@@ -80,32 +80,13 @@ class LineChart {
         //Create the area for putting different elements in the line chart
         vis.create_the_area()
         vis.last_selected_stock_data = {}
-        vis.transition = function transition(path) {
-            let duration = 2000
-            if (!vis.if_animation) {
-                duration = 0
-            }
-            path.transition()
-                .duration(duration)
-                .attrTween("stroke-dasharray", tweenDash)
-                .on("end", () => {
-                    d3.select(this).call(vis.transition);
-                });
-        }
 
-        function tweenDash() {
-            const l = this.getTotalLength(),
-                i = d3.interpolateString("0," + l, l + "," + l);
-            return function (t) {
-                return i(t)
-            };
-        }
 
         vis.brushG = vis.overview_area.append('g')
             .attr('class', 'brush x-brush');
 
 
-        // Initialize brush component
+        // Initialize the brush component
         vis.brush = d3.brushX()
             .extent([[0, 0], [vis.chart_width, vis.overview_chart_height]])
             .on('brush', function ({selection}) {
@@ -118,7 +99,6 @@ class LineChart {
 
         //Prepare the data that let us know the sector information for each company
         vis.initialize_the_sector_data()
-
         vis.updateVis()
 
     }
@@ -160,7 +140,7 @@ class LineChart {
                 vis.update_tooltip(event)
             })
 
-
+        //update the axis groups
         vis.xAxisG_detail
             .call(vis.xAxis_detail)
             .call(g => g.select('.domain').remove())
@@ -181,6 +161,8 @@ class LineChart {
 
     }
 
+
+    //set the domain of the line chart based on the data selected
     set_lineChart_domain() {
         let vis = this
         vis.All_date = []
@@ -220,7 +202,6 @@ class LineChart {
             filterDateRange(formatTime(vis.xScale_overview.domain()[0]), formatTime(vis.xScale_overview.domain()[1]))
         }
 
-
         vis.update_Title_and_AxisName()
 
         // Redraw line
@@ -247,7 +228,8 @@ class LineChart {
         return temp
     }
 
-
+//The function that is responsible for drawing the line on the line chart,given the target area,data to show,
+// scales and if need to label the name
     renderLine(area, data, x_scale, y_scale, if_text) {
         let vis = this
         let line = area.selectAll('.line').data(data)
@@ -269,7 +251,9 @@ class LineChart {
                 .y(function (d) {
                     return y_scale(d.price)
                 })
-            ).call(vis.transition);
+            ).call((path) => {
+            vis.transition(path, vis)
+        });
 
         line.exit().remove()
 
@@ -278,6 +262,7 @@ class LineChart {
         }
     }
 
+    //add the text to the line drawn
     render_text(area, data, x_scale, y_scale) {
         let vis = this
         let text = area.selectAll('.stock_name').data(data)
@@ -301,6 +286,8 @@ class LineChart {
         text.exit().remove()
     }
 
+
+    //update the title and axis name based on the data to show
     update_Title_and_AxisName() {
         let vis = this
         vis.svg.select('#y-axis-name').text(vis.axis_name)
@@ -313,6 +300,7 @@ class LineChart {
             .text(vis.data_indicator_string + " From " + selectedDomain[0].toDateString() + " to " + selectedDomain[1].toDateString())
     }
 
+    //add the color legend to the line chart
     add_legend() {
         let vis = this
         vis.legend = vis.svg.append('g').attr('class', 'lineChart_legend').attr('transform', `translate(50,${vis.chart_height + vis.overview_chart_height + vis.title_height})`);
@@ -348,13 +336,17 @@ class LineChart {
     import_data() {
         let vis = this
         vis.selected_stock_data = {}
+        //check whether the user has specified which company's stock price to show
         if (selected_stock_symbol.length === 0) {
+            //no company has been specified, then check whether the user selected a sector.
             if (sectorTotal_Data[sectorFilter[0]]) {
                 vis.data_indicator_string = "Sector Total Stock Price"
                 vis.selected_stock_data[sectorFilter[0]] = sectorTotal_Data[sectorFilter[0]].historical
                 vis.updateDataType(sectorFilter[0])
 
             } else {
+                //the user has not selected any companies or sectors, then the we will show the sp500 index as default
+                //on the line chart
                 vis.data_indicator_string = "SP500 Index"
                 let temp_sp500 = sp500_data
                 delete temp_sp500['columns'];
@@ -363,9 +355,11 @@ class LineChart {
             }
 
         } else {
+            //the user has selected some companies to show stock prices
             vis.selected_stock_data = {}
             let data = []
             selected_stock_symbol.forEach(stock_symbol => {
+                //check if the basket has been activated
                 if (stock_symbol === 'Basket1' || stock_symbol === 'Basket2') {
                     if (stock_symbol === 'Basket1') {
                         data = custom_data
@@ -390,6 +384,7 @@ class LineChart {
 
                     vis.selected_stock_data[stock_symbol] = total
                 } else {
+                    //single company's stock price
                     if (stockData[stock_symbol]) {
                         vis.selected_stock_data[stock_symbol] = stockData[stock_symbol].historical
                     }
@@ -398,12 +393,15 @@ class LineChart {
                 vis.updateDataType(stock_symbol)
             });
         }
+        //if the selected data is unchanged, we do not want to add animation to the line chart(such as: brush will
+        //not need the animation).
         if (JSON.stringify(vis.last_selected_stock_data) === JSON.stringify(vis.selected_stock_data)) {
             vis.if_animation = false
         }
         vis.last_selected_stock_data = vis.selected_stock_data
     }
 
+    //convert the format of the data so that we can use them
     updateDataType(stock_symbol) {
         let vis = this
         d3.map(Object.keys(vis.selected_stock_data[stock_symbol]), d => vis.selected_stock_data[stock_symbol][d]['date'] = d)
@@ -419,6 +417,7 @@ class LineChart {
         })
     }
 
+    //create the area need for all the components on the line chart
     create_the_area() {
         let vis = this
         // Initialize clipping mask that covers the detailed view
@@ -458,6 +457,8 @@ class LineChart {
             .attr('pointer-events', 'all')
     }
 
+
+    //draw the axes for both the detailed view and the overview.
     create_the_axis() {
         let vis = this
         //create the x-axis for the detailed view
@@ -483,6 +484,7 @@ class LineChart {
             .attr('class', 'axis y-axis');
     }
 
+    //we need to prepare some data so that we know the sectors that each company belongs to.
     initialize_the_sector_data() {
         let vis = this
         vis.sector_data = companies_data
@@ -509,6 +511,31 @@ class LineChart {
         }
     }
 
+    //the function for the animation for the line chart.
+    transition(path, vis) {
+        let duration = 2000
+        if (!vis.if_animation) {
+            duration = 0
+        }
+        path.transition()
+            .duration(duration)
+            .attrTween("stroke-dasharray", tweenDash)
+            .on("end", () => {
+                d3.select(this).call((path, vis) => {
+                    vis.transition(path, vis)
+                });
+            });
+
+        function tweenDash() {
+            const l = this.getTotalLength(),
+                i = d3.interpolateString("0," + l, l + "," + l);
+            return function (t) {
+                return i(t)
+            };
+        }
+    }
+
+    //update the tooltip when the mouse is entered the tracking area, or moving on the tracking area
     update_tooltip(event) {
         let vis = this
         // Find nearest data point

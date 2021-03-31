@@ -75,7 +75,7 @@ js/lineChart.js
 - It first draws the line in the overview line chart as it is simple and static.
 - Then it updated the function of hovering mouse on the chart.
 - It then will set the brush to a pre-specified place, as it set the position of the brush, the line on the detailed chart will be drawn as the 
-function vis.brushed will be called and it then calls renderline to draw the line.
+function vis.brushed will be called, and it then calls renderline() to draw the line.
 
 js/bubbleChart.js
 -

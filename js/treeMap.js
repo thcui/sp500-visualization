@@ -14,21 +14,20 @@ class TreeMap {
         let vis = this;
 
 
-
         vis.svg = d3
             .select(vis.config.parentElement)
             .attr("width", vis.config.containerWidth)
             .attr("height", vis.config.containerHeight)
 
-    //append title
+        //append title
         vis.svg.append('text')
-            .attr('id','#bubbleChart_title')
+            .attr('id', '#bubbleChart_title')
             .attr("x", 300)
             .attr("y", 20)
-            .attr('fill','white')
+            .attr('fill', 'white')
             .attr("text-anchor", "middle")
-            .attr('font-size','18px')
-            .attr('font-weight','bold')
+            .attr('font-size', '18px')
+            .attr('font-weight', 'bold')
             .text("Market Capitalization Distribution By Sectors")
         // append annotation
         vis.svg
@@ -36,7 +35,7 @@ class TreeMap {
             .attr("x", 20)
             .attr("y", 403)
             .style("font-size", 12)
-            .attr('fill','white')
+            .attr('fill', 'white')
             .text("Size of rectangle encodes the amount of market capitalization in the given sector");
 
 
@@ -52,9 +51,10 @@ class TreeMap {
     }
 
 
-    updateVis(){}
+    updateVis() {
+    }
 
-    renderVis(){
+    renderVis() {
         let vis = this;
         // stratify the data: reformatting for d3.js
         let data = vis.data;
@@ -81,7 +81,7 @@ class TreeMap {
             .data(root.leaves())
             .enter()
             .append("rect")
-            .attr("class","treeBlock")
+            .attr("class", "treeBlock")
             .attr('x', function (d) {
                 return d.x0;
             })
@@ -94,9 +94,11 @@ class TreeMap {
             .attr('height', function (d) {
                 return d.y1 - d.y0;
             })
-            .style("fill", function(d){ return colorScheme(d.data.sector)})
-            .on("mouseover",this.showToolTip)
-            .on("mouseout",this.hideToolTip)
+            .style("fill", function (d) {
+                return colorScheme(d.data.sector)
+            })
+            .on("mouseover", this.showToolTip)
+            .on("mouseout", this.hideToolTip)
             .on("click", this.selectSector);
 
         // append the text labels for sectors
@@ -118,28 +120,31 @@ class TreeMap {
             .attr("fill", "white")
 
     }
+
     //show tooltip function that displays market capitalization
-    showToolTip(e,d){
-        const formatMarketCap = number => d3.format('.3s')(number).replace('G','Billions').replace('T','Trillions')
+    showToolTip(e, d) {
+        const formatMarketCap = number => d3.format('.3s')(number).replace('G', 'Billions').replace('T', 'Trillions')
         let num = formatMarketCap(d.data.marketcap);
         d3.select('#tooltip')
             .style("display", "block")
-            .style("top", e.pageY +20+ "px")
-            .style("left", e.pageX + 20+"px")
+            .style("top", e.pageY + 20 + "px")
+            .style("left", e.pageX + 20 + "px")
             .html(`<strong>${d.data.sector}</strong>
               <div><i>Amount of Market Capitalization:</i></div>
               <div> ${num}  USD</div>
                `);
     }
+
     hideToolTip() {
         d3.select("#tooltip").style("display", "none");
     }
+
     // apply filter for selected sector
-    selectSector(e,d){
-        if(sectorFilter.includes(d.data.sector)){
+    selectSector(e, d) {
+        if (sectorFilter.includes(d.data.sector)) {
             d3.select(this).classed("selected", false);
             sectorFilter = [];
-        }else{
+        } else {
             d3.select(".treeBlock.selected").classed("selected", false);
             d3.select(this).classed("selected", true);
             sectorFilter = [d.data.sector]
