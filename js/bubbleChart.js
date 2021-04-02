@@ -312,6 +312,16 @@ class BubbleChart {
             .call(vis.autoZoom.transform, d3.zoomIdentity);
     }
 
+    focusZoom(symbol) {
+        let vis = this;
+        let x = d3.select(`.${symbol}`).attr("cx");
+        let y = d3.select(`.${symbol}`).attr("cy");
+        vis.svg.transition().duration(2500).call(
+            vis.autoZoom.transform,
+            d3.zoomIdentity.translate(vis.innerWidth / 2, vis.innerHeight / 2).scale(50).translate(-x, -y)
+        );
+    }
+
     resetSelectedStockSymbol() {
         d3.selectAll("circle.selected")
             .classed("selected", false)
