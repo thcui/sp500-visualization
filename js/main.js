@@ -74,6 +74,7 @@ d3.json('data/companyData.json').then(_stock => {
                 let symbol = searched_company.symbol
                 selected_stock_symbol.push(symbol)
                 bubbleChart.updateVis()
+                bubbleChart.focusZoom(symbol)
                 lineChart.updateVis()
             }
             else {
