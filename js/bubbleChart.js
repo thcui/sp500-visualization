@@ -28,13 +28,17 @@ class BubbleChart {
         vis.custom_container_x = vis.innerWidth + 80
 
         // Define size of SVG drawing area
-        vis.svg = d3
+        vis.basesvg = d3
             .select(vis.config.parentElement)
             .attr("width", vis.config.containerWidth)
             .attr("height", vis.config.containerHeight);
-        vis.svg.append('text')
+
+        vis.svgG = vis.basesvg.append("g")
+
+
+        vis.svgG.append('text')
             .attr('id', 'bubblechart_title')
-        vis.custom_container = vis.svg.append('g').attr('id', 'custom_container')
+        vis.custom_container = vis.basesvg.append('g').attr('id', 'custom_container')
             .style("font-size", "15px")
             .attr("font-weight", "700")
             .attr('fill', '#dddddd')
@@ -63,9 +67,20 @@ class BubbleChart {
         vis.custom_selection = []
         vis.clones = {}
 
+        // Append a transparent plane to listen to zoom event
+        vis.zoomPlane = vis.svgG
+            .append("rect")
+            .attr("class", "zoomPlane")
+            .attr("transform", `translate(${vis.config.margin.left},${vis.config.margin.top})`)
+            .attr("width", vis.innerWidth)
+            .attr("height", vis.innerHeight)
+            .attr("fill-opacity", "0")
+            .style("fill", "none")
+            .style("pointer-events", "all");
+
         // Append group element that will contain our actual chart
         // and position it according to the given margin config
-        vis.chartArea = vis.svg
+        vis.chartArea = vis.svgG
             .append("g")
             .attr("transform", `translate(${vis.config.margin.left},${vis.config.margin.top})`);
 
@@ -78,7 +93,7 @@ class BubbleChart {
             .attr('y', 0)
             .attr('height', vis.innerHeight);
 
-        // Initialize the axis and scale
+        // Initialize the axis group
         vis.YaxisG = vis.chartArea.append("g");
         vis.XaxisG = vis.chartArea.append("g").attr("transform", `translate(0,${vis.innerHeight})`);
 
@@ -86,6 +101,7 @@ class BubbleChart {
         vis.chart = vis.chartArea.append('g')
             .attr('clip-path', 'url(#chart-mask)');
 
+        // Initialize axis and scale
         vis.xScale = d3.scaleLinear().range([10, vis.innerWidth - 55]);
         vis.yScale = d3.scaleLinear().range([vis.innerHeight - 55, 55]);
         vis.radiusScale = d3.scaleSqrt().range([5, 50]);
@@ -108,7 +124,7 @@ class BubbleChart {
             .attr('x', vis.innerWidth - 80)
             .attr("text-anchor", "middle")
             .text("Amount of Market Capitalization");
-        vis.svg.append('text')
+        vis.svgG.append('text')
             .attr('class', 'axis-name')
             .attr('x', 60)
             .attr('y', 60)
@@ -200,9 +216,9 @@ class BubbleChart {
 
         // Bond tooltips, click event and drag event to circles
         vis.circle
-            .on("mouseover", this.showToolTip)
-            .on("mouseout", this.hideToolTip)
-            .on('click', this.clickBubble)
+            .on("mouseover", vis.showToolTip)
+            .on("mouseout", vis.hideToolTip)
+            .on('click', vis.clickBubble)
             .call(
                 d3.drag()
                     .on("start", function (event, d) {
@@ -299,16 +315,17 @@ class BubbleChart {
             .attr("transform", e.transform)
             .attr("r", (d) => vis.radiusScale(d.marketcap));
 
-        vis.XaxisG.transition().duration(30).call(vis.Xaxis.scale(e.transform.rescaleX(vis.xScale)));
-        vis.YaxisG.transition().duration(30).call(vis.Yaxis.scale(e.transform.rescaleY(vis.yScale)));
+        vis.XaxisG.transition().duration(30).ease(d3.easeLinear).call(vis.Xaxis.scale(e.transform.rescaleX(vis.xScale)));
+        vis.YaxisG.transition().duration(30).ease(d3.easeLinear).call(vis.Yaxis.scale(e.transform.rescaleY(vis.yScale)));
         vis.YaxisG.select(".domain").remove();
         vis.XaxisG.select(".domain").remove();
     }
 
     resetZoom() {
         let vis = this;
-        vis.svg.transition()
+        vis.svgG.transition()
             .duration(500)
+            .ease(d3.easeLinear)
             .call(vis.autoZoom.transform, d3.zoomIdentity);
     }
 
@@ -320,7 +337,7 @@ class BubbleChart {
         }
         let x = d3.select(`.${symbol}`).attr("cx");
         let y = d3.select(`.${symbol}`).attr("cy");
-        vis.svg.transition().duration(3500).call(
+        vis.svgG.transition().duration(3500).ease(d3.easeQuadOut).call(
             vis.zoom.transform,
             d3.zoomIdentity.translate(vis.innerWidth / 2, vis.innerHeight / 2).scale(50).translate(-x, -y)
         );
@@ -340,23 +357,23 @@ class BubbleChart {
         // initial zoom
         let initialTransform = d3.zoomIdentity.translate(vis.innerWidth / 2, vis.innerHeight / 2)
             .scale(5).translate(-vis.innerWidth / 5, -vis.innerHeight / 1.3);
-        vis.svg.call(vis.zoom.transform, initialTransform);
+        vis.svgG.call(vis.zoom.transform, initialTransform);
         // go back to normal
-        vis.svg
+        vis.svgG
             .transition()
             .delay(1000)
             .duration(1000)
             .ease(d3.easeQuadInOut)
             .call(vis.zoom.transform, d3.zoomIdentity)
             .on("end", function () {
-                // append zoom to svg after finish the initial zoom
-                vis.svg.call(vis.zoom);
+                // append zoom to svgG after finish the initial zoom
+                vis.svgG.call(vis.zoom);
             });
     }
 
     updateTitle() {
         let vis = this
-        vis.svg.select('#bubblechart_title')
+        vis.svgG.select('#bubblechart_title')
             .attr("x", 500)
             .attr("y", 15)
             .attr('fill', 'white')
