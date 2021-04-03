@@ -15,16 +15,19 @@
 # I. External Sources Used:
 ### (The change from the cited resources is included in the next part)
 #### lineChart Animation:
-https://observablehq.com/@jurestabuc/animated-line-chart
+- https://observablehq.com/@jurestabuc/animated-line-chart
 #### dragging:
-https://observablehq.com/@d3/circle-dragging-i
+- https://observablehq.com/@d3/circle-dragging-i
 #### brush for the line chart
-https://codesandbox.io/s/github/UBC-InfoVis/2021-436V-examples/tree/master/d3-brushing-linking?file=/js/focusContextVis.js
+- https://codesandbox.io/s/github/UBC-InfoVis/2021-436V-examples/tree/master/d3-brushing-linking?file=/js/focusContextVis.js
 #### treemap
-https://www.d3-graph-gallery.com/treemap
+- https://www.d3-graph-gallery.com/treemap
 #### bubbleChart
-https://codesandbox.io/s/github/UBC-InfoVis/2021-436V-examples/tree/master/d3-interactive-scatter-plot
-https://www.freecodecamp.org/news/get-ready-to-zoom-and-pan-like-a-pro-after-reading-this-in-depth-tutorial-5d963b0a153e/
+- https://codesandbox.io/s/github/UBC-InfoVis/2021-436V-examples/tree/master/d3-interactive-scatter-plot
+#### zoom
+- https://www.freecodecamp.org/news/get-ready-to-zoom-and-pan-like-a-pro-after-reading-this-in-depth-tutorial-5d963b0a153e/
+- https://bl.ocks.org/puzzler10/63c0eff1756ca7cb62213932f9ef6825
+- https://observablehq.com/@d3/programmatic-zoom
 
 # II. High-level Process/Changes Made:
 css/style.css:
