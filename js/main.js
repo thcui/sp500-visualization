@@ -127,8 +127,3 @@ function filterDateRange(startDate, endDate) {
     filterSector();
 }
 
-
-function filterTab(evt, cityName) {
-    lineChart.update_tab(cityName,true)
-}
-
