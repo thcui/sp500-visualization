@@ -5,6 +5,18 @@
     <title>S&P 500 Visualization</title>
 </head>
 <body>
+<script src="js/d3.v6.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+<script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+<!--    <script src="js/preprocess.js"></script>-->
+<script src="js/bubbleChart.js"></script>
+<script src="js/lineChart.js"></script>
+<script src="js/treeMap.js"></script>
+
+<script src="js/main.js"></script>
+<link rel="stylesheet" href="css/style.css">
+
     <text id="title">S&P 500 Visualization</text>
     <div id="search_bar">
         <label for="search"></label><input id="search" type="text" name="searchActor" placeholder="Search Stocks">
@@ -16,7 +28,17 @@
                 <svg id="treeMap"></svg>
             </div>
             <div id="right">
+                <!-- Tab links -->
+                <div class="tab">
+                    <button class="tablinks" id="SP500_tab" onclick="filterTab(event,'SP500')">SP500 Index</button>
+                    <button class="tablinks" id="Sector_tab" onclick="filterTab(event,'Sector')">Selected Sector Total Stock Price</button>
+                    <button class="tablinks" id="Companies_tab" onclick="filterTab(event,'Companies')">Selected Companies Stock Price(s)</button>
+                </div>
                 <svg id="lineChart"></svg>
+
+
+
+
             </div>
         </div>
         <div id="bottom_set">
@@ -29,16 +51,9 @@
     <div id="tooltip"></div>
 
 
-    <script src="js/d3.v6.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
-    <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
-    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
-<!--    <script src="js/preprocess.js"></script>-->
-    <script src="js/bubbleChart.js"></script>
-    <script src="js/lineChart.js"></script>
-    <script src="js/treeMap.js"></script>
 
-    <script src="js/main.js"></script>
-    <link rel="stylesheet" href="css/style.css">
+
+
+
 </body>
 </html>
