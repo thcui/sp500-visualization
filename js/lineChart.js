@@ -14,6 +14,7 @@ class LineChart {
 
     initVis() {
         let vis = this
+        vis.current_line=null
         //Initialize the domain(time) of the plot
         vis.defaultDomain = selectedDomain;
 
@@ -363,12 +364,13 @@ class LineChart {
         let vis = this
         vis.selected_stock_data = {}
         //check whether the user has specified which company's stock price to show
-        if (selected_stock_symbol.length === 0) {
+        if (selected_stock_symbol.length === 0||vis.current_line==='Sector'||vis.current_line==='SP500') {
             //no company has been specified, then check whether the user selected a sector.
-            if (sectorTotal_Data[sectorFilter[0]]) {
+            if ((sectorTotal_Data[sectorFilter[0]]&&vis.current_line===null)||vis.current_line==='Sector') {
                 vis.data_indicator_string = "Sector Total Stock Price"
                 vis.selected_stock_data[sectorFilter[0]] = sectorTotal_Data[sectorFilter[0]].historical
                 vis.updateDataType(sectorFilter[0])
+                vis.update_tab('Sector',false)
 
             } else {
                 //the user has not selected any companies or sectors, then the we will show the sp500 index as default
@@ -378,6 +380,7 @@ class LineChart {
                 delete temp_sp500['columns'];
                 vis.selected_stock_data['SP500'] = Object.assign({}, temp_sp500)
                 vis.axis_name = "SP500 index(no unit)"
+                vis.update_tab('SP500',false)
             }
 
         } else {
@@ -417,7 +420,9 @@ class LineChart {
                 }
                 vis.data_indicator_string = "Stock Price(s)"
                 vis.updateDataType(stock_symbol)
+
             });
+            vis.update_tab('Companies',false)
         }
         //if the selected data is unchanged, we do not want to add animation to the line chart(such as: brush will
         //not need the animation).
@@ -425,6 +430,7 @@ class LineChart {
             vis.if_animation = false
         }
         vis.last_selected_stock_data = vis.selected_stock_data
+        vis.current_line=null
     }
 
     //convert the format of the data so that we can use them
@@ -563,5 +569,44 @@ class LineChart {
             .text(d => d.price)
 
         tooltip_circle.exit().remove()
+    }
+
+    update_tab(line,if_update_chart) {
+        if(sectorFilter.length===0){
+            d3.select('#Sector_tab').classed('unclickable',true)
+        }
+        else{
+            d3.select('#Sector_tab').classed('unclickable',false)
+        }
+
+        if(selected_stock_symbol.length===0){
+            d3.select('#Companies_tab').classed('unclickable',true)
+        }
+        else{
+            d3.select('#Companies_tab').classed('unclickable',false)
+        }
+
+
+        // Declare all variables
+        let vis=this
+        var i, tabcontent, tablinks;
+
+        // Get all elements with class="tabcontent" and hide them
+        tabcontent = document.getElementsByClassName("tabcontent");
+        for (i = 0; i < tabcontent.length; i++) {
+            tabcontent[i].style.display = "none";
+        }
+
+        // Get all elements with class="tablinks" and remove the class "active"
+        tablinks = document.getElementsByClassName("tablinks");
+        for (i = 0; i < tablinks.length; i++) {
+            tablinks[i].className = tablinks[i].className.replace(" active", "");
+        }
+
+        vis.current_line=line
+        d3.select("#"+line+"_tab").classed("active", true)
+        if(if_update_chart){
+            this.updateVis()
+        }
     }
 }

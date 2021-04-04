@@ -162,3 +162,40 @@ input[type='submit'] {
     padding: 5px;
 
 }
+
+/* Style the tab */
+.tab {
+    overflow: hidden;
+    border: 1px solid #ccc;
+    background-color: #f1f1f1;
+    opacity: 0.5;
+    border-radius: 5px;
+}
+
+/* Style the buttons that are used to open the tab content */
+.tab button {
+    font-weight: bold;
+    background-color: inherit;
+    float: left;
+    border: none;
+    outline: none;
+    cursor: pointer;
+    padding: 10px 13px;
+    transition: 0.1s;
+}
+
+/* Change background color of buttons on hover */
+.tab button:hover {
+    background-color: #ddd;
+}
+
+/* Create an active/current tablink class */
+.tab button.active {
+    background-color: #ccc;
+}
+
+.tab button.unclickable {
+    color: #ccc;
+    pointer-events: none
+
+}
