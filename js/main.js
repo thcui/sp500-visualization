@@ -109,7 +109,7 @@ function getbubbleChartData(start_date, end_date) {
     }
 }
 //filter bubble chart based on selected sector in treemap
-function filterSector() {
+function filterSector_for_bubble_chart() {
     if (sectorFilter.length !== 0) {
         bubbleChart.data = bubbleChartData.filter(d => sectorFilter.includes(d.industry));
     } else {
@@ -117,13 +117,12 @@ function filterSector() {
         bubbleChart.data = bubbleChartData;
     }
     bubbleChart.updateVis();
-    lineChart.updateVis()
 }
 
 function filterDateRange(startDate, endDate) {
     bubbleChart.brushFlag = true;
     getbubbleChartData(startDate, endDate);
     bubbleChart.data = bubbleChartData;
-    filterSector();
+    filterSector_for_bubble_chart();
 }
 

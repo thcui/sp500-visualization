@@ -149,7 +149,8 @@ class TreeMap {
             d3.select(this).classed("selected", true);
             sectorFilter = [d.data.sector]
         }
-        filterSector();
+        filterSector_for_bubble_chart();
+        lineChart.updateVis()
     }
 
 }
