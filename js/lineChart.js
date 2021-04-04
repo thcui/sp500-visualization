@@ -129,8 +129,6 @@ class LineChart {
     renderVis() {
 
         let vis = this
-        //render the default line in detailed view, which requires the information from the overview.
-        vis.renderLine(vis.overview_area, Object.keys(vis.selected_stock_data), vis.xScale_overview, vis.yScale_overview, false)
 
         //Set the event for moving mouse on the tracking area: the tooltip will change based on the position of the mouse pointer.
         vis.trackingArea.on('mouseenter', () => {
@@ -207,8 +205,20 @@ class LineChart {
 
         vis.update_Title_and_AxisName()
 
+
+        let if_animation=true
+        //if the selected data is unchanged, we do not want to add animation to the line chart(such as: brush will
+        //not need the animation).
+        if (JSON.stringify(vis.last_selected_stock_data) === JSON.stringify(vis.selected_stock_data)) {
+            if_animation = false
+        }else {
+            //render the default line in detailed view, which requires the information from the overview.
+            vis.renderLine(vis.overview_area, Object.keys(vis.selected_stock_data), vis.xScale_overview, vis.yScale_overview, false,true)
+            vis.last_selected_stock_data = vis.selected_stock_data
+        }
+
         // Redraw line
-        vis.renderLine(vis.detailedView_area, Object.keys(vis.selected_stock_data), vis.xScale_detail, vis.yScale_detail, true)
+        vis.renderLine(vis.detailedView_area, Object.keys(vis.selected_stock_data), vis.xScale_detail, vis.yScale_detail, true,if_animation)
         // update x-axis labels in focus view
         vis.xAxisG_detail.call(vis.xAxis_detail);
     }
@@ -233,13 +243,13 @@ class LineChart {
 
 //The function that is responsible for drawing the line on the line chart,given the target area,data to show,
 // scales and if need to label the name
-    renderLine(area, data, x_scale, y_scale, if_text) {
+    renderLine(area, data, x_scale, y_scale, if_text,if_animation) {
         let vis = this
 
         //the function for the animation for the line chart, function needs to be created before use
         vis.transition=function transition(path) {
             let duration = 2000
-            if (!vis.if_animation) {
+            if (!if_animation) {
                 duration = 0
             }
             path.transition()
@@ -385,7 +395,6 @@ class LineChart {
 
         } else {
             //the user has selected some companies to show stock prices
-            vis.selected_stock_data = {}
             let data = []
             selected_stock_symbol.forEach(stock_symbol => {
                 //check if the basket has been activated
@@ -424,12 +433,8 @@ class LineChart {
             });
             vis.update_tab('Companies',false)
         }
-        //if the selected data is unchanged, we do not want to add animation to the line chart(such as: brush will
-        //not need the animation).
-        if (JSON.stringify(vis.last_selected_stock_data) === JSON.stringify(vis.selected_stock_data)) {
-            vis.if_animation = false
-        }
-        vis.last_selected_stock_data = vis.selected_stock_data
+
+
         vis.current_line=null
     }
 
