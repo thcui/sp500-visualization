@@ -53,6 +53,7 @@ body{
     color: #333;
 }
 .treeBlock:hover{
+    cursor: pointer;
     stroke-width:3;
     stroke: white;
 }
@@ -181,7 +182,7 @@ input[type='submit'] {
     outline: none;
     cursor: pointer;
     padding: 10px 13px;
-    transition: 0.1s;
+    transition: 0.3s;
 }
 
 /* Change background color of buttons on hover */
