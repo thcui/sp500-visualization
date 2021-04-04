@@ -54,7 +54,7 @@ body{
 }
 .treeBlock:hover{
     cursor: pointer;
-    stroke-width:3;
+    stroke-width:1;
     stroke: white;
 }
 .treeBlock.selected{
