@@ -408,7 +408,7 @@ class BubbleChart {
 
             clone.call(d3.drag()
                 .on("drag", function (event, d) {
-                    text.attr("transform", `translate(${event.x - vis.config.margin.left},${event.y})`)
+                    text.attr("transform", `translate(${event.x},${event.y})`)
                     d3.select(this).attr("cx", event.x).attr("cy", event.y)
                 })
                 .on("end", function (event, d) {
