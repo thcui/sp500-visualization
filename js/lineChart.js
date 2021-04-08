@@ -81,11 +81,9 @@ class LineChart {
         //Create the area for putting different elements in the line chart
         vis.create_the_area()
         vis.last_selected_stock_data = {}
-
-
+        
         vis.brushG = vis.overview_area.append('g')
             .attr('class', 'brush x-brush');
-
 
         // Initialize the brush component
         vis.brush = d3.brushX()
@@ -97,8 +95,6 @@ class LineChart {
                 if (!selection)
                     vis.brushed(null);
             });
-
-
 
         //Prepare the data that let us know the sector information for each company
         vis.initialize_the_sector_data()
@@ -416,7 +412,6 @@ class LineChart {
                                 total[i].volume = stockData[stock_symbol].historical[i].volume
                                 total[i].price = (+(stockData[stock_symbol].historical[i].price))
                             }
-
                         }
                     })
 
@@ -433,7 +428,6 @@ class LineChart {
             });
             vis.update_tab('Companies',false)
         }
-
 
         vis.current_line=null
     }
@@ -479,7 +473,6 @@ class LineChart {
             .attr('width', vis.overview_chart_width)
             .attr('height', vis.overview_chart_height)
             .attr('transform', `translate(0,${vis.detail_chart_height})`);
-
 
         // Initialize the tooltip
         vis.tooltip = vis.chart.append('g')
@@ -577,19 +570,9 @@ class LineChart {
     }
 
     update_tab(line,if_update_chart) {
-        if(sectorFilter.length===0){
-            d3.select('#Sector_tab').classed('unclickable',true)
-        }
-        else{
-            d3.select('#Sector_tab').classed('unclickable',false)
-        }
+        d3.select('#Sector_tab').classed('unclickable',sectorFilter.length===0)
 
-        if(selected_stock_symbol.length===0){
-            d3.select('#Companies_tab').classed('unclickable',true)
-        }
-        else{
-            d3.select('#Companies_tab').classed('unclickable',false)
-        }
+        d3.select('#Companies_tab').classed('unclickable',selected_stock_symbol.length===0)
 
 
         // Declare all variables

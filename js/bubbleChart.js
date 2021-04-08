@@ -407,7 +407,7 @@ class BubbleChart {
             data.push(d.symbol)
 
             clone.call(d3.drag()
-                .on("drag", function (event, d) {
+                .on("drag", function (event) {
                     text.attr("transform", `translate(${event.x},${event.y})`)
                     d3.select(this).attr("cx", event.x).attr("cy", event.y)
                 })
