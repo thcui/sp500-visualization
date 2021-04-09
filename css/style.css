@@ -231,10 +231,12 @@ input[type='submit'] {
 }
 .sr-only{
     position: fixed;
-    left: 47%;
+    left: 50%;
     top: 65%;
     color:white;
-    font-size:20px
+    font-size:20px;
+    -webkit-transform: translate(-50%, -50%);
+    transform: translate(-50%, -50%);
 }
 
 @keyframes spin {
