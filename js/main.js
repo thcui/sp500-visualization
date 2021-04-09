@@ -141,7 +141,7 @@ function getOverview(comp) {
             let pageId = Object.keys(page)[0];
             let content = page[pageId].extract;
             result=content.split("\n")[0]
-            resolve(result)
+            resolve(result+"<br>(From Wikipedia)")
         });
     });
   })
