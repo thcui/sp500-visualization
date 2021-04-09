@@ -15,7 +15,8 @@ class BubbleChart {
 
         vis.initFlag = true;
         vis.brushFlag = false;
-        vis.title_height = 30
+        vis.title_height = 30;
+        vis.updateTime = 300;
 
         vis.custom_container_y = 70
         vis.custom_container_width = 300
@@ -155,8 +156,10 @@ class BubbleChart {
         // If updateVis is called from moving brush, no need to reset zoom scale
         if (!vis.brushFlag) {
             vis.resetZoom();
+            vis.updateTime=300;
         } else {
             vis.brushFlag = false;
+            vis.updateTime=80;
         }
 
         vis.xScale.domain(d3.extent(vis.data, d => d.marketcap));
@@ -199,7 +202,7 @@ class BubbleChart {
                     .selection()
                 ,
                 update => update
-                    .transition().duration(300)
+                    .transition().duration(vis.updateTime)
                     .attr("cx", (d) => vis.xScale(d.marketcap))
                     .attr("cy", (d) => vis.yScale(d.perChange))
                     .attr("r", (d) => vis.radiusScale(d.marketcap))
