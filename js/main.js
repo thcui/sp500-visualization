@@ -55,7 +55,7 @@ d3.json('data/companyData.json').then(_stock => {
             }
         });
     });
-    getOverview("apple Inc");
+    getOverview("apple Inc").then((d)=>{console.log(d)})
 
     // reset button must render before chart initialization
     d3.select("#bubbleChart-reset-button_div")
@@ -129,14 +129,18 @@ function filterDateRange(startDate, endDate) {
 let searchUrl = 'https://en.wikipedia.org/w/api.php?action=opensearch&format=json&search=';
 let contentUrl = "https://en.wikipedia.org/w/api.php?format=json&action=query&prop=extracts&exintro&explaintext&redirects=1&titles="
 function getOverview(comp) {
+    let result
     comp = comp.replace(/\s+/g, '_');
+    return new Promise((resolve,rej)=>{
     d3.json(searchUrl + comp).then(data => {
         let title = data[1][0].replace(/\s+/g, '_');
         d3.json(contentUrl+title).then(res =>{
             let page = res.query.pages;
             let pageId = Object.keys(page)[0];
             let content = page[pageId].extract;
-            console.log(content.split("\n")[0])
+            result=content.split("\n")[0]
+            resolve(result)
         });
     });
+  })
 }
