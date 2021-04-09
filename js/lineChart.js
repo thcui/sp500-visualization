@@ -654,7 +654,7 @@ class LineChart {
                     .style("left", e.pageX - 600 + "px")
     }
     hideToolTip() {
-        d3.select("#lineChart_tooltip").style("display", "none");
+        d3.select("#lineChart_tooltip").style("display", "none").html(null)
     }
 
 }
