@@ -4,9 +4,9 @@ class LineChart {
         // Configuration object with defaults
         this.config = {
             parentElement: _config.parentElement,
-            containerWidth: 680,
+            containerWidth: 690,
             containerHeight: 450,
-            margin: _config.margin || {top: 30, right: 45, bottom: 60, left: 40}
+            margin: _config.margin || {top: 30, right: 50, bottom: 60, left: 35}
         }
         this.data = _data;
         this.initVis();
@@ -298,43 +298,54 @@ class LineChart {
     //add the text to the line drawn
     render_text(area, data, x_scale, y_scale) {
         let vis = this
-        let text = area.selectAll('.stock_name').data(data)
-        let textEnter = text.enter().append('text')
-        let textMerge = textEnter.merge(text)
+        let group = area.selectAll('.stock_name').data(data)
+        let groupEnter = group.enter().append('g')
+        groupEnter.append('text')
+        groupEnter.append('image')
+        let groupMerge = groupEnter.merge(group)
         let boundary_date = vis.get_closest_date(vis.xScale_detail.invert(x_scale.range()[1]), Object.values(vis.selected_stock_data))[0].date
 
 
 
+        groupMerge.attr('class', d => 'stock_name ' + vis.getSectors(d).replace(' ', '_'))
+            .each(function (d){
+                if(companies_data.filter(v=>{return v.symbol===d}).length>0){
+                    d3.select(this).attr("cursor", "help")
+                        .on("mouseenter",vis.showToolTip)
+                        .on("mouseover",vis.remainToolTip)
+                        .on("mouseout", vis.hideToolTip)
+                        .select('image')
+                        .datum(d => Object.values(vis.selected_stock_data[d]).filter(v =>
+                            v.date.toDateString() === boundary_date.toDateString()))
+                        .attr('transform',
+                            d => `translate(${vis.chart_width+36},${y_scale(d[0].price)-12}) scale(0.1)`)
+                        .attr('xlink:href', './information.png')
+                }else {
+                    d3.select(this).attr("cursor", "default").select('image').attr('transform', `scale(0)`)
+                }
+            })
+
+
+        let textMerge=groupMerge.select('text')
         textMerge.text(d => d)
             .attr('fill', d => colorScheme(vis.getSectors(d)))
             .attr('stroke', 'white')
             .attr('stroke-width', '0.1')
-            .attr('class', d => 'stock_name ' + vis.getSectors(d).replace(' ', '_'))
 
 
 
         textMerge.datum(d => Object.values(vis.selected_stock_data[d]).filter(v =>
             v.date.toDateString() === boundary_date.toDateString()))
             .attr('transform',
-                d => `translate(${vis.chart_width + 40},${y_scale(d[0].price)})`)
+                d => `translate(${vis.chart_width + 36},${y_scale(d[0].price)})`)
             .attr('text-anchor', 'end')
             .attr('vertical-align', 'text-bottom')
             .attr('font-size', 12)
 
-        textMerge.data(data)
-
-        textMerge.on("mouseenter",vis.showToolTip)
-            .on("mouseout", vis.hideToolTip)
-            .each(function (d){
-                if(companies_data.filter(v=>{return v.symbol===d}).length>0){
-                    d3.select(this).attr("cursor", "help")
-                }else {
-                    d3.select(this).attr("cursor", "default")
-                }
-            })
 
 
-        text.exit().remove()
+
+        group.exit().remove()
     }
 
 
@@ -380,7 +391,6 @@ class LineChart {
         vis.legend.append('text').text('Basket1').attr('transform', `translate(40,20)`).attr('font-size', 10)
         vis.legend.append('text').text('Basket2').attr('transform', `translate(80,20)`).attr('font-size', 10)
         vis.legend.append('text').text('Other types of the line shows the sector of the stock, color corresponding to the treemap').attr('transform', `translate(150,20)`).attr('font-size', 10)
-
 
     }
 
@@ -629,12 +639,18 @@ class LineChart {
                     .style("display", "block")
                     .style("top", e.pageY+15 + "px")
                     .style("left", e.pageX - 600 + "px")
-                    .style("right", 30 + "px")
+                    .style("right", 50 + "px")
                     .html(`<strong>${name}</strong><br>${result}
                `)
             })
 
         }
+    }
+    remainToolTip(e) {
+                d3.select('#lineChart_tooltip')
+                    .style("display", "block")
+                    .style("top", e.pageY+15 + "px")
+                    .style("left", e.pageX - 600 + "px")
     }
     hideToolTip() {
         d3.select("#lineChart_tooltip").style("display", "none");
