@@ -303,11 +303,16 @@ class LineChart {
         let textMerge = textEnter.merge(text)
         let boundary_date = vis.get_closest_date(vis.xScale_detail.invert(x_scale.range()[1]), Object.values(vis.selected_stock_data))[0].date
 
+
+
         textMerge.text(d => d)
             .attr('fill', d => colorScheme(vis.getSectors(d)))
             .attr('stroke', 'white')
             .attr('stroke-width', '0.1')
             .attr('class', d => 'stock_name ' + vis.getSectors(d).replace(' ', '_'))
+
+
+
         textMerge.datum(d => Object.values(vis.selected_stock_data[d]).filter(v =>
             v.date.toDateString() === boundary_date.toDateString()))
             .attr('transform',
@@ -315,6 +320,13 @@ class LineChart {
             .attr('text-anchor', 'end')
             .attr('vertical-align', 'text-bottom')
             .attr('font-size', 12)
+
+        textMerge.data(data)
+
+        textMerge.on("mouseover",vis.showToolTip)
+            .on("mouseout", vis.hideToolTip)
+            .attr("cursor", "help")
+
 
         text.exit().remove()
     }
@@ -518,7 +530,7 @@ class LineChart {
     //we need to prepare some data so that we know the sectors that each company belongs to.
     initialize_the_sector_data() {
         let vis = this
-        vis.sector_data = companies_data
+        vis.sector_data =[]
         //There are some special data do not have sectors they belonged to, so we need to manually set them
         for (let special_d of ["SP500", "Basket1", "Basket2"]) {
             vis.sector_data.push({
@@ -527,6 +539,7 @@ class LineChart {
                 "sector": special_d
             })
         }
+        vis.sector_data=vis.sector_data.concat(companies_data)
 
         //set a small helper function to easily get the sectors of
         // given company or other types of data (such as: sector itself).
@@ -596,5 +609,29 @@ class LineChart {
         if(if_update_chart){
             this.updateVis()
         }
+
+
     }
+
+    showToolTip(e, d) {
+        let name
+        let company=companies_data.filter(v=>{return v.symbol===d})
+        if(company.length>0){
+            name=company[0]['name']
+            getOverview(name).then((result)=> {
+                d3.select('#lineChart_tooltip')
+                    .style("display", "block")
+                    .style("top", e.pageY + "px")
+                    .style("left", e.pageX - 500 + "px")
+                    .html(`<strong>${name}</strong><br>${result}
+               `)
+            })
+
+        }
+
+    }
+    hideToolTip() {
+        d3.select("#lineChart_tooltip").style("display", "none");
+    }
+
 }
