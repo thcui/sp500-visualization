@@ -325,7 +325,13 @@ class LineChart {
 
         textMerge.on("mouseenter",vis.showToolTip)
             .on("mouseout", vis.hideToolTip)
-            .attr("cursor", "help")
+            .each(function (d){
+                if(companies_data.filter(v=>{return v.symbol===d}).length>0){
+                    d3.select(this).attr("cursor", "help")
+                }else {
+                    d3.select(this).attr("cursor", "default")
+                }
+            })
 
 
         text.exit().remove()
