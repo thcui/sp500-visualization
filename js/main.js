@@ -126,8 +126,8 @@ function filterDateRange(startDate, endDate) {
     bubbleChart.data = bubbleChartData;
     filterSector_for_bubble_chart();
 }
-let searchUrl = 'https://en.wikipedia.org/w/api.php?action=opensearch&format=json&search=';
-let contentUrl = "https://en.wikipedia.org/w/api.php?format=json&action=query&prop=extracts&exintro&explaintext&redirects=1&titles="
+let searchUrl = 'https://en.wikipedia.org/w/api.php?action=opensearch&format=json&origin=*&search=';
+let contentUrl = "https://en.wikipedia.org/w/api.php?format=json&origin=*&action=query&prop=extracts&exintro&explaintext&redirects=1&titles="
 function getOverview(comp) {
     let result
     comp = comp.replace(/\s+/g, '_');
