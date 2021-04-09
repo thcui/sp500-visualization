@@ -318,7 +318,7 @@ class LineChart {
                         .datum(d => Object.values(vis.selected_stock_data[d]).filter(v =>
                             v.date.toDateString() === boundary_date.toDateString()))
                         .attr('transform',
-                            d => `translate(${vis.chart_width+36},${y_scale(d[0].price)-12}) scale(0.1)`)
+                            d => `translate(${vis.chart_width+40},${y_scale(d[0].price)-12}) scale(0.08)`)
                         .attr('xlink:href', './information.png')
                 }else {
                     d3.select(this).attr("cursor", "default").select('image').attr('transform', `scale(0)`)
@@ -337,7 +337,7 @@ class LineChart {
         textMerge.datum(d => Object.values(vis.selected_stock_data[d]).filter(v =>
             v.date.toDateString() === boundary_date.toDateString()))
             .attr('transform',
-                d => `translate(${vis.chart_width + 36},${y_scale(d[0].price)})`)
+                d => `translate(${vis.chart_width + 40},${y_scale(d[0].price)})`)
             .attr('text-anchor', 'end')
             .attr('vertical-align', 'text-bottom')
             .attr('font-size', 12)
@@ -632,14 +632,15 @@ class LineChart {
     showToolTip(e, d) {
         let name
         let company=companies_data.filter(v=>{return v.symbol===d})
+        let linechart_tooltip=d3.select('#lineChart_tooltip')
+            .style("display", "block")
+            .style("top", e.pageY+15 + "px")
+            .style("left", e.pageX - 600 + "px")
+            .style("right", 50 + "px")
         if(company.length>0){
             name=company[0]['name']
             getOverview(name).then((result)=> {
-                d3.select('#lineChart_tooltip')
-                    .style("display", "block")
-                    .style("top", e.pageY+15 + "px")
-                    .style("left", e.pageX - 600 + "px")
-                    .style("right", 50 + "px")
+                linechart_tooltip
                     .html(`<strong>${name}</strong><br>${result}
                `)
             })
