@@ -215,12 +215,10 @@ input[type='submit'] {
 
 }
 
-.spinner_group{
+.spinner{
     position: absolute;
     left: 50%;
     top: 50%;
-}
-.spinner{
     z-index: 1;
     width: 120px;
     height: 120px;
@@ -232,7 +230,11 @@ input[type='submit'] {
     animation: spin 2s linear infinite;
 }
 .sr-only{
-    color:white
+    position: absolute;
+    left: 47%;
+    top: 65%;
+    color:white;
+    font-size:20px
 }
 
 @keyframes spin {
