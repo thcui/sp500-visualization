@@ -190,13 +190,12 @@ input[type='submit'] {
 /* Style the buttons that are used to open the tab content */
 .tab button {
     font-weight: bold;
-    font-size: 15px;
     background-color: inherit;
     float: left;
     border: none;
     outline: none;
     cursor: pointer;
-    padding: 3px 15px;
+    padding: 10px 13px;
     transition: 0.3s;
 }
 
