@@ -60,7 +60,7 @@ body{
     border: 1px solid #ddd;
     font-size: 12px;
     padding: 8px;
-    min-width: 160px;
+    min-width: 50px;
     color: #333;
 }
 .treeBlock:hover{
