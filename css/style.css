@@ -190,12 +190,13 @@ input[type='submit'] {
 /* Style the buttons that are used to open the tab content */
 .tab button {
     font-weight: bold;
+    font-size: 15px;
     background-color: inherit;
     float: left;
     border: none;
     outline: none;
     cursor: pointer;
-    padding: 10px 13px;
+    padding: 3px 15px;
     transition: 0.3s;
 }
 
@@ -214,7 +215,29 @@ input[type='submit'] {
     pointer-events: none
 
 }
-.spinner{
-    vertical-align: middle;
+
+.spinner_group{
     position: absolute;
+    left: 50%;
+    top: 50%;
 }
+.spinner{
+    z-index: 1;
+    width: 120px;
+    height: 120px;
+    margin: -76px 0 0 -76px;
+    border: 16px solid #f3f3f3;
+    border-radius: 50%;
+    border-top: 16px solid #3498db;
+    -webkit-animation: spin 2s linear infinite;
+    animation: spin 2s linear infinite;
+}
+.sr-only{
+    color:white
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+

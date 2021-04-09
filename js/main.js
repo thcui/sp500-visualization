@@ -63,7 +63,8 @@ d3.json('data/companyData.json').then(_stock => {
     treeMap = new TreeMap({parentElement: "#treeMap"}, data);
     bubbleChart = new BubbleChart({parentElement: '#bubbleChart',}, bubbleChartData);
     lineChart = new LineChart({parentElement: '#lineChart',}, data);
-    d3.select(".spinner").style("display", "none");
+    d3.select(".spinner_group").style("display", "none");
+    d3.select(".tab").style("display", "block");
 
     $(() => {
         const submitSearch = () => {
