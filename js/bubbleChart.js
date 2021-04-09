@@ -393,13 +393,14 @@ class BubbleChart {
         let basket_index = 0
         let text
         let data
-
-        if (event.x >= vis.custom_container_x && event.y >= vis.custom_container_y) {
+        let absolute_x=event.x+this.config.margin.left
+        let absolute_y=event.y+this.config.margin.top
+        if (absolute_x>= vis.custom_container_x && absolute_y >= vis.custom_container_y) {
             text = vis.custom_container.append('text').text(d.symbol).attr("transform", `translate(${event.x + vis.config.margin.left},${event.y + vis.config.margin.top})`)
                 .attr('color', '#000000')
                 .attr('font-size', '20')
                 .attr("text-anchor", "end")
-            if (event.y <= vis.custom_container_y + vis.custom_container_height) {
+            if (absolute_y <= vis.custom_container_y + vis.custom_container_height) {
                 data = custom_data
                 basket_index = 1
             } else {
