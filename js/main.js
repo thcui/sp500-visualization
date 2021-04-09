@@ -55,7 +55,6 @@ d3.json('data/companyData.json').then(_stock => {
             }
         });
     });
-    getOverview("apple Inc").then((d)=>{console.log(d)})
 
     // reset button must render before chart initialization
     d3.select("#bubbleChart-reset-button_div")
@@ -64,6 +63,7 @@ d3.json('data/companyData.json').then(_stock => {
     treeMap = new TreeMap({parentElement: "#treeMap"}, data);
     bubbleChart = new BubbleChart({parentElement: '#bubbleChart',}, bubbleChartData);
     lineChart = new LineChart({parentElement: '#lineChart',}, data);
+    d3.select(".spinner").style("display", "none");
 
     $(() => {
         const submitSearch = () => {
@@ -119,13 +119,14 @@ function filterSector_for_bubble_chart() {
     }
     bubbleChart.updateVis();
 }
-
+// change bubble change range based on date
 function filterDateRange(startDate, endDate) {
     bubbleChart.brushFlag = true;
     getbubbleChartData(startDate, endDate);
     bubbleChart.data = bubbleChartData;
     filterSector_for_bubble_chart();
 }
+// get company overview using api
 let searchUrl = 'https://en.wikipedia.org/w/api.php?action=opensearch&format=json&origin=*&search=';
 let contentUrl = "https://en.wikipedia.org/w/api.php?format=json&origin=*&action=query&prop=extracts&exintro&explaintext&redirects=1&titles="
 function getOverview(comp) {
