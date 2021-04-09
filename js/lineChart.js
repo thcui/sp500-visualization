@@ -323,7 +323,7 @@ class LineChart {
 
         textMerge.data(data)
 
-        textMerge.on("mouseover",vis.showToolTip)
+        textMerge.on("mouseenter",vis.showToolTip)
             .on("mouseout", vis.hideToolTip)
             .attr("cursor", "help")
 
@@ -621,14 +621,14 @@ class LineChart {
             getOverview(name).then((result)=> {
                 d3.select('#lineChart_tooltip')
                     .style("display", "block")
-                    .style("top", e.pageY + "px")
-                    .style("left", e.pageX - 500 + "px")
+                    .style("top", e.pageY+15 + "px")
+                    .style("left", e.pageX - 600 + "px")
+                    .style("right", 30 + "px")
                     .html(`<strong>${name}</strong><br>${result}
                `)
             })
 
         }
-
     }
     hideToolTip() {
         d3.select("#lineChart_tooltip").style("display", "none");
