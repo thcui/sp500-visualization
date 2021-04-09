@@ -230,7 +230,7 @@ input[type='submit'] {
     animation: spin 2s linear infinite;
 }
 .sr-only{
-    position: absolute;
+    position: fixed;
     left: 47%;
     top: 65%;
     color:white;
