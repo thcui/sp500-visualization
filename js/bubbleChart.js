@@ -57,13 +57,13 @@ class BubbleChart {
             .attr("rx", 10)
             .attr("ry", 10)
             .attr("fill-opacity", '0.5')
-        vis.custom_container.append('text').attr("transform", `translate(${vis.custom_container_x},${vis.custom_container_y + 15})`)
+        vis.custom_container.append('text').attr("transform", `translate(${vis.custom_container_x+5},${vis.custom_container_y + 15})`)
             .text('Basket1')
         vis.custom_basket2 = vis.custom_basket.clone()
             .attr("transform", `translate(${vis.custom_container_x},${vis.custom_container_y + vis.custom_container_height + 10})`)
             .attr("fill", 'yellow')
             .attr("fill-opacity", '0.5')
-        vis.custom_container.append('text').attr("transform", `translate(${vis.custom_container_x},${vis.custom_container_y + vis.custom_container_height + 25})`)
+        vis.custom_container.append('text').attr("transform", `translate(${vis.custom_container_x+5},${vis.custom_container_y + vis.custom_container_height + 25})`)
             .text('Basket2')
         vis.custom_selection = []
         vis.clones = {}
