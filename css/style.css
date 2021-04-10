@@ -266,4 +266,9 @@ input[type='submit'] {
     0% { transform: rotate(0deg); }
     100% { transform: rotate(360deg); }
 }
-
+#bubbleChart-reset-button{
+    background-color: #4B94D0;
+}
+#submit{
+    background-color: #4B94D0;
+}
