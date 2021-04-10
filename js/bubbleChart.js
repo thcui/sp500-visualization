@@ -48,7 +48,7 @@ class BubbleChart {
             .text('Customize your own basket of')
         vis.custom_container.append('text')
             .attr("transform", `translate(${vis.custom_container_x},${vis.custom_container_y - 20})`)
-            .text(' stocks by dragging the bubble here! ')
+            .text(' stocks by dragging the bubbles to here! ')
         vis.custom_basket = vis.custom_container.append('rect')
             .attr("transform", `translate(${vis.custom_container_x},${vis.custom_container_y})`)
             .attr('width', vis.custom_container_width)
