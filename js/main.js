@@ -58,7 +58,7 @@ d3.json('data/companyData.json').then(_stock => {
 
     // render buttons for bubbleChart
     // reset button must render before chart initialization
-    d3.select("#bubbleChart-resetview-button_div")
+    d3.select("#bubbleChart-button_div")
         .html(`<button id="bubbleChart-resetview-button">Reset View</button>
         <button id="bubbleChart-resetsels-button">Clear All Selections</button>
         <button id="bubbleChart-resetsel-button">Clear Selections On Current View</button>`);
