@@ -84,7 +84,7 @@ d3.json('data/companyData.json').then(_stock => {
                 lineChart.updateVis()
             }
             else {
-                window.alert('No Company Found')
+                window.alert('No company with name \''+searchValue+'\' is found')
             }
         };
         $('#search').autocomplete({
