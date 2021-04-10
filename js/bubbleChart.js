@@ -4,7 +4,7 @@ class BubbleChart {
             parentElement: _config.parentElement,
             containerWidth: 1300,
             containerHeight: 500,
-            margin: {top: 20, right: 30, bottom: 50, left: 60},
+            margin: { top: 20, right: 30, bottom: 50, left: 60 },
         };
         this.data = _data
         this.initVis();
@@ -57,13 +57,13 @@ class BubbleChart {
             .attr("rx", 10)
             .attr("ry", 10)
             .attr("fill-opacity", '0.5')
-        vis.custom_container.append('text').attr("transform", `translate(${vis.custom_container_x+5},${vis.custom_container_y + 15})`)
+        vis.custom_container.append('text').attr("transform", `translate(${vis.custom_container_x + 5},${vis.custom_container_y + 15})`)
             .text('Basket1')
         vis.custom_basket2 = vis.custom_basket.clone()
             .attr("transform", `translate(${vis.custom_container_x},${vis.custom_container_y + vis.custom_container_height + 10})`)
             .attr("fill", 'yellow')
             .attr("fill-opacity", '0.5')
-        vis.custom_container.append('text').attr("transform", `translate(${vis.custom_container_x+5},${vis.custom_container_y + vis.custom_container_height + 25})`)
+        vis.custom_container.append('text').attr("transform", `translate(${vis.custom_container_x + 5},${vis.custom_container_y + vis.custom_container_height + 25})`)
             .text('Basket2')
         vis.custom_selection = []
         vis.clones = {}
@@ -134,7 +134,7 @@ class BubbleChart {
 
         // zoom and pan
         vis.zoom = d3.zoom()
-            .scaleExtent([1, 40])
+            .scaleExtent([0.1, 40])
             .translateExtent([[-100, -100], [vis.config.containerWidth + 100, vis.config.containerHeight + 100]])
             .on("zoom", function (event) {
                 vis.zoomed(event);
@@ -156,15 +156,18 @@ class BubbleChart {
         // If updateVis is called from moving brush, no need to reset zoom scale
         if (!vis.brushFlag) {
             vis.resetZoom();
-            vis.updateTime=300;
+            vis.updateTime = 300;
+
+            // Update scale if not called by brushing
+            vis.xScale.domain(d3.extent(vis.data, d => d.marketcap));
+            vis.yScale.domain(d3.extent(vis.data, d => d.perChange));
+            vis.radiusScale.domain(d3.extent(vis.data, d => d.marketcap));
+
         } else {
             vis.brushFlag = false;
-            vis.updateTime=80;
+            vis.updateTime = 80;
         }
 
-        vis.xScale.domain(d3.extent(vis.data, d => d.marketcap));
-        vis.yScale.domain(d3.extent(vis.data, d => d.perChange));
-        vis.radiusScale.domain(d3.extent(vis.data, d => d.marketcap));
         vis.unzommed_radiusScale.domain(d3.extent(vis.data, d => d.marketcap));
         vis.YaxisG.call(vis.Yaxis);
         vis.XaxisG.call(vis.Xaxis);
@@ -190,13 +193,13 @@ class BubbleChart {
                     .append("circle")
                     .attr("cx", (d) => vis.xScale(d.marketcap))
                     .attr("cy", (d) => vis.yScale(d.perChange))
+                    .attr("transform", vis.zoomTransform)
                     .attr("cursor", "pointer")
                     .attr("r", 0)
                     .attr("fill", (d) => colorScheme(d.industry))
                     .attr("opacity", 0.7)
-                    .attr("class", (d) => `${d.industry} ${d.symbol} ${
-                        selected_stock_symbol.includes(d.symbol) ? 'selected' : ''
-                    }`)
+                    .attr("class", (d) => `${d.industry} ${d.symbol} ${selected_stock_symbol.includes(d.symbol) ? 'selected' : ''
+                        }`)
                     .transition().delay(enterDelay).duration(300)
                     .attr("r", (d) => vis.radiusScale(d.marketcap))
                     .selection()
@@ -206,9 +209,8 @@ class BubbleChart {
                     .attr("cx", (d) => vis.xScale(d.marketcap))
                     .attr("cy", (d) => vis.yScale(d.perChange))
                     .attr("r", (d) => vis.radiusScale(d.marketcap))
-                    .attr("class", (d) => `${d.industry} ${d.symbol} ${
-                        selected_stock_symbol.includes(d.symbol) ? 'selected' : ''
-                    }`)
+                    .attr("class", (d) => `${d.industry} ${d.symbol} ${selected_stock_symbol.includes(d.symbol) ? 'selected' : ''
+                        }`)
                     .selection(),
                 exit => exit
                     .transition()
@@ -301,7 +303,7 @@ class BubbleChart {
 
     zoomed(e) {
         let vis = this;
-        vis.transform = e.transform.k
+        vis.zoomTransform = e.transform;
         vis.radiusScale.range([5 / e.transform.k, 50 / e.transform.k]);
         vis.circle.attr("transform", e.transform)
             .attr("r", (d) => vis.radiusScale(d.marketcap));
@@ -313,6 +315,7 @@ class BubbleChart {
 
     autoZoomed(e) {
         let vis = this;
+        vis.zoomTransform = e.transform;
         vis.radiusScale.range([5 / e.transform.k, 50 / e.transform.k]);
         vis.circle
             .attr("transform", e.transform)
@@ -393,9 +396,9 @@ class BubbleChart {
         let basket_index = 0
         let text
         let data
-        let absolute_x=event.x+this.config.margin.left
-        let absolute_y=event.y+this.config.margin.top
-        if (absolute_x>= vis.custom_container_x && absolute_y >= vis.custom_container_y) {
+        let absolute_x = event.x + this.config.margin.left
+        let absolute_y = event.y + this.config.margin.top
+        if (absolute_x >= vis.custom_container_x && absolute_y >= vis.custom_container_y) {
             text = vis.custom_container.append('text').text(d.symbol).attr("transform", `translate(${event.x + vis.config.margin.left},${event.y + vis.config.margin.top})`)
                 .attr('color', '#000000')
                 .attr('font-size', '20')
