@@ -17,8 +17,8 @@ let colorScheme = d3.scaleOrdinal()
     .domain(["Industrials", "Health Care", "Information Technology", "Communication Services",
         "Consumer Discretionary", "Utilities", "Financials", "Materials", "Real Estate",
         "Consumer Staples", "Energy","SP500","Basket1","Basket2"])
-    .range(["#ED8936", "#2F755A", "#3182CE", "#8F2F77", "#805AD5", "#fC8181", "#C53030",
-        "#718096", "#38B2AC", "#9DCC00", "#E0CE61","#FFFFFF","#dddddd","Yellow"]);
+    .range(["#ec810c", "#2F755A", "#3182CE", "#8F2F77", "#805AD5", "#fC8181", "#B23636",
+        "#718096", "#38B2AC", "#a6ca66", "#f9cb5c","#FFFFFF","#dddddd","Yellow"]);
 let selectedDomain = [new Date('2020-04-01'), new Date('2021-01-29')];
 
 
