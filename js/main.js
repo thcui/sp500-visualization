@@ -56,9 +56,12 @@ d3.json('data/companyData.json').then(_stock => {
         });
     });
 
+    // render buttons for bubbleChart
     // reset button must render before chart initialization
-    d3.select("#bubbleChart-reset-button_div")
-        .html(`<button id="bubbleChart-reset-button">Reset Stocks Selection</button>`);
+    d3.select("#bubbleChart-resetview-button_div")
+        .html(`<button id="bubbleChart-resetview-button">Reset View</button>
+        <button id="bubbleChart-resetsels-button">Clear All Selections</button>
+        <button id="bubbleChart-resetsel-button">Clear Selections On Current View</button>`);
 
     treeMap = new TreeMap({parentElement: "#treeMap"}, data);
     bubbleChart = new BubbleChart({parentElement: '#bubbleChart',}, bubbleChartData);
@@ -75,6 +78,7 @@ d3.json('data/companyData.json').then(_stock => {
             if (searched_company) {
                 let symbol = searched_company.symbol
                 selected_stock_symbol.push(symbol)
+                bubbleChart.disableResetZoomFlag = 1
                 bubbleChart.updateVis()
                 bubbleChart.focusZoom(symbol)
                 lineChart.updateVis()
@@ -122,7 +126,7 @@ function filterSector_for_bubble_chart() {
 }
 // change bubble change range based on date
 function filterDateRange(startDate, endDate) {
-    bubbleChart.brushFlag = true;
+    bubbleChart.disableResetZoomFlag = true;
     getbubbleChartData(startDate, endDate);
     bubbleChart.data = bubbleChartData;
     filterSector_for_bubble_chart();

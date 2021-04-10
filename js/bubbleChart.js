@@ -14,7 +14,7 @@ class BubbleChart {
         let vis = this;
 
         vis.initFlag = true;
-        vis.brushFlag = false;
+        vis.disableResetZoomFlag = false;
         vis.title_height = 30;
         vis.updateTime = 300;
 
@@ -135,7 +135,7 @@ class BubbleChart {
         // zoom and pan
         vis.zoom = d3.zoom()
             .scaleExtent([0.1, 40])
-            .translateExtent([[-100, -100], [vis.config.containerWidth + 100, vis.config.containerHeight + 100]])
+            .translateExtent([[-100, -1000], [vis.config.containerWidth + 100, vis.config.containerHeight + 1000]])
             .on("zoom", function (event) {
                 vis.zoomed(event);
             });
@@ -154,17 +154,14 @@ class BubbleChart {
         let vis = this;
 
         // If updateVis is called from moving brush, no need to reset zoom scale
-        if (!vis.brushFlag) {
+        if (!vis.disableResetZoomFlag) {
             vis.resetZoom();
             vis.updateTime = 300;
-
             // Update scale if not called by brushing
-            vis.xScale.domain(d3.extent(vis.data, d => d.marketcap));
-            vis.yScale.domain(d3.extent(vis.data, d => d.perChange));
-            vis.radiusScale.domain(d3.extent(vis.data, d => d.marketcap));
+            vis.resetScale();
 
         } else {
-            vis.brushFlag = false;
+            vis.disableResetZoomFlag = false;
             vis.updateTime = 80;
         }
 
@@ -260,10 +257,23 @@ class BubbleChart {
         }
 
         // reset button for zoom and point selection
-        d3.select("#bubbleChart-reset-button")
+        d3.select("#bubbleChart-resetview-button")
             .on("click", function () {
-                vis.resetZoom();
-                vis.resetSelectedStockSymbol();
+                vis.updateVis();
+            });
+        // reset button for zoom and point selection
+        d3.select("#bubbleChart-resetsel-button")
+            .on("click", function () {
+                vis.resetSelectedStockSymbolCurrView();
+            });
+        // reset button for zoom and point selection
+        d3.select("#bubbleChart-resetsels-button")
+            .on("click", function () {
+                selected_stock_symbol = selected_stock_symbol.filter(v => {
+                    return (v === 'Basket1' || v === 'Basket2');
+                })
+                d3.selectAll('circle').classed("selected", false);
+                lineChart.updateVis();
             });
     }
 
@@ -299,6 +309,13 @@ class BubbleChart {
 
     hideToolTip() {
         d3.select("#tooltip").style("display", "none");
+    }
+
+    resetScale() {
+        let vis = this;
+        vis.xScale.domain(d3.extent(vis.data, d => d.marketcap));
+        vis.yScale.domain(d3.extent(vis.data, d => d.perChange));
+        vis.radiusScale.domain(d3.extent(vis.data, d => d.marketcap));
     }
 
     zoomed(e) {
@@ -337,25 +354,28 @@ class BubbleChart {
 
     focusZoom(symbol) {
         let vis = this;
+
         let circle = d3.select(`.${symbol}`);
         if (circle.empty()) {
             return;
         }
+
         let x = d3.select(`.${symbol}`).attr("cx");
         let y = d3.select(`.${symbol}`).attr("cy");
-        vis.svgG.transition().duration(3500).ease(d3.easeQuadOut).call(
+
+        vis.svgG.transition().duration(1500).ease(d3.easeQuadOut).call(
             vis.zoom.transform,
             d3.zoomIdentity.translate(vis.innerWidth / 2, vis.innerHeight / 2).scale(50).translate(-x, -y)
         );
     }
 
-    resetSelectedStockSymbol() {
+    resetSelectedStockSymbolCurrView() {
         d3.selectAll("circle.selected")
             .classed("selected", false)
             .each(function (d) {
                 selected_stock_symbol = selected_stock_symbol.filter(v => v !== d.symbol);
             });
-        lineChart.updateVis()
+        lineChart.updateVis();
     }
 
     initialZoom() {
@@ -421,7 +441,7 @@ class BubbleChart {
                 .on("end", function (event, d) {
                     basket_index = vis.dragend_for_new_shape(event, d, basket_index, text, d3.select(this))
                 }))
-            lineChart.updateVis()
+            lineChart.updateVis();
         } else {
             clone.remove()
         }
