@@ -17,8 +17,8 @@ let colorScheme = d3.scaleOrdinal()
     .domain(["Industrials", "Health Care", "Information Technology", "Communication Services",
         "Consumer Discretionary", "Utilities", "Financials", "Materials", "Real Estate",
         "Consumer Staples", "Energy","SP500","Basket1","Basket2"])
-    .range(["#ED8936", "#2F855A", "#3182CE", "#8F3F77", "#805AD5", "#FC8181", "#C53030",
-        "#718096", "#38B2AC", "#B7791F", "#E0CE61","#FFFFFF","#dddddd","Yellow"]);
+    .range(["#ED8936", "#2F755A", "#3182CE", "#8F2F77", "#805AD5", "#fC8181", "#C53030",
+        "#718096", "#38B2AC", "#9DCC00", "#E0CE61","#FFFFFF","#dddddd","Yellow"]);
 let selectedDomain = [new Date('2020-04-01'), new Date('2021-01-29')];
 
 
@@ -132,7 +132,7 @@ let searchUrl = 'https://en.wikipedia.org/w/api.php?action=opensearch&format=jso
 let contentUrl = "https://en.wikipedia.org/w/api.php?format=json&origin=*&action=query&prop=extracts&exintro&explaintext&redirects=1&titles="
 function getOverview(comp) {
     let result
-    comp = comp.replace(/\s+/g, '_');
+        comp = comp.replace(/\s+/g, '_').replace(/_\(Class_\w+\)/i,"")
     return new Promise((resolve,rej)=>{
     d3.json(searchUrl + comp).then(data => {
         let title = data[1][0].replace(/\s+/g, '_');
