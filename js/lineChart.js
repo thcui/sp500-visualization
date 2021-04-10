@@ -310,11 +310,12 @@ class LineChart {
         groupMerge.attr('class', d => 'stock_name ' + vis.getSectors(d).replace(' ', '_'))
             .each(function (d){
                 if(companies_data.filter(v=>{return v.symbol===d}).length>0){
-                    d3.select(this).attr("cursor", "help")
+                    d3.select(this)
+                        .attr("cursor", "help")
                         .on("mouseenter",vis.showToolTip)
-                        .on("mouseover",vis.remainToolTip)
+                        .on("mouseover",vis.showToolTip)
                         .on("mouseout", vis.hideToolTip)
-                        .select('image')
+                    d3.select(this).select('image')
                         .datum(d => Object.values(vis.selected_stock_data[d]).filter(v =>
                             v.date.toDateString() === boundary_date.toDateString()))
                         .attr('transform',
@@ -646,12 +647,6 @@ class LineChart {
             })
 
         }
-    }
-    remainToolTip(e) {
-                d3.select('#lineChart_tooltip')
-                    .style("display", "block")
-                    .style("top", e.pageY+15 + "px")
-                    .style("left", e.pageX - 600 + "px")
     }
     hideToolTip() {
         d3.select("#lineChart_tooltip").style("display", "none").html(null)
