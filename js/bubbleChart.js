@@ -67,7 +67,7 @@ class BubbleChart {
             .attr("stroke", 'yellow')
             .attr("stroke-width", '5')
             .attr("stroke-opacity", '0.5')
-            .attr('fill','white')
+            .attr('fill','yellow')
             .attr('fill-opacity','0.1')
 
         vis.custom_container.append('text').attr("transform", `translate(${vis.custom_container_x + 5},${vis.custom_container_y + vis.custom_container_height + 25})`)
