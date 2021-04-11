@@ -72,7 +72,7 @@ js/treeMap.js
 
 js/lineChart.js
 - 
-####For the initVis():
+#### For the initVis():
 - I first updated both y-scale and x-axis to be scaleLinear() since the both of them are quantitative.   
 - I formatted the tick marks to be long enough so that it can be used the see the position.
 - I set and update all my scales, making sure to update my scales in updateVis in case any data has changed
@@ -80,7 +80,7 @@ js/lineChart.js
 - I added the legend to indicate the meaning of color and dash lines: vis.add_legend()
 - I initialized the brush so that we can modify it later
 
-####For the updateVis():
+#### For the updateVis():
 - There are some variable component in the title that need to be updated here based on the data.
 - I mainly set the domain of the axes as they depend on the input data.
 - Based the selection, vis.import_data() will select only the data needed and put them into vis.selected_stock_data
