@@ -61,6 +61,7 @@ js/main.js:
 - filterSector() filter bubble chart data points based on the selected sector in tree map
 - filterDateRange() filter bubble chart data points based on the selected date range in the line chart
 - the jquery search bar function selects the stock symbol in interest, call `bubbleChart.focusZoom()`, and move the viewpoint to the bubble in interest.
+- `getOverview(comp)` get company overview data using Wikipedia API
 
 js/treeMap.js
 - 
