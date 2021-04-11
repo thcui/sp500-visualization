@@ -14,20 +14,28 @@
 
 # I. External Sources Used:
 ### (The change from the cited resources is included in the next part)
-#### lineChart Animation:
+#### Overall
+- https://github.com/d3/d3/blob/master/API.md
+#### LineChart Animation:
 - https://observablehq.com/@jurestabuc/animated-line-chart
-#### dragging:
+#### Dragging:
 - https://observablehq.com/@d3/circle-dragging-i
-#### brush for the line chart
+#### Brush for the line chart
 - https://codesandbox.io/s/github/UBC-InfoVis/2021-436V-examples/tree/master/d3-brushing-linking?file=/js/focusContextVis.js
-#### treemap
+#### Treemap
 - https://www.d3-graph-gallery.com/treemap
-#### bubbleChart
+#### BubbleChart
 - https://codesandbox.io/s/github/UBC-InfoVis/2021-436V-examples/tree/master/d3-interactive-scatter-plot
-#### zoom
+#### Zoom
 - https://www.freecodecamp.org/news/get-ready-to-zoom-and-pan-like-a-pro-after-reading-this-in-depth-tutorial-5d963b0a153e/
 - https://bl.ocks.org/puzzler10/63c0eff1756ca7cb62213932f9ef6825
 - https://observablehq.com/@d3/programmatic-zoom
+#### Data
+- [data/marketcap.csv](https://datahub.io/core/s-and-p-500-companies)
+- [data/data/*.csv](https://www.kaggle.com/zc1111/sp-500-daily-data-till-20210130)
+- [data/SP500HistoricalData.csv](https://www.investing.com/indices/us-spx-500-historical-data)
+- GoogleFinance API
+- YahooFinance API
 
 # II. High-level Process/Changes Made:
 css/style.css:
@@ -52,6 +60,7 @@ js/main.js:
 - getbubbleChartData() function computes stock price percentage change for bubble chart base on the given interval
 - filterSector() filter bubble chart data points based on the selected sector in tree map
 - filterDateRange() filter bubble chart data points based on the selected date range in the line chart
+- the jquery search bar function selects the stock symbol in interest, call `bubbleChart.focusZoom()`, and move the viewpoint to the bubble in interest.
 
 js/treeMap.js
 - 
@@ -89,11 +98,12 @@ js/bubbleChart.js
 - hover over each bubble, the app will display detailed tooltips for each company. Implementation are in `showTooltip()` and `hideToolTip()`.
 - d3 zoom referred to https://www.freecodecamp.org/news/get-ready-to-zoom-and-pan-like-a-pro-after-reading-this-in-depth-tutorial-5d963b0a153e/
 - `initialZoom()` provides the functionality of a initial zooming + panning transition when the page is loaded up, to advise the user of the functionality of zooming.
-- after the data finished loading, `vis.zoom` is bound to the svg element, for user to perform interaction.
+- after the data finished loading, `vis.zoom` is bound to `vis.svgG` element, for user to perform interaction.
 - double click, scroll using mouse, pan using mouse will zoom and pan the chart. 
-- when user click on button `Reset Stocks Selection`, or click on a block of treemap, `autoZoomed()` is used to update the transition of the axis and scale.
-- resize/drag the brush, click on button `Reset Stocks Selection`, and click on a block of treemap will trigger transition of circles bound in `renderVis()`.
-- `Reset Stocks Selection` is bound to a click event on `vis.resetZoom()` and `vis.resetSelectedStockSymbol()`. Click on `Reset Stocks Selection` will reset the selections and viewpoint.
+- when user click on button `Reset View`, or click on a block of treemap, `vis.resetZoom()` is used to update the transition of the axis and scale, reset the zoom to `d3.zoomIdentity`.
+- resize/drag the brush, bubbles will update their position through animation, without changing the zoom scale.
+- when user click on button `Clear All Selections`, the system will deselect all previous selections made on each view by purging values in `selected_stock_symbol` except for Baskets.
+- when user, click on button `Clear Selections On Current View`, the system will deselect previous selections made on current view by calling `vis.resetSelectedStockSymbolCurrView()`.
 - For each bubble, we added the support for drag by `.call(d3.drag().…………………`,   
   - When the drag is started: It will create a new circle with clip-path on it, so that it will look like a check mark, we will call it the "new shape". The position will be the current position of the mouse pointer.
   - When the drag is moving: The new shape will adjust the position based on the mouse pointer: `clone.attr("cx", event.x+vis.config.margin.left).attr("cy", event.y+vis.config.margin.top)`  
