@@ -81,9 +81,11 @@ d3.json('data/companyData.json').then(_stock => {
                 //clear filter when  a company is searched
                 d3.select(".treeBlock.selected").classed("selected", false);
                 sectorFilter = [];
-                bubbleChart.disableResetZoomFlag = 1;
-                // update bubble chart
+                // update bubble chart to general view
                 bubbleChart.data = bubbleChartData;
+                bubbleChart.updateVis();
+                // focus zoom to searched bubble
+                bubbleChart.disableResetZoomFlag = 1;
                 bubbleChart.updateVis();
                 bubbleChart.focusZoom(symbol);
                 //show stock price of searched company
