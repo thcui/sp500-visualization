@@ -78,18 +78,10 @@ d3.json('data/companyData.json').then(_stock => {
             if (searched_company) {
                 let symbol = searched_company.symbol
                 selected_stock_symbol.push(symbol)
-                //clear filter when  a company is searched
-                d3.select(".treeBlock.selected").classed("selected", false);
-                sectorFilter = [];
-                // update bubble chart to general view
-                bubbleChart.data = bubbleChartData;
-                bubbleChart.updateVis();
-                // focus zoom to searched bubble
-                bubbleChart.disableResetZoomFlag = 1;
-                bubbleChart.updateVis();
-                bubbleChart.focusZoom(symbol);
-                //show stock price of searched company
-                lineChart.updateVis();
+                bubbleChart.disableResetZoomFlag = 1
+                bubbleChart.updateVis()
+                bubbleChart.focusZoom(symbol)
+                lineChart.updateVis()
             }
             else {
                 window.alert('No company with name \''+searchValue+'\' is found')
