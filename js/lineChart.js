@@ -318,8 +318,19 @@ class LineChart {
                     d3.select(this).select('image')
                         .datum(d => Object.values(vis.selected_stock_data[d]).filter(v =>
                             v.date.toDateString() === boundary_date.toDateString()))
-                        .attr('transform',
-                            d => `translate(${vis.chart_width+40},${y_scale(d[0].price)-12}) scale(0.08)`)
+                        .each(function(d){
+                            if(!d[0]){
+                                d3.select(this).attr('transform',
+                                    d => `translate(-1000,-1000) scale(0.08)`)
+                            }
+                            else{
+                                d3.select(this).attr('transform',
+                                    d => `translate(${vis.chart_width+40},${y_scale(d[0].price)-12}) scale(0.08)`)
+
+                            }
+                        })
+                        // .attr('transform',
+                        //     d => `translate(${vis.chart_width+40},${y_scale(d[0].price)-12}) scale(0.08)`)
                         .attr('xlink:href', './information.png')
                 }else {
                     d3.select(this).attr("cursor", "default")
@@ -343,8 +354,18 @@ class LineChart {
 
         textMerge.datum(d => Object.values(vis.selected_stock_data[d]).filter(v =>
             v.date.toDateString() === boundary_date.toDateString()))
-            .attr('transform',
-                d => `translate(${vis.chart_width + 40},${y_scale(d[0].price)})`)
+            .each(function(d){
+                if(!d[0]){
+                    d3.select(this).attr('transform', `translate(-1000,-1000)`)
+                }
+                else{
+                    d3.select(this).attr('transform',
+                        d => `translate(${vis.chart_width + 40},${y_scale(d[0].price)})`)
+
+                }
+            })
+            // .attr('transform',
+            //     d => `translate(${vis.chart_width + 40},${y_scale(d[0].price)})`)
             .attr('text-anchor', 'end')
             .attr('vertical-align', 'text-bottom')
             .attr('font-size', 12)
