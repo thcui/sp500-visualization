@@ -150,7 +150,13 @@ class TreeMap {
             sectorFilter = [d.data.sector]
         }
         filterSector_for_bubble_chart();
-        lineChart.update_tab('Sector',true)
+        if(sectorFilter.length===0){
+            lineChart.updateVis()
+        }
+        else{
+            lineChart.update_tab('Sector',true)
+        }
+
     }
 
 }
