@@ -4,7 +4,7 @@ class BubbleChart {
             parentElement: _config.parentElement,
             containerWidth: 1300,
             containerHeight: 500,
-            margin: { top: 20, right: 30, bottom: 50, left: 60 },
+            margin: {top: 20, right: 30, bottom: 50, left: 60},
         };
         this.data = _data
         this.initVis();
@@ -53,8 +53,8 @@ class BubbleChart {
             .attr("transform", `translate(${vis.custom_container_x},${vis.custom_container_y})`)
             .attr('width', vis.custom_container_width)
             .attr('height', vis.custom_container_height)
-            .attr('fill','white')
-            .attr('fill-opacity','0.1')
+            .attr('fill', 'white')
+            .attr('fill-opacity', '0.1')
             .attr("stroke", '#dddddd')
             .attr("stroke-width", '5')
             .attr("rx", 10)
@@ -67,8 +67,8 @@ class BubbleChart {
             .attr("stroke", 'yellow')
             .attr("stroke-width", '5')
             .attr("stroke-opacity", '0.5')
-            .attr('fill','yellow')
-            .attr('fill-opacity','0.1')
+            .attr('fill', 'yellow')
+            .attr('fill-opacity', '0.1')
 
         vis.custom_container.append('text').attr("transform", `translate(${vis.custom_container_x + 5},${vis.custom_container_y + vis.custom_container_height + 25})`)
             .text('Basket2')
@@ -203,7 +203,7 @@ class BubbleChart {
                     .attr("fill", (d) => colorScheme(d.industry))
                     .attr("opacity", 0.7)
                     .attr("class", (d) => `${d.industry} ${d.symbol} ${selected_stock_symbol.includes(d.symbol) ? 'selected' : ''
-                        }`)
+                    }`)
                     .transition().delay(enterDelay).duration(300)
                     .attr("r", (d) => vis.radiusScale(d.marketcap))
                     .selection()
@@ -214,7 +214,7 @@ class BubbleChart {
                     .attr("cy", (d) => vis.yScale(d.perChange))
                     .attr("r", (d) => vis.radiusScale(d.marketcap))
                     .attr("class", (d) => `${d.industry} ${d.symbol} ${selected_stock_symbol.includes(d.symbol) ? 'selected' : ''
-                        }`)
+                    }`)
                     .selection(),
                 exit => exit
                     .transition()
