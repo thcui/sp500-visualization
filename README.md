@@ -56,6 +56,7 @@ js/main.js:
 -
 - define global variable such as color scale and time interval
 - load data and initialize views
+- it will hide the spinning circle(for loading) when the visualization is ready
 - handle search submission and update line chart view
 - getbubbleChartData() function computes stock price percentage change for bubble chart base on the given interval
 - filterSector() filter bubble chart data points based on the selected sector in tree map
@@ -91,6 +92,10 @@ js/lineChart.js
 - Then it updated the function of hovering mouse on the chart.
 - It then will set the brush to a pre-specified place, as it set the position of the brush, the line on the detailed chart will be drawn as the 
 function vis.brushed will be called, and it then calls renderline() to draw the line.
+- For each line that is called by the vis.brushed(i.e. all the lines in the detailed view), we will set the parameter if_text of the function renderLine() to 
+be true. In this case, the text will be added beside the line, and an information icon will be added if the line represents a company.(to show we have some overview information available in the tooltip)
+- As we introduce in the last part, each text for the company name support tooltips, and the tooltip will use the Wikipedia API to get the overview information 
+for each company. In this way, we can get the information about the company up to date.
 
 js/bubbleChart.js
 -

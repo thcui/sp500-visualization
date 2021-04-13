@@ -329,8 +329,6 @@ class LineChart {
 
                             }
                         })
-                        // .attr('transform',
-                        //     d => `translate(${vis.chart_width+40},${y_scale(d[0].price)-12}) scale(0.08)`)
                         .attr('xlink:href', './information.png')
                 }else {
                     d3.select(this).attr("cursor", "default")
