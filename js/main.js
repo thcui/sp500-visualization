@@ -59,9 +59,9 @@ d3.json('data/companyData.json').then(_stock => {
     // render buttons for bubbleChart
     // reset button must render before chart initialization
     d3.select("#bubbleChart-button_div")
-        .html(`<button id="bubbleChart-resetview-button">Reset View</button>
-        <button id="bubbleChart-resetsels-button">Clear All Selections</button>
-        <button id="bubbleChart-resetsel-button">Clear Selections On Current View</button>`);
+        .html(`<button id="bubbleChart-resetview-button"style="background-color:#4B94D0" >Reset View</button>
+        <button id="bubbleChart-resetsels-button" style="background-color:#4B94D0">Clear All Selections</button>
+        <button id="bubbleChart-resetsel-button"  style="background-color:#4B94D0" >Clear Selections On Current View</button>`);
 
     treeMap = new TreeMap({parentElement: "#treeMap"}, data);
     bubbleChart = new BubbleChart({parentElement: '#bubbleChart',}, bubbleChartData);
