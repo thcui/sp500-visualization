@@ -34,9 +34,9 @@ class TreeMap {
             .append("text")
             .attr("x", 20)
             .attr("y", 403)
-            .style("font-size", 12)
+            .style("font-size", 11)
             .attr('fill', 'white')
-            .text("Size of rectangle encodes the amount of market capitalization in the given sector");
+            .text("Size of rectangle encodes the amount of market capitalization in the given sector, each color represents a sector");
 
 
         // Append group element that will contain our actual chart
