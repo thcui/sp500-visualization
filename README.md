@@ -3,11 +3,11 @@
 ### Name: Tianhang Cui
 #### Student Number:32968299
 #### CSID: y7r1b
-  
+
 ### Name: Yuchen Liu
 #### Student Number: 19279158
 #### CSID: d6h0b
-  
+
 ### Name: Emily Lian
 #### Student Number: 36054062
 #### CSID: l6q1b
@@ -31,7 +31,7 @@
 - https://bl.ocks.org/puzzler10/63c0eff1756ca7cb62213932f9ef6825
 - https://observablehq.com/@d3/programmatic-zoom
 #### Animation:
-  https://observablehq.com/@d3/selection-join
+https://observablehq.com/@d3/selection-join
 #### Dragging:
 - https://observablehq.com/@d3/circle-dragging-i
 
@@ -81,7 +81,7 @@ js/treeMap.js
 js/lineChart.js
 - 
 #### For the initVis():
-- I first updated both y-scale and x-axis to be scaleLinear() since the both of them are quantitative.   
+- I first updated both y-scale and x-axis to be scaleLinear() since the both of them are quantitative.
 - I formatted the tick marks to be long enough so that it can be used the see the position.
 - I set and update all my scales, making sure to update my scales in updateVis in case any data has changed
 - I added the vertical and horizontal axis for displaying the date and the stock price. I put the axes into their corresponding group.
@@ -96,12 +96,12 @@ js/lineChart.js
 ####  For the renderVis():
 - It first draws the line in the overview line chart as it is simple and static.
 - Then it updated the function of hovering mouse on the chart.
-- It then will set the brush to a pre-specified place, as it set the position of the brush, the line on the detailed chart will be drawn as the 
-function vis.brushed will be called, and it then calls renderline() to draw the line.
-- For each line that is called by the vis.brushed(i.e. all the lines in the detailed view), we will set the parameter if_text of the function renderLine() to 
-be true. In this case, the text will be added beside the line, and an information icon will be added if the line represents a company.(to show we have some overview information available in the tooltip)
-- As we introduce in the last part, each text for the company name support tooltips, and the tooltip will use the Wikipedia API to get the overview information 
-for each company. In this way, we can get the information about the company up to date.
+- It then will set the brush to a pre-specified place, as it set the position of the brush, the line on the detailed chart will be drawn as the
+  function vis.brushed will be called, and it then calls renderline() to draw the line.
+- For each line that is called by the vis.brushed(i.e. all the lines in the detailed view), we will set the parameter if_text of the function renderLine() to
+  be true. In this case, the text will be added beside the line, and an information icon will be added if the line represents a company.(to show we have some overview information available in the tooltip)
+- As we introduce in the last part, each text for the company name support tooltips, and the tooltip will use the Wikipedia API to get the overview information
+  for each company. In this way, we can get the information about the company up to date.
 
 js/bubbleChart.js
 -
@@ -111,14 +111,14 @@ js/bubbleChart.js
 - d3 zoom referred to https://www.freecodecamp.org/news/get-ready-to-zoom-and-pan-like-a-pro-after-reading-this-in-depth-tutorial-5d963b0a153e/
 - `initialZoom()` provides the functionality of a initial zooming + panning transition when the page is loaded up, to advise the user of the functionality of zooming.
 - after the data finished loading, `vis.zoom` is bound to `vis.svgG` element, for user to perform interaction.
-- double click, scroll using mouse, pan using mouse will zoom and pan the chart. 
+- double click, scroll using mouse, pan using mouse will zoom and pan the chart.
 - when user click on button `Reset View`, or click on a block of treemap, `vis.resetZoom()` is used to update the transition of the axis and scale, reset the zoom to `d3.zoomIdentity`.
 - resize/drag the brush, bubbles will update their position through animation, without changing the zoom scale.
 - when user click on button `Clear All Selections`, the system will deselect all previous selections made on each view by purging values in `selected_stock_symbol` except for Baskets.
 - when user, click on button `Clear Selections On Current View`, the system will deselect previous selections made on current view by calling `vis.resetSelectedStockSymbolCurrView()`.
-- For each bubble, we added the support for drag by `.call(d3.drag().…………………`,   
+- For each bubble, we added the support for drag by `.call(d3.drag().…………………`,
   - When the drag is started: It will create a new circle with clip-path on it, so that it will look like a check mark, we will call it the "new shape". The position will be the current position of the mouse pointer.
-  - When the drag is moving: The new shape will adjust the position based on the mouse pointer: `clone.attr("cx", event.x+vis.config.margin.left).attr("cy", event.y+vis.config.margin.top)`  
+  - When the drag is moving: The new shape will adjust the position based on the mouse pointer: `clone.attr("cx", event.x+vis.config.margin.left).attr("cy", event.y+vis.config.margin.top)`
   - When the drag is end: The function dragend() will be called, and it performs different action based on the final position of the drag:
-    1. If it is in the area of one of the rectangle for the 'basket', we will put the symbol of this stock into the `custom_data` or `custom_data2`, and then update the line chart based on it. Also, we will let the “new shape” can be dragged so that the user can remove it from the basket.  
+    1. If it is in the area of one of the rectangle for the 'basket', we will put the symbol of this stock into the `custom_data` or `custom_data2`, and then update the line chart based on it. Also, we will let the “new shape” can be dragged so that the user can remove it from the basket.
     2. If it is not in the area of 'basket', we will treat it as the user want to cancel the drag and nothing will happen(the "new shape" will be removed).
