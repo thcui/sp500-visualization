@@ -146,7 +146,8 @@ class BubbleChart {
             .attr('y', vis.innerHeight+vis.config.margin.bottom+10)
             .attr("text-anchor", "left")
             .attr('font-size',10)
-            .text("Bubble size: market capitalization, same as x-axis. Bubble color: sector, following treemap color pattern. Horizontal/vertical position: stock price change and amount of market capitalization respectively");
+            .attr("opacity",0.7)
+            .text("Circle size encodes market capitalization. Circle color encodes sector, same encoding as the treemap.");
 
         // zoom and pan
         vis.zoom = d3.zoom()
