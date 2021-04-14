@@ -418,7 +418,7 @@ class LineChart {
         vis.legend.append('text').text('Basket1').attr('transform', `translate(40,20)`).attr('font-size', 10)
         vis.legend.append('text').text('Basket2').attr('transform', `translate(80,20)`).attr('font-size', 10)
         vis.legend.append('text').text('Other types of the line shows the sector of the stock, color corresponding to the treemap').attr('transform', `translate(150,20)`).attr('font-size', 10)
-        vis.legend.append('text').text('(Vertical position encodes the SP500 index/price and the horizontal position encodes date)').attr('transform', `translate(80,35)`).attr('font-size', 10).attr('fill','#dddddd')
+        vis.legend.append('text').text('(Vertical position encodes the SP500 index/stock price and the horizontal position encodes date)').attr('transform', `translate(80,35)`).attr('font-size', 10).attr('fill','#dddddd')
     }
 
     import_data() {
