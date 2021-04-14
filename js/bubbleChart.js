@@ -138,6 +138,14 @@ class BubbleChart {
             .attr('y', 60)
             .attr("text-anchor", "middle")
             .text("Stock Price Change");
+        
+        // Append Legend explaination
+        vis.svgG.append('text')
+            .attr('class', 'bubble-legend')
+            .attr('x', 60)
+            .attr('y', vis.innerHeight+vis.config.margin.bottom+10)
+            .attr("text-anchor", "middle")
+            .text("Bubble size encodes market capitalization, the same as x-axis. Bubble color encodes sector.");
 
         // zoom and pan
         vis.zoom = d3.zoom()

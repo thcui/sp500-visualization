@@ -269,3 +269,8 @@ input[type='submit'] {
 #submit{
     background-color: #4B94D0;
 }
+
+.bubble-legend{
+    fill: white;
+    color: white;
+}
