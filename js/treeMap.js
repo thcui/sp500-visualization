@@ -151,9 +151,11 @@ class TreeMap {
         }
         filterSector_for_bubble_chart();
         if(sectorFilter.length===0){
+            //if after the click, there is no sector is selected, we followed the basic rule for showing tab
             lineChart.updateVis()
         }
         else{
+            //if after the click, there is sector is selected, we show the sector tab
             lineChart.update_tab('Sector',true)
         }
 

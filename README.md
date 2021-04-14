@@ -13,29 +13,35 @@
 #### CSID: l6q1b
 
 # I. External Sources Used:
-### (The change from the cited resources is included in the next part)
-#### Overall
+###### (The change from the cited resources is included in the next part)
+### 1. Overall
 - https://github.com/d3/d3/blob/master/API.md
-#### LineChart Animation:
+### 2. LineChart:
+#### Animation:
 - https://observablehq.com/@jurestabuc/animated-line-chart
-#### Dragging:
-- https://observablehq.com/@d3/circle-dragging-i
 #### Brush for the line chart
 - https://codesandbox.io/s/github/UBC-InfoVis/2021-436V-examples/tree/master/d3-brushing-linking?file=/js/focusContextVis.js
-#### Treemap
+### 3. Treemap:
 - https://www.d3-graph-gallery.com/treemap
-#### BubbleChart
+### 4. BubbleChart:
+#### Main frame:
 - https://codesandbox.io/s/github/UBC-InfoVis/2021-436V-examples/tree/master/d3-interactive-scatter-plot
-#### Zoom
+#### Zoom:
 - https://www.freecodecamp.org/news/get-ready-to-zoom-and-pan-like-a-pro-after-reading-this-in-depth-tutorial-5d963b0a153e/
 - https://bl.ocks.org/puzzler10/63c0eff1756ca7cb62213932f9ef6825
 - https://observablehq.com/@d3/programmatic-zoom
-#### Data
+#### Animation:
+  https://observablehq.com/@d3/selection-join
+#### Dragging:
+- https://observablehq.com/@d3/circle-dragging-i
+
+### 5.Data
 - [data/marketcap.csv](https://datahub.io/core/s-and-p-500-companies)
 - [data/data/*.csv](https://www.kaggle.com/zc1111/sp-500-daily-data-till-20210130)
 - [data/SP500HistoricalData.csv](https://www.investing.com/indices/us-spx-500-historical-data)
 - GoogleFinance API
 - YahooFinance API
+- Wikipedia API
 
 # II. High-level Process/Changes Made:
 css/style.css:
