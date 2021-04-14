@@ -142,9 +142,9 @@ class BubbleChart {
         // Append Legend explaination
         vis.svgG.append('text')
             .attr('class', 'bubble-legend')
-            .attr('x', 60)
+            .attr('x', 20)
             .attr('y', vis.innerHeight+vis.config.margin.bottom+10)
-            .attr("text-anchor", "middle")
+            .attr("text-anchor", "left")
             .text("Bubble size encodes market capitalization, the same as x-axis. Bubble color encodes sector.");
 
         // zoom and pan
