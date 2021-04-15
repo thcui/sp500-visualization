@@ -12,6 +12,8 @@
 #### Student Number: 36054062
 #### CSID: l6q1b
 
+(This visualization should work fine as long as there is enough width for showing the whole treemap and line chart in one screen)
+
 # I. External Sources Used:
 ###### (The change from the cited resources is included in the next part)
 ### 1. Overall
