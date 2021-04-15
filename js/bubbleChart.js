@@ -145,7 +145,7 @@ class BubbleChart {
             .attr('x', 20)
             .attr('y', vis.innerHeight+vis.config.margin.bottom+10)
             .attr("text-anchor", "left")
-            .attr('font-size',10)
+            .attr('font-size',12)
             .attr("opacity",0.7)
             .text("Circle size encodes market capitalization. Circle color encodes sector, same encoding as the treemap.");
 
