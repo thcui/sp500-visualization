@@ -5,10 +5,6 @@ Check the visualization [here](https://www.students.cs.ubc.ca/~cs-436v/21Jan/fam
 
 ![thumbnail](.\thumbnail.png)
 
-(This visualization should work fine as long as there is enough width for showing the whole treemap and line chart in one screen)
-
-# I. External Sources Used:
-
 ###### (The change from the cited resources is included in the next part)
 ### 1. Overall
 - https://github.com/d3/d3/blob/master/API.md
