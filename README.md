@@ -3,7 +3,7 @@
 ### Tianhang Cui, Yuchen Liu, Emily Lian
 Check the visualization [here](https://www.students.cs.ubc.ca/~cs-436v/21Jan/fame/projects/sp500/index.html)!
 
-![thumbnail](.\thumbnail.png)
+![thumbnail](thumbnail.png)
 
 ###### (The change from the cited resources is included in the next part)
 ### 1. Overall
